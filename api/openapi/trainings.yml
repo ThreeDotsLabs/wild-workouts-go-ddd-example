@@ -1,0 +1,210 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Wild Workouts trainings
+  description: TODO
+  contact:
+    name: Three Dots Labs
+    url: https://threedots.tech/
+servers:
+  - url: https://{hostname}/api
+    variables:
+      hostname:
+        default: localhost
+security:
+  - bearerAuth: []
+paths:
+  /trainings:
+    get:
+      operationId: getTrainings
+      responses:
+        '200':
+          description: todo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trainings'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      operationId: createTraining
+      requestBody:
+        description: todo
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostTraining'
+      responses:
+        '204':
+          description: todo
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /trainings/{trainingUUID}:
+    delete:
+      operationId: cancelTraining
+      parameters:
+        - in: path
+          name: trainingUUID
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: todo
+      responses:
+        '204':
+          description: todo
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /trainings/{trainingUUID}/reschedule:
+    put:
+      operationId: rescheduleTraining
+      requestBody:
+        description: todo
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostTraining'
+      parameters:
+        - in: path
+          name: trainingUUID
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: todo
+      responses:
+        '204':
+          description: todo
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /trainings/{trainingUUID}/approve-reschedule:
+    put:
+      operationId: approveRescheduleTraining
+      parameters:
+        - in: path
+          name: trainingUUID
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: todo
+      responses:
+        '204':
+          description: todo
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /trainings/{trainingUUID}/reject-reschedule:
+    put:
+      operationId: rejectRescheduleTraining
+      parameters:
+        - in: path
+          name: trainingUUID
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: todo
+      responses:
+        '204':
+          description: todo
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Training:
+      type: object
+      required: [uuid, user, userUuid, notes, time, canBeCancelled, moveRequiresAccept]
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        user:
+          type: string
+          example: Mariusz Pudzianowski
+        userUuid:
+          type: string
+          format: uuid
+        notes:
+          type: string
+          example: "let's do leg day!"
+        time:
+          type: string
+          format: date-time
+        canBeCancelled:
+          type: boolean
+        moveRequiresAccept:
+          type: boolean
+        proposedTime:
+          type: string
+          format: date-time
+        moveProposedBy:
+          type: string
+
+    Trainings:
+      type: object
+      required: [trainings]
+      properties:
+        trainings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Training'
+
+    PostTraining:
+      type: object
+      required: [time, notes]
+      properties:
+        notes:
+          type: string
+          example: "let's do leg day!"
+        time:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      required:
+        - slug
+        - message
+      properties:
+        slug:
+          type: string
+        message:
+          type: string

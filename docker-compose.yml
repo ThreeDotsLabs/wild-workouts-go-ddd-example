@@ -1,0 +1,98 @@
+version: '3'
+services:
+  web:
+    build:
+      context: docker/web
+      dockerfile: Dockerfile
+    working_dir: /web
+    volumes:
+      - ./web:/web
+      - /web/node_modules/
+    ports:
+      - "127.0.0.1:8080:8080"
+
+  trainer-http:
+    build:
+      context: docker/app
+    volumes:
+      - ./internal:/internal
+#      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
+    working_dir: /internal/trainer
+    ports:
+      - "127.0.0.1:3000:$PORT"
+    env_file:
+      - .env
+    environment:
+      SERVER_TO_RUN: http
+    depends_on:
+      - firestore
+
+  trainer-grpc:
+    build:
+      context: docker/app
+    volumes:
+      - ./internal:/internal
+#      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
+    working_dir: /internal/trainer
+    ports:
+      - "127.0.0.1:3010:$PORT"
+    env_file:
+      - .env
+    environment:
+      SERVER_TO_RUN: grpc
+    depends_on:
+      - firestore
+
+  trainings-http:
+    build:
+      context: docker/app
+    volumes:
+      - ./internal:/internal
+#      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
+    working_dir: /internal/trainings
+    ports:
+      - "127.0.0.1:3001:$PORT"
+    env_file:
+      - .env
+    depends_on:
+      - firestore
+
+  users-http:
+    build:
+      context: docker/app
+    volumes:
+      - ./internal:/internal
+#      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
+    working_dir: /internal/users
+    ports:
+      - "127.0.0.1:3002:$PORT"
+    environment:
+      SERVER_TO_RUN: http
+    env_file:
+      - .env
+    depends_on:
+      - firestore
+
+  users-grpc:
+    build:
+      context: docker/app
+    volumes:
+      - ./internal:/internal
+#      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
+    working_dir: /internal/users
+    ports:
+      - "127.0.0.1:3020:$PORT"
+    environment:
+      SERVER_TO_RUN: grpc
+    env_file:
+      - .env
+    depends_on:
+      - firestore
+
+  firestore:
+    image: karhoo/firestore-emulator:0.2.2
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:8787:8787"
+    restart: unless-stopped

@@ -1,0 +1,3 @@
+# this repo is about Go, not JavaScript
+*.js linguist-vendored
+*.vue linguist-vendored

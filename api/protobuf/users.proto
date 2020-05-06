@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package users;
+
+service UsersService {
+  rpc GetTrainingBalance(GetTrainingBalanceRequest) returns (GetTrainingBalanceResponse) {}
+  rpc UpdateTrainingBalance(UpdateTrainingBalanceRequest) returns (EmptyResponse) {}
+}
+
+message GetTrainingBalanceRequest {
+  string user_id = 1;
+}
+
+message GetTrainingBalanceResponse {
+  int64 amount = 1;
+}
+
+message UpdateTrainingBalanceRequest {
+  string user_id = 1;
+  int64 amount_change = 2;
+}
+
+message EmptyResponse {}

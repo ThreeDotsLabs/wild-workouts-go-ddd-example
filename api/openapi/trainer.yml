@@ -1,0 +1,153 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Wild Workouts trainer
+  description: TODO
+  contact:
+    name: Three Dots Labs
+    url: https://threedots.tech/
+servers:
+  - url: https://{hostname}/api
+    variables:
+      hostname:
+        default: localhost
+security:
+  - bearerAuth: []
+paths:
+  /trainer/calendar:
+    get:
+      operationId: getTrainerAvailableHours
+      parameters:
+        - in: query
+          name: dateFrom
+          schema:
+            type: string
+            format: date-time
+          required: true
+        - in: query
+          name: dateTo
+          schema:
+            type: string
+            format: date-time
+          required: true
+      responses:
+        '200':
+          description: todo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Date'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /trainer/calendar/make-hour-available:
+    put:
+      operationId: makeHourAvailable
+      requestBody:
+        description: todo
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HourUpdate'
+      responses:
+        '204':
+          description: todo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Date'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /trainer/calendar/make-hour-unavailable:
+    put:
+      operationId: makeHourUnavailable
+      requestBody:
+        description: todo
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HourUpdate'
+      responses:
+        '204':
+          description: todo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Date'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Date:
+      type: object
+      required: [date, hasFreeHours, hours]
+      properties:
+        date:
+          type: string
+          format: date
+          example: "2020-03-22"
+        hasFreeHours:
+          type: boolean
+        hours:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hour'
+
+    Hour:
+      type: object
+      required: [hour, available, hasTrainingScheduled]
+      properties:
+        hour:
+          type: string
+          format: date-time
+        available:
+          type: boolean
+        hasTrainingScheduled:
+          type: boolean
+
+    HourUpdate:
+      type: object
+      required: [hours]
+      properties:
+        hours:
+          type: array
+          items:
+            type: string
+            format: date-time
+
+    Error:
+      type: object
+      required:
+        - slug
+        - message
+      properties:
+        slug:
+          type: string
+        message:
+          type: string

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package trainer;
+
+import "google/protobuf/timestamp.proto";
+
+service TrainerService {
+  rpc IsHourAvailable(IsHourAvailableRequest) returns (IsHourAvailableResponse) {}
+  rpc UpdateHour(UpdateHourRequest) returns (EmptyResponse) {}
+}
+
+message IsHourAvailableRequest {
+  google.protobuf.Timestamp time = 1;
+}
+
+message IsHourAvailableResponse {
+  bool is_available = 1;
+}
+
+message UpdateHourRequest {
+  google.protobuf.Timestamp time = 1;
+
+  bool has_training_scheduled = 2;
+  bool available = 3;
+}
+
+message EmptyResponse {}
