@@ -1,0 +1,36 @@
+{
+  "hosting": {
+    "public": "dist",
+    "ignore": [
+      "__/**",
+      "**/.*"
+    ],
+    "rewrites": [
+      {
+        "source": "/api/trainer{,/**}",
+        "run": {
+          "serviceId": "trainer-http",
+          "region": "europe-west1"
+        }
+      },
+      {
+        "source": "/api/trainings{,/**}",
+        "run": {
+          "serviceId": "trainings-http",
+          "region": "europe-west1"
+        }
+      },
+      {
+        "source": "/api/users{,/**}",
+        "run": {
+          "serviceId": "users-http",
+          "region": "europe-west1"
+        }
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
