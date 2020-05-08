@@ -3,5 +3,5 @@ set -e
 
 readonly service="$1"
 
-cd "./pkg/$service"
+cd "./internal/$service"
 go vet .

@@ -18,7 +18,7 @@ vendor/
 
 .terraform
 *.tfstate
-*.tfstate.backup
+*.tfstate.*backup
 terraform/.env
 terraform/cloud-builders-community
 

@@ -1,0 +1,86 @@
+steps:
+- id: trainer-lint
+  name: golang
+  entrypoint: ./scripts/lint.sh
+  args: [trainer]
+- id: trainings-lint
+  name: golang
+  entrypoint: ./scripts/lint.sh
+  args: [trainings]
+- id: users-lint
+  name: golang
+  entrypoint: ./scripts/lint.sh
+  args: [users]
+
+- id: trainer-docker
+  name: gcr.io/cloud-builders/docker
+  entrypoint: ./scripts/build-docker.sh
+  args: ["trainer", "$PROJECT_ID"]
+  waitFor: [trainer-lint]
+- id: trainings-docker
+  name: gcr.io/cloud-builders/docker
+  entrypoint: ./scripts/build-docker.sh
+  args: ["trainings", "$PROJECT_ID"]
+  waitFor: [trainings-lint]
+- id: users-docker
+  name: gcr.io/cloud-builders/docker
+  entrypoint: ./scripts/build-docker.sh
+  args: ["users", "$PROJECT_ID"]
+  waitFor: [users-lint]
+
+- id: trainer-http-deploy
+  name: gcr.io/cloud-builders/gcloud
+  entrypoint: ./scripts/deploy.sh
+  args: [trainer, http, "$PROJECT_ID"]
+  waitFor: [trainer-docker]
+- id: trainer-grpc-deploy
+  name: gcr.io/cloud-builders/gcloud
+  entrypoint: ./scripts/deploy.sh
+  args: [trainer, grpc, "$PROJECT_ID"]
+  waitFor: [trainer-docker]
+- id: trainings-http-deploy
+  name: gcr.io/cloud-builders/gcloud
+  entrypoint: ./scripts/deploy.sh
+  args: [trainings, http, "$PROJECT_ID"]
+  waitFor: [trainings-docker]
+- id: users-http-deploy
+  name: gcr.io/cloud-builders/gcloud
+  entrypoint: ./scripts/deploy.sh
+  args: [users, http, "$PROJECT_ID"]
+  waitFor: [users-docker]
+- id: users-grpc-deploy
+  name: gcr.io/cloud-builders/gcloud
+  entrypoint: ./scripts/deploy.sh
+  args: [users, grpc, "$PROJECT_ID"]
+  waitFor: [users-docker]
+
+- id: web-deps
+  name: node:12.16.2
+  entrypoint: yarn
+  args: [install]
+  dir: web
+  waitFor: ['-']
+- id: openapi-js
+  name: openapitools/openapi-generator-cli:v4.3.0 
+  entrypoint: "./scripts/openapi-js.sh"
+  waitFor: ['-']
+- id: web-build
+  name: node:12.16.2
+  entrypoint: yarn
+  args: [build]
+  dir: web
+  waitFor: [web-deps, openapi-js]
+- name: gcr.io/$PROJECT_ID/firebase
+  args: ['deploy', '--project=$PROJECT_ID']
+  dir: web
+  waitFor: [web-build]
+
+options:
+  env:
+  - 'GO111MODULE=on'
+  machineType: 'N1_HIGHCPU_8'
+
+images:
+- 'gcr.io/$PROJECT_ID/trainer'
+- 'gcr.io/$PROJECT_ID/trainings'
+- 'gcr.io/$PROJECT_ID/users'
