@@ -18,10 +18,6 @@ resource "google_cloudbuild_trigger" "trigger" {
 }
 
 resource "null_resource" "firebase_builder" {
-  triggers = {
-    project = google_project.project.number
-  }
-
   provisioner "local-exec" {
     command = "make firebase_builder"
   }

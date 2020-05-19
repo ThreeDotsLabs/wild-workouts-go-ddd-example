@@ -14,9 +14,10 @@ resource "google_project" "project" {
 }
 
 resource "google_project_iam_member" "owner" {
-  project = google_project.project.project_id
-  role    = "roles/owner"
-  member  = "user:${var.user}"
+  role   = "roles/owner"
+  member = "user:${var.user}"
+
+  depends_on = [google_project.project]
 }
 
 resource "google_project_service" "compute" {
@@ -25,10 +26,8 @@ resource "google_project_service" "compute" {
 }
 
 resource "google_project_service" "container_registry" {
-  service = "containerregistry.googleapis.com"
-  depends_on = [
-    google_project.project,
-  ]
+  service    = "containerregistry.googleapis.com"
+  depends_on = [google_project.project]
 
   disable_dependent_services = true
 }

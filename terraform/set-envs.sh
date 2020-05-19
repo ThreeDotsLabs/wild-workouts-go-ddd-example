@@ -2,6 +2,8 @@
 readonly env_prefix=TF_VAR_
 readonly example_file=.env.example
 readonly target_file=.env
+readonly default_region=europe-west1
+readonly default_firebase_location=europe-west
 
 answer=""
 
@@ -61,6 +63,20 @@ if [ -z "$TF_VAR_billing_account" ]; then
     echo "Found billing account: $current_billing_account"
     TF_VAR_billing_account="$current_billing_account"
 fi
+
+if [ -z "$TF_VAR_region" ]; then
+    TF_VAR_region="$default_region"
+fi
+
+if [ -z "$TF_VAR_firebase_location" ]; then
+    TF_VAR_firebase_location="$default_firebase_location"
+fi
+
+echo
+echo "You need to pick a region where Cloud Run is available!"
+echo "See full list of supported regions: https://cloud.google.com/run/docs/locations"
+echo "See available Firebase locations here: https://firebase.google.com/docs/projects/locations"
+echo
 
 echo "Fill all required parameters:"
 

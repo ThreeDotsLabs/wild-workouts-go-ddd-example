@@ -1,8 +1,4 @@
 resource "null_resource" "enable_firestore" {
-  triggers = {
-    project = google_project.project.number
-  }
-
   provisioner "local-exec" {
     command = "make firestore"
   }
