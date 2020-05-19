@@ -24,7 +24,6 @@ resource "google_service_account_key" "firebase_key" {
 
 resource "google_firebase_project" "default" {
   provider = google-beta
-  project  = google_project.project.project_id
 
   depends_on = [
     google_project_service.firebase,
@@ -34,14 +33,16 @@ resource "google_firebase_project" "default" {
 
 resource "google_firebase_project_location" "default" {
   provider = google-beta
-  project  = google_firebase_project.default.project
 
   location_id = var.firebase_location
+
+  depends_on = [
+    google_firebase_project.default,
+  ]
 }
 
 resource "google_firebase_web_app" "wild_workouts" {
   provider     = google-beta
-  project      = google_project.project.project_id
   display_name = "Wild Workouts"
 
   depends_on = [google_firebase_project.default]
