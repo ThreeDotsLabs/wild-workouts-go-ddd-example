@@ -7,7 +7,8 @@ No application is perfect from the beginning. With over a dozen coming articles,
 ### Articles
 
 1. [**Too modern Go application? Building a serverless application with Google Cloud Run and Firebase**](https://threedots.tech/post/serverless-cloud-run-firebase-modern-go-application/?utm_source=github.com)
-2. *More articles are on the way!*
+2. [**A complete Terraform setup of a serverless application on Google Cloud Run and Firebase**](https://threedots.tech/post/complete-setup-of-serverless-application/?utm_source=github.com)
+3. *More articles are on the way!*
 
 ### Directories
 
