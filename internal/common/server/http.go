@@ -54,7 +54,7 @@ func addAuthMiddleware(router *chi.Mux) {
 
 	var opts []option.ClientOption
 	if file := os.Getenv("SERVICE_ACCOUNT_FILE"); file != "" {
-		opts = append(opts, option.WithCredentialsFile("/service-account-file.json"))
+		opts = append(opts, option.WithCredentialsFile(file))
 	}
 
 	config := &firebase.Config{ProjectID: os.Getenv("GCP_PROJECT")}
