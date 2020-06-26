@@ -1,5 +1,5 @@
 base_image:=gcr.io/cloudrun/hello
-load_envs:=source ./.env
+load_envs:=. ./.env
 
 all: check init apply push_repo done
 
@@ -19,7 +19,7 @@ apply:
 
 .PHONY: push_repo
 push_repo:
-	git config --global credential.https://source.developers.google.com.helper gcloud.sh  
+	git config --global credential.https://source.developers.google.com.helper gcloud.sh
 	repo_url=$(shell terraform output -no-color | grep repo_url | awk '{print $$3}') && \
 	if [ -z "$(shell git remote | grep google)" ]; then \
 		git remote add google "$$repo_url"; \
