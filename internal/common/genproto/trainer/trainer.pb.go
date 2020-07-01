@@ -105,8 +105,6 @@ func (m *IsHourAvailableResponse) GetIsAvailable() bool {
 
 type UpdateHourRequest struct {
 	Time                 *timestamp.Timestamp `protobuf:"bytes,1,opt,name=time,proto3" json:"time,omitempty"`
-	HasTrainingScheduled bool                 `protobuf:"varint,2,opt,name=has_training_scheduled,json=hasTrainingScheduled,proto3" json:"has_training_scheduled,omitempty"`
-	Available            bool                 `protobuf:"varint,3,opt,name=available,proto3" json:"available,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -142,20 +140,6 @@ func (m *UpdateHourRequest) GetTime() *timestamp.Timestamp {
 		return m.Time
 	}
 	return nil
-}
-
-func (m *UpdateHourRequest) GetHasTrainingScheduled() bool {
-	if m != nil {
-		return m.HasTrainingScheduled
-	}
-	return false
-}
-
-func (m *UpdateHourRequest) GetAvailable() bool {
-	if m != nil {
-		return m.Available
-	}
-	return false
 }
 
 type EmptyResponse struct {
@@ -201,26 +185,25 @@ func init() {
 }
 
 var fileDescriptor_8df4ffdae7cc5e40 = []byte{
-	// 289 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x91, 0xcf, 0x4e, 0x83, 0x40,
-	0x10, 0x87, 0x8b, 0x1a, 0xff, 0x4c, 0xad, 0x8d, 0x1b, 0x83, 0x0d, 0x31, 0x69, 0xdd, 0x93, 0xa7,
-	0x6d, 0x52, 0x3d, 0x7a, 0xd1, 0xc4, 0xa4, 0x5e, 0x29, 0x7a, 0x25, 0x4b, 0x19, 0x61, 0x13, 0x60,
-	0x91, 0x5d, 0x9a, 0xf8, 0x24, 0xbe, 0x84, 0x0f, 0x69, 0xba, 0x74, 0x21, 0x5a, 0xbd, 0xf4, 0xc8,
-	0xcc, 0xc7, 0x37, 0x33, 0xbf, 0x85, 0x81, 0xae, 0xb8, 0x28, 0xb0, 0x62, 0x65, 0x25, 0xb5, 0x24,
-	0x47, 0x9b, 0x4f, 0x6f, 0x9c, 0x48, 0x99, 0x64, 0x38, 0x35, 0xe5, 0xa8, 0x7e, 0x9b, 0x6a, 0x91,
-	0xa3, 0xd2, 0x3c, 0x2f, 0x1b, 0x92, 0xce, 0xc1, 0x7d, 0x56, 0x73, 0x59, 0x57, 0x0f, 0x2b, 0x2e,
-	0x32, 0x1e, 0x65, 0xe8, 0xe3, 0x7b, 0x8d, 0x4a, 0x13, 0x06, 0x07, 0x6b, 0x78, 0xe4, 0x4c, 0x9c,
-	0x9b, 0xfe, 0xcc, 0x63, 0x8d, 0x89, 0x59, 0x13, 0x0b, 0xac, 0xc9, 0x37, 0x1c, 0xbd, 0x87, 0xcb,
-	0x2d, 0x93, 0x2a, 0x65, 0xa1, 0x90, 0x5c, 0xc3, 0xa9, 0x50, 0x21, 0xb7, 0x75, 0xa3, 0x3c, 0xf6,
-	0xfb, 0x42, 0xb5, 0x28, 0xfd, 0x74, 0xe0, 0xfc, 0xa5, 0x8c, 0xb9, 0xc6, 0xb5, 0x62, 0xc7, 0x1d,
-	0xc8, 0x1d, 0xb8, 0x29, 0x57, 0xa1, 0xb9, 0x5e, 0x14, 0x49, 0xa8, 0x96, 0x29, 0xc6, 0x75, 0x86,
-	0xf1, 0x68, 0xcf, 0x8c, 0xbc, 0x48, 0xb9, 0x0a, 0x36, 0xcd, 0x85, 0xed, 0x91, 0x2b, 0x38, 0xe9,
-	0x76, 0xdb, 0x37, 0x60, 0x57, 0xa0, 0x43, 0x18, 0x3c, 0xe5, 0xa5, 0xfe, 0xb0, 0xd7, 0xcc, 0xbe,
-	0x1c, 0x38, 0x0b, 0x9a, 0x7c, 0x17, 0x58, 0xad, 0xc4, 0x12, 0xc9, 0x2b, 0x0c, 0x7f, 0xdd, 0x4e,
-	0xc6, 0xcc, 0x3e, 0xc9, 0xdf, 0xf9, 0x7a, 0x93, 0xff, 0x81, 0x66, 0x10, 0xed, 0x91, 0x47, 0x80,
-	0x2e, 0x14, 0xe2, 0xb5, 0x7f, 0x6c, 0x25, 0xe5, 0xb9, 0x6d, 0xef, 0xc7, 0xb2, 0xb4, 0x17, 0x1d,
-	0x9a, 0xb4, 0x6e, 0xbf, 0x03, 0x00, 0x00, 0xff, 0xff, 0x1a, 0x99, 0x6a, 0xba, 0x23, 0x02, 0x00,
-	0x00,
+	// 274 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x90, 0x41, 0x4f, 0x02, 0x31,
+	0x10, 0x85, 0xc1, 0x18, 0x35, 0x83, 0x80, 0xf4, 0x80, 0x66, 0x2f, 0x60, 0x4f, 0x9e, 0x4a, 0x82,
+	0x57, 0x2f, 0x86, 0x68, 0x96, 0x83, 0x97, 0x05, 0xbd, 0x9a, 0xee, 0x32, 0xae, 0x8d, 0xdd, 0x6d,
+	0x6d, 0xbb, 0x24, 0xfe, 0x40, 0xff, 0x97, 0xa1, 0x6b, 0x37, 0x41, 0xf4, 0x82, 0xc7, 0x4e, 0xdf,
+	0x7c, 0xef, 0xcd, 0x83, 0xae, 0x33, 0x5c, 0x94, 0x68, 0x98, 0x36, 0xca, 0x29, 0x72, 0xfc, 0xfd,
+	0x8c, 0x46, 0xb9, 0x52, 0xb9, 0xc4, 0x89, 0x1f, 0xa7, 0xd5, 0xcb, 0xc4, 0x89, 0x02, 0xad, 0xe3,
+	0x85, 0xae, 0x95, 0x34, 0x86, 0xe1, 0xdc, 0xc6, 0xaa, 0x32, 0xb7, 0x6b, 0x2e, 0x24, 0x4f, 0x25,
+	0x26, 0xf8, 0x5e, 0xa1, 0x75, 0x84, 0xc1, 0xe1, 0x46, 0x7c, 0xd1, 0x1e, 0xb7, 0xaf, 0x3a, 0xd3,
+	0x88, 0xd5, 0x24, 0x16, 0x48, 0x6c, 0x19, 0x48, 0x89, 0xd7, 0xd1, 0x1b, 0x38, 0xdf, 0x21, 0x59,
+	0xad, 0x4a, 0x8b, 0xe4, 0x12, 0x4e, 0x85, 0x7d, 0xe6, 0x61, 0xee, 0x91, 0x27, 0x49, 0x47, 0xd8,
+	0x46, 0x4a, 0x67, 0x30, 0x78, 0xd4, 0x2b, 0xee, 0x70, 0x43, 0xd8, 0x37, 0x42, 0x1f, 0xba, 0x77,
+	0x85, 0x76, 0x1f, 0xc1, 0x78, 0xfa, 0x79, 0x00, 0xbd, 0x65, 0x5d, 0xc5, 0x02, 0xcd, 0x5a, 0x64,
+	0x48, 0x9e, 0xa0, 0xff, 0x23, 0x26, 0x19, 0xb1, 0xd0, 0xde, 0xef, 0x55, 0x44, 0xe3, 0xbf, 0x05,
+	0xb5, 0x11, 0x6d, 0x91, 0x18, 0xce, 0x16, 0xd9, 0x2b, 0xae, 0x2a, 0x89, 0xde, 0x51, 0x94, 0x39,
+	0x89, 0x9a, 0xbd, 0x9d, 0xdb, 0xa2, 0x61, 0xf3, 0xb7, 0x15, 0x99, 0xb6, 0xc8, 0x3d, 0xf4, 0x66,
+	0xbc, 0xcc, 0x50, 0xfe, 0x93, 0x33, 0x87, 0xc1, 0x03, 0x7f, 0xc3, 0xed, 0x5b, 0xf7, 0x42, 0xa5,
+	0x47, 0xbe, 0xf2, 0xeb, 0xaf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x98, 0xc4, 0x9a, 0xd0, 0x67, 0x02,
+	0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -236,7 +219,9 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type TrainerServiceClient interface {
 	IsHourAvailable(ctx context.Context, in *IsHourAvailableRequest, opts ...grpc.CallOption) (*IsHourAvailableResponse, error)
-	UpdateHour(ctx context.Context, in *UpdateHourRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
+	ScheduleTraining(ctx context.Context, in *UpdateHourRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
+	CancelTraining(ctx context.Context, in *UpdateHourRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
+	MakeHourAvailable(ctx context.Context, in *UpdateHourRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
 }
 
 type trainerServiceClient struct {
@@ -256,9 +241,27 @@ func (c *trainerServiceClient) IsHourAvailable(ctx context.Context, in *IsHourAv
 	return out, nil
 }
 
-func (c *trainerServiceClient) UpdateHour(ctx context.Context, in *UpdateHourRequest, opts ...grpc.CallOption) (*EmptyResponse, error) {
+func (c *trainerServiceClient) ScheduleTraining(ctx context.Context, in *UpdateHourRequest, opts ...grpc.CallOption) (*EmptyResponse, error) {
 	out := new(EmptyResponse)
-	err := c.cc.Invoke(ctx, "/trainer.TrainerService/UpdateHour", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/trainer.TrainerService/ScheduleTraining", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *trainerServiceClient) CancelTraining(ctx context.Context, in *UpdateHourRequest, opts ...grpc.CallOption) (*EmptyResponse, error) {
+	out := new(EmptyResponse)
+	err := c.cc.Invoke(ctx, "/trainer.TrainerService/CancelTraining", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *trainerServiceClient) MakeHourAvailable(ctx context.Context, in *UpdateHourRequest, opts ...grpc.CallOption) (*EmptyResponse, error) {
+	out := new(EmptyResponse)
+	err := c.cc.Invoke(ctx, "/trainer.TrainerService/MakeHourAvailable", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -268,7 +271,9 @@ func (c *trainerServiceClient) UpdateHour(ctx context.Context, in *UpdateHourReq
 // TrainerServiceServer is the server API for TrainerService service.
 type TrainerServiceServer interface {
 	IsHourAvailable(context.Context, *IsHourAvailableRequest) (*IsHourAvailableResponse, error)
-	UpdateHour(context.Context, *UpdateHourRequest) (*EmptyResponse, error)
+	ScheduleTraining(context.Context, *UpdateHourRequest) (*EmptyResponse, error)
+	CancelTraining(context.Context, *UpdateHourRequest) (*EmptyResponse, error)
+	MakeHourAvailable(context.Context, *UpdateHourRequest) (*EmptyResponse, error)
 }
 
 // UnimplementedTrainerServiceServer can be embedded to have forward compatible implementations.
@@ -278,8 +283,14 @@ type UnimplementedTrainerServiceServer struct {
 func (*UnimplementedTrainerServiceServer) IsHourAvailable(ctx context.Context, req *IsHourAvailableRequest) (*IsHourAvailableResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsHourAvailable not implemented")
 }
-func (*UnimplementedTrainerServiceServer) UpdateHour(ctx context.Context, req *UpdateHourRequest) (*EmptyResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateHour not implemented")
+func (*UnimplementedTrainerServiceServer) ScheduleTraining(ctx context.Context, req *UpdateHourRequest) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ScheduleTraining not implemented")
+}
+func (*UnimplementedTrainerServiceServer) CancelTraining(ctx context.Context, req *UpdateHourRequest) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CancelTraining not implemented")
+}
+func (*UnimplementedTrainerServiceServer) MakeHourAvailable(ctx context.Context, req *UpdateHourRequest) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MakeHourAvailable not implemented")
 }
 
 func RegisterTrainerServiceServer(s *grpc.Server, srv TrainerServiceServer) {
@@ -304,20 +315,56 @@ func _TrainerService_IsHourAvailable_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TrainerService_UpdateHour_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TrainerService_ScheduleTraining_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateHourRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TrainerServiceServer).UpdateHour(ctx, in)
+		return srv.(TrainerServiceServer).ScheduleTraining(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/trainer.TrainerService/UpdateHour",
+		FullMethod: "/trainer.TrainerService/ScheduleTraining",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrainerServiceServer).UpdateHour(ctx, req.(*UpdateHourRequest))
+		return srv.(TrainerServiceServer).ScheduleTraining(ctx, req.(*UpdateHourRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TrainerService_CancelTraining_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateHourRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrainerServiceServer).CancelTraining(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trainer.TrainerService/CancelTraining",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrainerServiceServer).CancelTraining(ctx, req.(*UpdateHourRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TrainerService_MakeHourAvailable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateHourRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrainerServiceServer).MakeHourAvailable(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trainer.TrainerService/MakeHourAvailable",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrainerServiceServer).MakeHourAvailable(ctx, req.(*UpdateHourRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -331,8 +378,16 @@ var _TrainerService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _TrainerService_IsHourAvailable_Handler,
 		},
 		{
-			MethodName: "UpdateHour",
-			Handler:    _TrainerService_UpdateHour_Handler,
+			MethodName: "ScheduleTraining",
+			Handler:    _TrainerService_ScheduleTraining_Handler,
+		},
+		{
+			MethodName: "CancelTraining",
+			Handler:    _TrainerService_CancelTraining_Handler,
+		},
+		{
+			MethodName: "MakeHourAvailable",
+			Handler:    _TrainerService_MakeHourAvailable_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

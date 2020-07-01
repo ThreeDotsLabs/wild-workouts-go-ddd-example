@@ -71,16 +71,19 @@ func loadTrainerFixtures(ctx context.Context) error {
 		for hour := 12; hour <= 20; hour++ {
 			trainingTime := time.Date(date.Year(), date.Month(), date.Day(), hour, 0, 0, 0, time.UTC)
 
+			if trainingTime.Add(time.Hour).Before(time.Now()) {
+				// this hour is already "in progress"
+				continue
+			}
+
 			ts, err := ptypes.TimestampProto(trainingTime)
 			if err != nil {
 				return errors.Wrapf(err, "unable to marshal time %s", trainingTime)
 			}
 
 			if localRand.NormFloat64() > 0 {
-				_, err = trainerClient.UpdateHour(ctx, &trainer.UpdateHourRequest{
-					Time:                 ts,
-					HasTrainingScheduled: false,
-					Available:            true,
+				_, err = trainerClient.MakeHourAvailable(ctx, &trainer.UpdateHourRequest{
+					Time: ts,
 				})
 				if err != nil {
 					return errors.Wrap(err, "unable to update hour")

@@ -19,12 +19,12 @@ func main() {
 	logs.Init()
 
 	ctx := context.Background()
-	firebaseClient, err := firestore.NewClient(ctx, os.Getenv("GCP_PROJECT"))
+	firestoreClient, err := firestore.NewClient(ctx, os.Getenv("GCP_PROJECT"))
 	if err != nil {
 		panic(err)
 	}
 
-	firebaseDB := db{firebaseClient}
+	firebaseDB := db{firestoreClient}
 
 	serverType := strings.ToLower(os.Getenv("SERVER_TO_RUN"))
 	switch serverType {
@@ -32,11 +32,11 @@ func main() {
 		go loadFixtures(firebaseDB)
 
 		server.RunHTTPServer(func(router chi.Router) http.Handler {
-			return HandlerFromMux(HttpServer{firebaseDB}, router)
+			return HandlerFromMux(HttpServer{firebaseDB, NewFirestoreHourRepository(firestoreClient)}, router)
 		})
 	case "grpc":
 		server.RunGRPCServer(func(server *grpc.Server) {
-			svc := GrpcServer{firebaseDB}
+			svc := GrpcServer{NewFirestoreHourRepository(firestoreClient)}
 			trainer.RegisterTrainerServiceServer(server, svc)
 		})
 	default:
