@@ -1,3 +1,5 @@
+include .env
+
 .PHONY: openapi
 openapi: openapi_http openapi_js
 
@@ -39,3 +41,7 @@ lint:
 	@./scripts/lint.sh trainer
 	@./scripts/lint.sh trainings
 	@./scripts/lint.sh users
+
+.PHONY: mycli
+mycli:
+	mycli -u ${MYSQL_USER} -p ${MYSQL_PASSWORD} ${MYSQL_DATABASE}
