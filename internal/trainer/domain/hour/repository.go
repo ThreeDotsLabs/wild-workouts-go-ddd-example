@@ -6,7 +6,7 @@ import (
 )
 
 type Repository interface {
-	GetOrCreateHour(ctx context.Context, time time.Time) (*Hour, error)
+	GetOrCreateHour(ctx context.Context, hourTime time.Time) (*Hour, error)
 	UpdateHour(
 		ctx context.Context,
 		hourTime time.Time,
