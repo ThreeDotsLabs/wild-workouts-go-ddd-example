@@ -1,4 +1,6 @@
 include .env
+include .test.env
+export
 
 .PHONY: openapi
 openapi: openapi_http openapi_js
@@ -45,3 +47,15 @@ lint:
 .PHONY: mycli
 mycli:
 	mycli -u ${MYSQL_USER} -p ${MYSQL_PASSWORD} ${MYSQL_DATABASE}
+
+INERNAL_PACKAGES := $(wildcard internal/*)
+
+ifeq (test,$(firstword $(MAKECMDGOALS)))
+  TEST_ARGS := $(subst $$,$$$$,$(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS)))
+  $(eval $(TEST_ARGS):;@:)
+endif
+
+.PHONY: test $(INERNAL_PACKAGES)
+test: $(INERNAL_PACKAGES)
+$(INERNAL_PACKAGES):
+	@(cd $@ && go test -count=1 -race ./... $(subst $$$$,$$,$(TEST_ARGS)))

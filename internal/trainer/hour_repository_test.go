@@ -145,11 +145,14 @@ func testUpdateHour_parallel(t *testing.T, repository hour.Repository) {
 	})
 	require.NoError(t, err)
 
-	workersCount := 10
+	workersCount := 20
 	workersDone := sync.WaitGroup{}
 	workersDone.Add(workersCount)
 
+	// closing startWorkers will unblock all workers at once,
+	// thanks to that it will be more likely to have race condition
 	startWorkers := make(chan struct{})
+	// if training was successfully scheduled, number of the worker is sent to this channel
 	trainingsScheduled := make(chan int, workersCount)
 
 	// we are trying to do race condition, in practice only one worker should be able to finish transaction
@@ -163,9 +166,11 @@ func testUpdateHour_parallel(t *testing.T, repository hour.Repository) {
 			schedulingTraining := false
 
 			err := repository.UpdateHour(ctx, hourTime, func(h *hour.Hour) (*hour.Hour, error) {
+				// training is already scheduled, nothing to do there
 				if h.HasTrainingScheduled() {
 					return h, nil
 				}
+				// training is not scheduled yet, so let's try to do that
 				if err := h.ScheduleTraining(); err != nil {
 					return nil, err
 				}
@@ -176,12 +181,15 @@ func testUpdateHour_parallel(t *testing.T, repository hour.Repository) {
 			})
 
 			if schedulingTraining && err == nil {
+				// training is only scheduled if UpdateHour didn't return an error
 				trainingsScheduled <- workerNum
 			}
 		}()
 	}
 
 	close(startWorkers)
+
+	// we are waiting, when all workers did the job
 	workersDone.Wait()
 	close(trainingsScheduled)
 
