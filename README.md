@@ -8,14 +8,14 @@ No application is perfect from the beginning. With over a dozen coming articles,
 
 ### Articles
 
-1. [**Too modern Go application? Building a serverless application with Google Cloud Run and Firebase**](https://threedots.tech/post/serverless-cloud-run-firebase-modern-go-application/?utm_source=github.com)
-2. [**A complete Terraform setup of a serverless application on Google Cloud Run and Firebase**](https://threedots.tech/post/complete-setup-of-serverless-application/?utm_source=github.com)
-3. [**Robust gRPC communication on Google Cloud Run (but not only!)**](https://threedots.tech/post/robust-grpc-google-cloud-run/?utm_source=github.com)
-4. [**You should not build your own authentication. Let Firebase do it for you.**](https://threedots.tech/post/firebase-cloud-run-authentication/?utm_source=github.com)
-5. [**Business Applications in Go: Things to know about DRY**](https://threedots.tech/post/things-to-know-about-dry/?utm_source=github.com)
-6. [**When microservices in Go are not enough: introduction to DDD Lite**](https://threedots.tech/post/ddd-lite-in-go-introduction/?utm_source=github.com)
-7. [**Repository pattern: painless way to simplify your Go service logic**](https://threedots.tech/post/repository-pattern-in-go/?utm_source=github.com)
-8. [**4 practical principles of high-quality database integration tests in Go**](https://threedots.tech/post/database-integration-testing/?utm_source=github.com)
+1. [**Too modern Go application? Building a serverless application with Google Cloud Run and Firebase**](https://threedots.tech/post/serverless-cloud-run-firebase-modern-go-application/?utm_source=github.com) _[[v1.0]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v1.0)_
+2. [**A complete Terraform setup of a serverless application on Google Cloud Run and Firebase**](https://threedots.tech/post/complete-setup-of-serverless-application/?utm_source=github.com) _[[v1.1]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v1.1)_
+3. [**Robust gRPC communication on Google Cloud Run (but not only!)**](https://threedots.tech/post/robust-grpc-google-cloud-run/?utm_source=github.com) _[[v1.2]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v1.2)_
+4. [**You should not build your own authentication. Let Firebase do it for you.**](https://threedots.tech/post/firebase-cloud-run-authentication/?utm_source=github.com) _[[v1.3]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v1.3)_
+5. [**Business Applications in Go: Things to know about DRY**](https://threedots.tech/post/things-to-know-about-dry/?utm_source=github.com) _[[v2.0]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.0)_
+6. [**When microservices in Go are not enough: introduction to DDD Lite**](https://threedots.tech/post/ddd-lite-in-go-introduction/?utm_source=github.com) _[[v2.1]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.1)_
+7. [**Repository pattern: painless way to simplify your Go service logic**](https://threedots.tech/post/repository-pattern-in-go/?utm_source=github.com) _[[v2.2]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.2)_
+8. [**4 practical principles of high-quality database integration tests in Go**](https://threedots.tech/post/database-integration-testing/?utm_source=github.com) _[[v2.3]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.3)_
 9. *More articles are on the way!*
 
 ### Directories
