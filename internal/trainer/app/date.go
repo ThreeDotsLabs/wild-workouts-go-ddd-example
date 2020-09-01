@@ -1,8 +1,35 @@
-package main
+package app
 
 import (
 	"time"
 )
+
+type Date struct {
+	Date         time.Time
+	HasFreeHours bool
+	Hours        []Hour
+}
+
+type Hour struct {
+	Available            bool
+	HasTrainingScheduled bool
+	Hour                 time.Time
+}
+
+func (d Date) FindHourInDate(timeToCheck time.Time) (*Hour, bool) {
+	for i, hour := range d.Hours {
+		if hour.Hour == timeToCheck {
+			return &d.Hours[i], true
+		}
+	}
+
+	return nil, false
+}
+
+type AvailableHoursRequest struct {
+	DateFrom time.Time
+	DateTo   time.Time
+}
 
 const (
 	minHour = 12
@@ -10,7 +37,7 @@ const (
 )
 
 // setDefaultAvailability adds missing hours to Date model if they were not set
-func setDefaultAvailability(date DateModel) DateModel {
+func setDefaultAvailability(date Date) Date {
 
 HoursLoop:
 	for hour := minHour; hour <= maxHour; hour++ {
@@ -21,7 +48,7 @@ HoursLoop:
 				continue HoursLoop
 			}
 		}
-		newHour := HourModel{
+		newHour := Hour{
 			Available: false,
 			Hour:      hour,
 		}
@@ -32,8 +59,8 @@ HoursLoop:
 	return date
 }
 
-func addMissingDates(params *GetTrainerAvailableHoursParams, dates []DateModel) []DateModel {
-	for day := params.DateFrom.UTC(); day.Before(params.DateTo) || day.Equal(params.DateTo); day = day.Add(time.Hour * 24) {
+func addMissingDates(dates []Date, from time.Time, to time.Time) []Date {
+	for day := from.UTC(); day.Before(to) || day.Equal(to); day = day.Add(time.Hour * 24) {
 		found := false
 		for _, date := range dates {
 			if date.Date.Equal(day) {
@@ -43,7 +70,7 @@ func addMissingDates(params *GetTrainerAvailableHoursParams, dates []DateModel) 
 		}
 
 		if !found {
-			date := DateModel{
+			date := Date{
 				Date: day,
 			}
 			date = setDefaultAvailability(date)

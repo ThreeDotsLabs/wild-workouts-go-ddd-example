@@ -1,4 +1,4 @@
-package main_test
+package adapters_test
 
 import (
 	"context"
@@ -9,8 +9,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/adapters"
+
 	"cloud.google.com/go/firestore"
-	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/domain/hour"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -69,7 +70,7 @@ func createRepositories(t *testing.T) []Repository {
 		},
 		{
 			Name:       "memory",
-			Repository: main.NewMemoryHourRepository(testHourFactory),
+			Repository: adapters.NewMemoryHourRepository(testHourFactory),
 		},
 	}
 }
@@ -126,7 +127,7 @@ func testUpdateHour(t *testing.T, repository hour.Repository) {
 }
 
 func testUpdateHour_parallel(t *testing.T, repository hour.Repository) {
-	if _, ok := repository.(*main.FirestoreHourRepository); ok {
+	if _, ok := repository.(*adapters.FirestoreHourRepository); ok {
 		// todo - enable after fix of https://github.com/googleapis/google-cloud-go/issues/2604
 		t.Skip("because of emulator bug, it's not working in Firebase")
 	}
@@ -272,7 +273,7 @@ func TestNewDateDTO(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.Time.String(), func(t *testing.T) {
-			dateDTO := main.NewEmptyDateDTO(c.Time)
+			dateDTO := adapters.NewEmptyDateDTO(c.Time)
 			assert.True(t, dateDTO.Date.Equal(c.ExpectedDateTime), "%s != %s", dateDTO.Date, c.ExpectedDateTime)
 		})
 	}
@@ -288,18 +289,18 @@ var testHourFactory = hour.MustNewFactory(hour.FactoryConfig{
 	MaxUtcHour:               24,
 })
 
-func newFirebaseRepository(t *testing.T, ctx context.Context) *main.FirestoreHourRepository {
+func newFirebaseRepository(t *testing.T, ctx context.Context) *adapters.FirestoreHourRepository {
 	firebaseClient, err := firestore.NewClient(ctx, os.Getenv("GCP_PROJECT"))
 	require.NoError(t, err)
 
-	return main.NewFirestoreHourRepository(firebaseClient, testHourFactory)
+	return adapters.NewFirestoreHourRepository(firebaseClient, testHourFactory)
 }
 
-func newMySQLRepository(t *testing.T) *main.MySQLHourRepository {
-	db, err := main.NewMySQLConnection()
+func newMySQLRepository(t *testing.T) *adapters.MySQLHourRepository {
+	db, err := adapters.NewMySQLConnection()
 	require.NoError(t, err)
 
-	return main.NewMySQLHourRepository(db, testHourFactory)
+	return adapters.NewMySQLHourRepository(db, testHourFactory)
 }
 
 func newValidAvailableHour(t *testing.T) *hour.Hour {

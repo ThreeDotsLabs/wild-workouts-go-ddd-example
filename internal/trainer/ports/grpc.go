@@ -1,4 +1,4 @@
-package main
+package ports
 
 import (
 	"context"
@@ -15,6 +15,16 @@ import (
 
 type GrpcServer struct {
 	hourRepository hour.Repository
+}
+
+func NewGrpcServer(hourRepository hour.Repository) GrpcServer {
+	if hourRepository == nil {
+		panic("missing hourRepository")
+	}
+
+	return GrpcServer{
+		hourRepository: hourRepository,
+	}
 }
 
 func (g GrpcServer) MakeHourAvailable(ctx context.Context, request *trainer.UpdateHourRequest) (*trainer.EmptyResponse, error) {

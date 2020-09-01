@@ -1,32 +1,31 @@
-package main
+package ports
 
 import (
 	"net/http"
 
-	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
-
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/auth"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/server/httperr"
-	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/domain/hour"
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app"
+	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/go-chi/render"
 )
 
 type HttpServer struct {
-	db             db
-	hourRepository hour.Repository
+	service app.HourService
+}
+
+func NewHttpServer(service app.HourService) HttpServer {
+	return HttpServer{
+		service: service,
+	}
 }
 
 func (h HttpServer) GetTrainerAvailableHours(w http.ResponseWriter, r *http.Request) {
 	queryParams := r.Context().Value("GetTrainerAvailableHoursParams").(*GetTrainerAvailableHoursParams)
 
-	if queryParams.DateFrom.After(queryParams.DateTo) {
-		httperr.BadRequest("date-from-after-date-to", nil, w, r)
-		return
-	}
-
-	dateModels, err := h.db.GetDates(r.Context(), queryParams)
+	dateModels, err := h.service.GetTrainerAvailableHours(r.Context(), queryParams.DateFrom, queryParams.DateTo)
 	if err != nil {
-		httperr.InternalError("unable-to-get-dates", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 
@@ -34,7 +33,7 @@ func (h HttpServer) GetTrainerAvailableHours(w http.ResponseWriter, r *http.Requ
 	render.Respond(w, r, dates)
 }
 
-func dateModelsToResponse(models []DateModel) []Date {
+func dateModelsToResponse(models []app.Date) []Date {
 	var dates []Date
 	for _, d := range models {
 		var hours []Hour
@@ -61,7 +60,7 @@ func dateModelsToResponse(models []DateModel) []Date {
 func (h HttpServer) MakeHourAvailable(w http.ResponseWriter, r *http.Request) {
 	user, err := auth.UserFromCtx(r.Context())
 	if err != nil {
-		httperr.Unauthorised("no-user-found", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 
@@ -72,20 +71,14 @@ func (h HttpServer) MakeHourAvailable(w http.ResponseWriter, r *http.Request) {
 
 	hourUpdate := &HourUpdate{}
 	if err := render.Decode(r, hourUpdate); err != nil {
-		httperr.BadRequest("unable-to-update-availability", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 
-	for _, hourToUpdate := range hourUpdate.Hours {
-		if err := h.hourRepository.UpdateHour(r.Context(), hourToUpdate, func(h *hour.Hour) (*hour.Hour, error) {
-			if err := h.MakeAvailable(); err != nil {
-				return nil, err
-			}
-			return h, nil
-		}); err != nil {
-			httperr.InternalError("unable-to-update-availability", err, w, r)
-			return
-		}
+	err = h.service.MakeHoursAvailable(r.Context(), hourUpdate.Hours)
+	if err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
 	}
 
 	w.WriteHeader(http.StatusNoContent)
@@ -94,9 +87,10 @@ func (h HttpServer) MakeHourAvailable(w http.ResponseWriter, r *http.Request) {
 func (h HttpServer) MakeHourUnavailable(w http.ResponseWriter, r *http.Request) {
 	user, err := auth.UserFromCtx(r.Context())
 	if err != nil {
-		httperr.Unauthorised("no-user-found", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
+
 	if user.Role != "trainer" {
 		httperr.Unauthorised("invalid-role", nil, w, r)
 		return
@@ -104,20 +98,14 @@ func (h HttpServer) MakeHourUnavailable(w http.ResponseWriter, r *http.Request) 
 
 	hourUpdate := &HourUpdate{}
 	if err := render.Decode(r, hourUpdate); err != nil {
-		httperr.BadRequest("unable-to-update-availability", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 
-	for _, hourToUpdate := range hourUpdate.Hours {
-		if err := h.hourRepository.UpdateHour(r.Context(), hourToUpdate, func(h *hour.Hour) (*hour.Hour, error) {
-			if err := h.MakeNotAvailable(); err != nil {
-				return nil, err
-			}
-			return h, nil
-		}); err != nil {
-			httperr.InternalError("unable-to-update-availability", err, w, r)
-			return
-		}
+	err = h.service.MakeHoursUnavailable(r.Context(), hourUpdate.Hours)
+	if err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
 	}
 
 	w.WriteHeader(http.StatusNoContent)

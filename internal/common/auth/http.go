@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"firebase.google.com/go/auth"
+	commonerrors "github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/errors"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/server/httperr"
-	"github.com/pkg/errors"
 )
 
 type FirebaseHttpMiddleware struct {
@@ -71,7 +71,7 @@ const (
 var (
 	// if we expect that the user of the function may be interested with concrete error,
 	// it's a good idea to provide variable with this error
-	NoUserInContextError = errors.New("no user in context")
+	NoUserInContextError = commonerrors.NewAuthorizationError("no user in context", "no-user-found")
 )
 
 func UserFromCtx(ctx context.Context) (User, error) {

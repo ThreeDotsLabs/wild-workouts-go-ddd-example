@@ -12,7 +12,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func loadFixtures(db db) {
+type fixturesChecker interface {
+	CanLoadFixtures(ctx context.Context, daysToSet int) (bool, error)
+}
+
+func loadFixtures(checker fixturesChecker) {
 	start := time.Now()
 	ctx := context.Background()
 
@@ -29,7 +33,7 @@ func loadFixtures(db db) {
 	var err error
 
 	for {
-		canLoad, err = canLoadFixtures(ctx, db)
+		canLoad, err = checker.CanLoadFixtures(ctx, daysToSet)
 		if err == nil {
 			break
 		}
@@ -93,13 +97,4 @@ func loadTrainerFixtures(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-func canLoadFixtures(ctx context.Context, db db) (bool, error) {
-	documents, err := db.TrainerHoursCollection().Limit(daysToSet).Documents(ctx).GetAll()
-	if err != nil {
-		return false, err
-	}
-
-	return len(documents) < daysToSet, nil
 }

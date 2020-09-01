@@ -20,12 +20,12 @@ type db struct {
 	firestoreClient *firestore.Client
 }
 
-func (d db) UsersCollection() *firestore.CollectionRef {
+func (d db) usersCollection() *firestore.CollectionRef {
 	return d.firestoreClient.Collection("users")
 }
 
 func (d db) UserDocumentRef(userID string) *firestore.DocumentRef {
-	return d.UsersCollection().Doc(userID)
+	return d.usersCollection().Doc(userID)
 }
 
 func (d db) GetUser(ctx context.Context, userID string) (UserModel, error) {

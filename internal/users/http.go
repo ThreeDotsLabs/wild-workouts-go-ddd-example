@@ -16,7 +16,7 @@ type HttpServer struct {
 func (h HttpServer) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 	authUser, err := auth.UserFromCtx(r.Context())
 	if err != nil {
-		httperr.Unauthorised("no-user-found", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 

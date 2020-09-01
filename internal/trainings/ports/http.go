@@ -1,45 +1,57 @@
-package main
+package ports
 
 import (
 	"net/http"
 
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/auth"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/server/httperr"
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/app"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
-	"github.com/google/uuid"
 )
 
 type HttpServer struct {
-	db db
+	service app.TrainingService
+}
+
+func NewHttpServer(service app.TrainingService) HttpServer {
+	return HttpServer{
+		service: service,
+	}
 }
 
 func (h HttpServer) GetTrainings(w http.ResponseWriter, r *http.Request) {
 	user, err := auth.UserFromCtx(r.Context())
 	if err != nil {
-		httperr.Unauthorised("no-user-found", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 
-	trainingModels, err := h.db.GetTrainings(r.Context(), user)
+	var appTrainings []app.Training
+	if user.Role == "trainer" {
+		appTrainings, err = h.service.GetAllTrainings(r.Context())
+	} else {
+		appTrainings, err = h.service.GetTrainingsForUser(r.Context(), user)
+	}
+
 	if err != nil {
-		httperr.InternalError("cannot-get-trainings", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 
-	trainings := trainingModelsToResponse(trainingModels)
+	trainings := appTrainingsToResponse(appTrainings)
 	trainingsResp := Trainings{trainings}
 
 	render.Respond(w, r, trainingsResp)
 }
 
-func trainingModelsToResponse(models []TrainingModel) []Training {
+func appTrainingsToResponse(appTrainings []app.Training) []Training {
 	var trainings []Training
-	for _, tm := range models {
+	for _, tm := range appTrainings {
 		t := Training{
-			CanBeCancelled:     tm.canBeCancelled(),
+			CanBeCancelled:     tm.CanBeCancelled(),
 			MoveProposedBy:     tm.MoveProposedBy,
-			MoveRequiresAccept: !tm.canBeCancelled(),
+			MoveRequiresAccept: tm.MoveRequiresAccept(),
 			Notes:              tm.Notes,
 			ProposedTime:       tm.ProposedTime,
 			Time:               tm.Time,
@@ -61,33 +73,20 @@ func (h HttpServer) CreateTraining(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// sanity check
-	if len(postTraining.Notes) > 1000 {
-		httperr.BadRequest("note-too-big", nil, w, r)
+	user, err := auth.UserFromCtx(r.Context())
+	if err != nil {
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 
-	user, err := auth.UserFromCtx(r.Context())
-	if err != nil {
-		httperr.Unauthorised("no-user-found", err, w, r)
-		return
-	}
 	if user.Role != "attendee" {
 		httperr.Unauthorised("invalid-role", nil, w, r)
 		return
 	}
 
-	training := TrainingModel{
-		Notes:    postTraining.Notes,
-		Time:     postTraining.Time,
-		User:     user.DisplayName,
-		UserUUID: user.UUID,
-		UUID:     uuid.New().String(),
-	}
-
-	err = h.db.CreateTraining(r.Context(), user, training)
+	err = h.service.CreateTraining(r.Context(), user, postTraining.Time, postTraining.Notes)
 	if err != nil {
-		httperr.InternalError("cannot-create-training", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 }
@@ -97,13 +96,13 @@ func (h HttpServer) CancelTraining(w http.ResponseWriter, r *http.Request) {
 
 	user, err := auth.UserFromCtx(r.Context())
 	if err != nil {
-		httperr.Unauthorised("no-user-found", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 
-	err = h.db.CancelTraining(r.Context(), user, trainingUUID)
+	err = h.service.CancelTraining(r.Context(), user, trainingUUID)
 	if err != nil {
-		httperr.InternalError("cannot-update-training", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 }
@@ -117,21 +116,15 @@ func (h HttpServer) RescheduleTraining(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// sanity check
-	if len(rescheduleTraining.Notes) > 1000 {
-		httperr.BadRequest("note-too-big", nil, w, r)
-		return
-	}
-
 	user, err := auth.UserFromCtx(r.Context())
 	if err != nil {
-		httperr.Unauthorised("no-user-found", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 
-	err = h.db.RescheduleTraining(r.Context(), user, trainingUUID, rescheduleTraining.Time, rescheduleTraining.Notes)
+	err = h.service.RescheduleTraining(r.Context(), user, trainingUUID, rescheduleTraining.Time, rescheduleTraining.Notes)
 	if err != nil {
-		httperr.InternalError("cannot-update-training", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 }
@@ -141,13 +134,13 @@ func (h HttpServer) ApproveRescheduleTraining(w http.ResponseWriter, r *http.Req
 
 	user, err := auth.UserFromCtx(r.Context())
 	if err != nil {
-		httperr.Unauthorised("no-user-found", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 
-	err = h.db.ApproveTrainingReschedule(r.Context(), user, trainingUUID)
+	err = h.service.ApproveTrainingReschedule(r.Context(), user, trainingUUID)
 	if err != nil {
-		httperr.InternalError("cannot-update-training", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 }
@@ -157,13 +150,13 @@ func (h HttpServer) RejectRescheduleTraining(w http.ResponseWriter, r *http.Requ
 
 	user, err := auth.UserFromCtx(r.Context())
 	if err != nil {
-		httperr.Unauthorised("no-user-found", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 
-	err = h.db.RejectTrainingReschedule(r.Context(), user, trainingUUID)
+	err = h.service.RejectTrainingReschedule(r.Context(), user, trainingUUID)
 	if err != nil {
-		httperr.InternalError("cannot-update-training", err, w, r)
+		httperr.RespondWithSlugError(err, w, r)
 		return
 	}
 }

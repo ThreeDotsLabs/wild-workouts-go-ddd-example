@@ -11,7 +11,10 @@ import (
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/genproto/trainer"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/logs"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/server"
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/adapters"
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/domain/hour"
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/ports"
 	"github.com/go-chi/chi"
 	"google.golang.org/grpc"
 )
@@ -25,7 +28,7 @@ func main() {
 		panic(err)
 	}
 
-	firebaseDB := db{firestoreClient}
+	datesRepository := adapters.NewDatesFirestoreRepository(firestoreClient)
 
 	hourFactory, err := hour.NewFactory(hour.FactoryConfig{
 		MaxWeeksInTheFutureToSet: 6,
@@ -36,23 +39,24 @@ func main() {
 		panic(err)
 	}
 
+	hourRepository := adapters.NewFirestoreHourRepository(firestoreClient, hourFactory)
+
+	service := app.NewHourService(datesRepository, hourRepository)
+
 	serverType := strings.ToLower(os.Getenv("SERVER_TO_RUN"))
 	switch serverType {
 	case "http":
-		go loadFixtures(firebaseDB)
+		go loadFixtures(datesRepository)
 
 		server.RunHTTPServer(func(router chi.Router) http.Handler {
-			return HandlerFromMux(
-				HttpServer{
-					firebaseDB,
-					NewFirestoreHourRepository(firestoreClient, hourFactory),
-				},
+			return ports.HandlerFromMux(
+				ports.NewHttpServer(service),
 				router,
 			)
 		})
 	case "grpc":
 		server.RunGRPCServer(func(server *grpc.Server) {
-			svc := GrpcServer{NewFirestoreHourRepository(firestoreClient, hourFactory)}
+			svc := ports.NewGrpcServer(hourRepository)
 			trainer.RegisterTrainerServiceServer(server, svc)
 		})
 	default:
