@@ -10,6 +10,22 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+type TrainingModel struct {
+	UUID     string `firestore:"Uuid"`
+	UserUUID string `firestore:"UserUuid"`
+	User     string `firestore:"User"`
+
+	Time  time.Time `firestore:"Time"`
+	Notes string    `firestore:"Notes"`
+
+	ProposedTime   *time.Time `firestore:"ProposedTime"`
+	MoveProposedBy *string    `firestore:"MoveProposedBy"`
+}
+
+func (t TrainingModel) canBeCancelled() bool {
+	return t.Time.Sub(time.Now()) > time.Hour*24
+}
+
 type db struct {
 	firestoreClient *firestore.Client
 }
@@ -18,7 +34,7 @@ func (d db) TrainingsCollection() *firestore.CollectionRef {
 	return d.firestoreClient.Collection("trainings")
 }
 
-func (d db) GetTrainings(ctx context.Context, user auth.User) ([]Training, error) {
+func (d db) GetTrainings(ctx context.Context, user auth.User) ([]TrainingModel, error) {
 	query := d.TrainingsCollection().Query.Where("Time", ">=", time.Now().Add(-time.Hour*24))
 
 	if user.Role != "trainer" {
@@ -27,7 +43,7 @@ func (d db) GetTrainings(ctx context.Context, user auth.User) ([]Training, error
 
 	iter := query.Documents(ctx)
 
-	var trainings []Training
+	var trainings []TrainingModel
 
 	for {
 		doc, err := iter.Next()
@@ -38,13 +54,10 @@ func (d db) GetTrainings(ctx context.Context, user auth.User) ([]Training, error
 			return nil, err
 		}
 
-		t := Training{}
+		t := TrainingModel{}
 		if err := doc.DataTo(&t); err != nil {
 			return nil, err
 		}
-
-		t.CanBeCancelled = t.canBeCancelled()
-		t.MoveRequiresAccept = !t.canBeCancelled()
 
 		trainings = append(trainings, t)
 	}

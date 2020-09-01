@@ -6,7 +6,6 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/domain/hour"
-	"github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -97,19 +96,19 @@ func (f FirestoreHourRepository) documentRef(hourTime time.Time) *firestore.Docu
 func (f FirestoreHourRepository) getDateDTO(
 	getDocumentFn func() (doc *firestore.DocumentSnapshot, err error),
 	dateTime time.Time,
-) (Date, error) {
+) (DateModel, error) {
 	doc, err := getDocumentFn()
 	if status.Code(err) == codes.NotFound {
 		// in reality this date exists, even if it's not persisted
 		return NewEmptyDateDTO(dateTime), nil
 	}
 	if err != nil {
-		return Date{}, err
+		return DateModel{}, err
 	}
 
-	date := Date{}
+	date := DateModel{}
 	if err := doc.DataTo(&date); err != nil {
-		return Date{}, errors.Wrap(err, "unable to unmarshal Date from Firestore")
+		return DateModel{}, errors.Wrap(err, "unable to unmarshal DateModel from Firestore")
 	}
 
 	return date, nil
@@ -117,7 +116,7 @@ func (f FirestoreHourRepository) getDateDTO(
 
 // for now we are keeping backward comparability, because of that it's a bit messy and overcomplicated
 // todo - we will clean it up later with CQRS :-)
-func (f FirestoreHourRepository) domainHourFromDateDTO(date Date, hourTime time.Time) (*hour.Hour, error) {
+func (f FirestoreHourRepository) domainHourFromDateDTO(date DateModel, hourTime time.Time) (*hour.Hour, error) {
 	firebaseHour, found := findHourInDateDTO(date, hourTime)
 	if !found {
 		// in reality this date exists, even if it's not persisted
@@ -134,7 +133,7 @@ func (f FirestoreHourRepository) domainHourFromDateDTO(date Date, hourTime time.
 
 // for now we are keeping backward comparability, because of that it's a bit messy and overcomplicated
 // todo - we will clean it up later with CQRS :-)
-func updateHourInDataDTO(updatedHour *hour.Hour, firebaseDate *Date) {
+func updateHourInDataDTO(updatedHour *hour.Hour, firebaseDate *DateModel) {
 	firebaseHourDTO := domainHourToDTO(updatedHour)
 
 	hourFound := false
@@ -161,7 +160,7 @@ func updateHourInDataDTO(updatedHour *hour.Hour, firebaseDate *Date) {
 	}
 }
 
-func mapAvailabilityFromDTO(firebaseHour Hour) (hour.Availability, error) {
+func mapAvailabilityFromDTO(firebaseHour HourModel) (hour.Availability, error) {
 	if firebaseHour.Available && !firebaseHour.HasTrainingScheduled {
 		return hour.Available, nil
 	}
@@ -179,15 +178,15 @@ func mapAvailabilityFromDTO(firebaseHour Hour) (hour.Availability, error) {
 	)
 }
 
-func domainHourToDTO(updatedHour *hour.Hour) Hour {
-	return Hour{
+func domainHourToDTO(updatedHour *hour.Hour) HourModel {
+	return HourModel{
 		Available:            updatedHour.IsAvailable(),
 		HasTrainingScheduled: updatedHour.HasTrainingScheduled(),
 		Hour:                 updatedHour.Time(),
 	}
 }
 
-func findHourInDateDTO(firebaseDate Date, time time.Time) (Hour, bool) {
+func findHourInDateDTO(firebaseDate DateModel, time time.Time) (HourModel, bool) {
 	for i := range firebaseDate.Hours {
 		firebaseHour := firebaseDate.Hours[i]
 
@@ -198,11 +197,11 @@ func findHourInDateDTO(firebaseDate Date, time time.Time) (Hour, bool) {
 		return firebaseHour, true
 	}
 
-	return Hour{}, false
+	return HourModel{}, false
 }
 
-func NewEmptyDateDTO(t time.Time) Date {
-	return Date{
-		Date: types.Date{Time: t.UTC().Truncate(time.Hour * 24)},
+func NewEmptyDateDTO(t time.Time) DateModel {
+	return DateModel{
+		Date: t.UTC().Truncate(time.Hour * 24),
 	}
 }

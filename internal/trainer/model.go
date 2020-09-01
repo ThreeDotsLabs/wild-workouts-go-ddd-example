@@ -2,8 +2,6 @@ package main
 
 import (
 	"time"
-
-	"github.com/deepmap/oapi-codegen/pkg/types"
 )
 
 const (
@@ -12,7 +10,7 @@ const (
 )
 
 // setDefaultAvailability adds missing hours to Date model if they were not set
-func setDefaultAvailability(date Date) Date {
+func setDefaultAvailability(date DateModel) DateModel {
 
 HoursLoop:
 	for hour := minHour; hour <= maxHour; hour++ {
@@ -23,7 +21,7 @@ HoursLoop:
 				continue HoursLoop
 			}
 		}
-		newHour := Hour{
+		newHour := HourModel{
 			Available: false,
 			Hour:      hour,
 		}
@@ -34,7 +32,7 @@ HoursLoop:
 	return date
 }
 
-func addMissingDates(params *GetTrainerAvailableHoursParams, dates []Date) []Date {
+func addMissingDates(params *GetTrainerAvailableHoursParams, dates []DateModel) []DateModel {
 	for day := params.DateFrom.UTC(); day.Before(params.DateTo) || day.Equal(params.DateTo); day = day.Add(time.Hour * 24) {
 		found := false
 		for _, date := range dates {
@@ -45,10 +43,8 @@ func addMissingDates(params *GetTrainerAvailableHoursParams, dates []Date) []Dat
 		}
 
 		if !found {
-			date := Date{
-				Date: types.Date{
-					Time: day,
-				},
+			date := DateModel{
+				Date: day,
 			}
 			date = setDefaultAvailability(date)
 			dates = append(dates, date)
@@ -56,14 +52,4 @@ func addMissingDates(params *GetTrainerAvailableHoursParams, dates []Date) []Dat
 	}
 
 	return dates
-}
-
-func (d Date) FindHourInDate(timeToCheck time.Time) (*Hour, bool) {
-	for i, hour := range d.Hours {
-		if hour.Hour == timeToCheck {
-			return &d.Hours[i], true
-		}
-	}
-
-	return nil, false
 }
