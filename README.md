@@ -21,7 +21,8 @@ No application is perfect from the beginning. With over a dozen coming articles,
 6. [**When microservices in Go are not enough: introduction to DDD Lite**](https://threedots.tech/post/ddd-lite-in-go-introduction/?utm_source=github.com) _[[v2.1]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.1)_
 7. [**Repository pattern: painless way to simplify your Go service logic**](https://threedots.tech/post/repository-pattern-in-go/?utm_source=github.com) _[[v2.2]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.2)_
 8. [**4 practical principles of high-quality database integration tests in Go**](https://threedots.tech/post/database-integration-testing/?utm_source=github.com) _[[v2.3]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.3)_
-9. *More articles are on the way!*
+9. [**Introducing Clean Architecture by refactoring a Go project**](https://threedots.tech/post/introducing-clean-architecture/?utm_source=github.com) _[[v2.4]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.4)_
+10. *More articles are on the way!*
 
 ### Directories
 
