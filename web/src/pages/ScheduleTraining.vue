@@ -126,6 +126,7 @@
                         this.trainingData.notes,
                         this.trainingData.date,
                         this.trainingData.hour,
+                        this.isPropose,
                         function () {
                             if (self.isPropose) {
                                 self.$toast.success('Training reschedule proposal sent!');
@@ -139,7 +140,7 @@
                             self.showLoader = false
                             self.$toast.error("Failed to reschedule training");
                             console.error(err)
-                        }
+                        },
                     )
                 } else {
                     scheduleTraining(

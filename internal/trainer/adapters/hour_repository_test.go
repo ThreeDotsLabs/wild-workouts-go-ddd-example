@@ -290,10 +290,10 @@ var testHourFactory = hour.MustNewFactory(hour.FactoryConfig{
 })
 
 func newFirebaseRepository(t *testing.T, ctx context.Context) *adapters.FirestoreHourRepository {
-	firebaseClient, err := firestore.NewClient(ctx, os.Getenv("GCP_PROJECT"))
+	firestoreClient, err := firestore.NewClient(ctx, os.Getenv("GCP_PROJECT"))
 	require.NoError(t, err)
 
-	return adapters.NewFirestoreHourRepository(firebaseClient, testHourFactory)
+	return adapters.NewFirestoreHourRepository(firestoreClient, testHourFactory)
 }
 
 func newMySQLRepository(t *testing.T) *adapters.MySQLHourRepository {

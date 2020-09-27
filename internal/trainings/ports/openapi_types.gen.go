@@ -40,11 +40,17 @@ type Trainings struct {
 // CreateTrainingJSONBody defines parameters for CreateTraining.
 type CreateTrainingJSONBody PostTraining
 
+// RequestRescheduleTrainingJSONBody defines parameters for RequestRescheduleTraining.
+type RequestRescheduleTrainingJSONBody PostTraining
+
 // RescheduleTrainingJSONBody defines parameters for RescheduleTraining.
 type RescheduleTrainingJSONBody PostTraining
 
 // CreateTrainingRequestBody defines body for CreateTraining for application/json ContentType.
 type CreateTrainingJSONRequestBody CreateTrainingJSONBody
+
+// RequestRescheduleTrainingRequestBody defines body for RequestRescheduleTraining for application/json ContentType.
+type RequestRescheduleTrainingJSONRequestBody RequestRescheduleTrainingJSONBody
 
 // RescheduleTrainingRequestBody defines body for RescheduleTraining for application/json ContentType.
 type RescheduleTrainingJSONRequestBody RescheduleTrainingJSONBody

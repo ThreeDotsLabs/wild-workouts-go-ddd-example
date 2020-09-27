@@ -6,10 +6,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
-	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/auth"
-	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/app"
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/app/query"
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/domain/training"
 	"github.com/pkg/errors"
 	"google.golang.org/api/iterator"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type TrainingModel struct {
@@ -22,10 +24,8 @@ type TrainingModel struct {
 
 	ProposedTime   *time.Time `firestore:"ProposedTime"`
 	MoveProposedBy *string    `firestore:"MoveProposedBy"`
-}
 
-func (t TrainingModel) canBeCancelled() bool {
-	return t.Time.Sub(time.Now()) > time.Hour*24
+	Canceled bool `firestore:"Canceled"`
 }
 
 type TrainingsFirestoreRepository struct {
@@ -40,30 +40,189 @@ func NewTrainingsFirestoreRepository(
 	}
 }
 
-func (d TrainingsFirestoreRepository) trainingsCollection() *firestore.CollectionRef {
-	return d.firestoreClient.Collection("trainings")
+func (r TrainingsFirestoreRepository) trainingsCollection() *firestore.CollectionRef {
+	return r.firestoreClient.Collection("trainings")
 }
 
-func (d TrainingsFirestoreRepository) AllTrainings(ctx context.Context) ([]app.Training, error) {
-	query := d.trainingsCollection().Query.Where("Time", ">=", time.Now().Add(-time.Hour*24))
+func (r TrainingsFirestoreRepository) AddTraining(ctx context.Context, tr *training.Training) error {
+	collection := r.trainingsCollection()
 
-	iter := query.Documents(ctx)
+	trainingModel := r.marshalTraining(tr)
 
-	return trainingModelsToApp(iter)
+	return r.firestoreClient.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+		return tx.Create(collection.Doc(trainingModel.UUID), trainingModel)
+	})
 }
 
-func (d TrainingsFirestoreRepository) FindTrainingsForUser(ctx context.Context, user auth.User) ([]app.Training, error) {
-	query := d.trainingsCollection().Query.
+func (r TrainingsFirestoreRepository) GetTraining(
+	ctx context.Context,
+	trainingUUID string,
+	user training.User,
+) (*training.Training, error) {
+	firestoreTraining, err := r.trainingsCollection().Doc(trainingUUID).Get(ctx)
+
+	if status.Code(err) == codes.NotFound {
+		return nil, training.NotFoundError{trainingUUID}
+	}
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to get actual docs")
+	}
+
+	tr, err := r.unmarshalTraining(firestoreTraining)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := training.CanUserSeeTraining(user, *tr); err != nil {
+		return nil, err
+	}
+
+	return tr, nil
+}
+
+func (r TrainingsFirestoreRepository) UpdateTraining(
+	ctx context.Context,
+	trainingUUID string,
+	user training.User,
+	updateFn func(ctx context.Context, tr *training.Training) (*training.Training, error),
+) error {
+	trainingsCollection := r.trainingsCollection()
+
+	return r.firestoreClient.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+		documentRef := trainingsCollection.Doc(trainingUUID)
+
+		firestoreTraining, err := tx.Get(documentRef)
+		if err != nil {
+			return errors.Wrap(err, "unable to get actual docs")
+		}
+
+		tr, err := r.unmarshalTraining(firestoreTraining)
+		if err != nil {
+			return err
+		}
+
+		if err := training.CanUserSeeTraining(user, *tr); err != nil {
+			return err
+		}
+
+		updatedTraining, err := updateFn(ctx, tr)
+		if err != nil {
+			return err
+		}
+
+		return tx.Set(documentRef, r.marshalTraining(updatedTraining))
+	})
+}
+
+func (r TrainingsFirestoreRepository) marshalTraining(tr *training.Training) TrainingModel {
+	trainingModel := TrainingModel{
+		UUID:     tr.UUID(),
+		UserUUID: tr.UserUUID(),
+		User:     tr.UserName(),
+		Time:     tr.Time(),
+		Notes:    tr.Notes(),
+		Canceled: tr.IsCanceled(),
+	}
+
+	if tr.IsRescheduleProposed() {
+		proposedBy := tr.MovedProposedBy().String()
+		proposedTime := tr.ProposedNewTime()
+
+		trainingModel.MoveProposedBy = &proposedBy
+		trainingModel.ProposedTime = &proposedTime
+	}
+
+	return trainingModel
+}
+
+func (r TrainingsFirestoreRepository) unmarshalTraining(doc *firestore.DocumentSnapshot) (*training.Training, error) {
+	trainingModel := TrainingModel{}
+	err := doc.DataTo(&trainingModel)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to load document")
+	}
+
+	var moveProposedBy training.UserType
+	if trainingModel.MoveProposedBy != nil {
+		moveProposedBy, err = training.NewUserTypeFromString(*trainingModel.MoveProposedBy)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var proposedTime time.Time
+	if trainingModel.ProposedTime != nil {
+		proposedTime = *trainingModel.ProposedTime
+	}
+
+	return training.UnmarshalHourFromDatabase(
+		trainingModel.UUID,
+		trainingModel.UserUUID,
+		trainingModel.User,
+		trainingModel.Time,
+		trainingModel.Notes,
+		trainingModel.Canceled,
+		proposedTime,
+		moveProposedBy,
+	)
+}
+
+func (r TrainingsFirestoreRepository) AllTrainings(ctx context.Context) ([]query.Training, error) {
+	query := r.
+		trainingsCollection().
+		Query.
 		Where("Time", ">=", time.Now().Add(-time.Hour*24)).
-		Where("UserUuid", "==", user.UUID)
+		Where("Canceled", "==", false)
 
 	iter := query.Documents(ctx)
 
-	return trainingModelsToApp(iter)
+	return r.trainingModelsToQuery(iter)
 }
 
-func trainingModelsToApp(iter *firestore.DocumentIterator) ([]app.Training, error) {
-	var trainings []app.Training
+func (r TrainingsFirestoreRepository) FindTrainingsForUser(ctx context.Context, userUUID string) ([]query.Training, error) {
+	query := r.trainingsCollection().Query.
+		Where("Time", ">=", time.Now().Add(-time.Hour*24)).
+		Where("UserUuid", "==", userUUID).
+		Where("Canceled", "==", false)
+
+	iter := query.Documents(ctx)
+
+	return r.trainingModelsToQuery(iter)
+}
+
+// warning: RemoveAllTrainings was designed for tests for doing data cleanups
+func (r TrainingsFirestoreRepository) RemoveAllTrainings(ctx context.Context) error {
+	for {
+		iter := r.trainingsCollection().Limit(100).Documents(ctx)
+		numDeleted := 0
+
+		batch := r.firestoreClient.Batch()
+		for {
+			doc, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return errors.Wrap(err, "unable to get document")
+			}
+
+			batch.Delete(doc.Ref)
+			numDeleted++
+		}
+
+		if numDeleted == 0 {
+			return nil
+		}
+
+		_, err := batch.Commit(ctx)
+		if err != nil {
+			return errors.Wrap(err, "unable to remove docs")
+		}
+	}
+}
+
+func (r TrainingsFirestoreRepository) trainingModelsToQuery(iter *firestore.DocumentIterator) ([]query.Training, error) {
+	var trainings []query.Training
 
 	for {
 		doc, err := iter.Next()
@@ -74,145 +233,32 @@ func trainingModelsToApp(iter *firestore.DocumentIterator) ([]app.Training, erro
 			return nil, err
 		}
 
-		t := TrainingModel{}
-		if err := doc.DataTo(&t); err != nil {
+		tr, err := r.unmarshalTraining(doc)
+		if err != nil {
 			return nil, err
 		}
 
-		trainings = append(trainings, app.Training(t))
+		queryTraining := query.Training{
+			UUID:           tr.UUID(),
+			UserUUID:       tr.UserUUID(),
+			User:           tr.UserName(),
+			Time:           tr.Time(),
+			Notes:          tr.Notes(),
+			CanBeCancelled: tr.CanBeCanceledForFree(),
+		}
+
+		if tr.IsRescheduleProposed() {
+			proposedTime := tr.ProposedNewTime()
+			queryTraining.ProposedTime = &proposedTime
+
+			proposedBy := tr.MovedProposedBy().String()
+			queryTraining.MoveProposedBy = &proposedBy
+		}
+
+		trainings = append(trainings, queryTraining)
 	}
 
 	sort.Slice(trainings, func(i, j int) bool { return trainings[i].Time.Before(trainings[j].Time) })
 
 	return trainings, nil
-}
-
-func (d TrainingsFirestoreRepository) CreateTraining(ctx context.Context, training app.Training, createFn func() error) error {
-	collection := d.trainingsCollection()
-
-	trainingModel := TrainingModel(training)
-
-	return d.firestoreClient.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
-		docs, err := tx.Documents(collection.Where("Time", "==", trainingModel.Time)).GetAll()
-		if err != nil {
-			return errors.Wrap(err, "unable to get actual docs")
-		}
-		if len(docs) > 0 {
-			return errors.Errorf("there is training already at %s", trainingModel.Time)
-		}
-
-		err = createFn()
-		if err != nil {
-			return err
-		}
-
-		return tx.Create(collection.Doc(trainingModel.UUID), trainingModel)
-	})
-}
-
-func (d TrainingsFirestoreRepository) CancelTraining(ctx context.Context, trainingUUID string, deleteFn func(app.Training) error) error {
-	trainingsCollection := d.trainingsCollection()
-
-	return d.firestoreClient.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
-		trainingDocumentRef := trainingsCollection.Doc(trainingUUID)
-
-		firestoreTraining, err := tx.Get(trainingDocumentRef)
-		if err != nil {
-			return errors.Wrap(err, "unable to get actual docs")
-		}
-
-		training := TrainingModel{}
-		err = firestoreTraining.DataTo(&training)
-		if err != nil {
-			return errors.Wrap(err, "unable to load document")
-		}
-
-		err = deleteFn(app.Training(training))
-		if err != nil {
-			return err
-		}
-
-		return tx.Delete(trainingDocumentRef)
-	})
-}
-
-func (d TrainingsFirestoreRepository) RescheduleTraining(
-	ctx context.Context,
-	trainingUUID string,
-	newTime time.Time,
-	updateFn func(app.Training) (app.Training, error),
-) error {
-	collection := d.trainingsCollection()
-
-	return d.firestoreClient.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
-		doc, err := tx.Get(d.trainingsCollection().Doc(trainingUUID))
-		if err != nil {
-			return errors.Wrap(err, "could not find training")
-		}
-
-		docs, err := tx.Documents(collection.Where("Time", "==", newTime)).GetAll()
-		if err != nil {
-			return errors.Wrap(err, "unable to get actual docs")
-		}
-		if len(docs) > 0 {
-			return errors.Errorf("there is training already at %s", newTime)
-		}
-
-		var training TrainingModel
-		err = doc.DataTo(&training)
-		if err != nil {
-			return errors.Wrap(err, "could not unmarshal training")
-		}
-
-		updatedTraining, err := updateFn(app.Training(training))
-		if err != nil {
-			return err
-		}
-
-		return tx.Set(collection.Doc(training.UUID), TrainingModel(updatedTraining))
-	})
-}
-
-func (d TrainingsFirestoreRepository) ApproveTrainingReschedule(ctx context.Context, trainingUUID string, updateFn func(app.Training) (app.Training, error)) error {
-	return d.firestoreClient.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
-		doc, err := tx.Get(d.trainingsCollection().Doc(trainingUUID))
-		if err != nil {
-			return errors.Wrap(err, "could not find training")
-		}
-
-		var training TrainingModel
-		err = doc.DataTo(&training)
-		if err != nil {
-			return errors.Wrap(err, "could not unmarshal training")
-		}
-
-		updatedTraining, err := updateFn(app.Training(training))
-		if err != nil {
-			return err
-		}
-
-		return tx.Set(d.trainingsCollection().Doc(training.UUID), TrainingModel(updatedTraining))
-	})
-}
-
-func (d TrainingsFirestoreRepository) RejectTrainingReschedule(ctx context.Context, trainingUUID string, updateFn func(app.Training) (app.Training, error)) error {
-	return d.firestoreClient.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
-		doc, err := tx.Get(d.trainingsCollection().Doc(trainingUUID))
-		if err != nil {
-			return errors.Wrap(err, "could not find training")
-		}
-
-		var training TrainingModel
-		err = doc.DataTo(&training)
-		if err != nil {
-			return errors.Wrap(err, "could not unmarshal training")
-		}
-
-		updatedTraining, err := updateFn(app.Training(training))
-		if err != nil {
-			return err
-		}
-
-		return tx.Set(d.trainingsCollection().Doc(training.UUID), TrainingModel(updatedTraining))
-	})
 }

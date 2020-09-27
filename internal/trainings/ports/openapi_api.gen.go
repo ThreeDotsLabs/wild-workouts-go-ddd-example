@@ -23,6 +23,8 @@ type ServerInterface interface {
 	ApproveRescheduleTraining(w http.ResponseWriter, r *http.Request)
 	//  (PUT /trainings/{trainingUUID}/reject-reschedule)
 	RejectRescheduleTraining(w http.ResponseWriter, r *http.Request)
+	//  (PUT /trainings/{trainingUUID}/request-reschedule)
+	RequestRescheduleTraining(w http.ResponseWriter, r *http.Request)
 	//  (PUT /trainings/{trainingUUID}/reschedule)
 	RescheduleTraining(w http.ResponseWriter, r *http.Request)
 }
@@ -121,6 +123,30 @@ func RejectRescheduleTrainingCtx(next http.Handler) http.Handler {
 	})
 }
 
+// RequestRescheduleTraining operation middleware
+func RequestRescheduleTrainingCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		var err error
+
+		// ------------- Path parameter "trainingUUID" -------------
+		var trainingUUID string
+
+		err = runtime.BindStyledParameter("simple", false, "trainingUUID", chi.URLParam(r, "trainingUUID"), &trainingUUID)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter trainingUUID: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		ctx = context.WithValue(ctx, "trainingUUID", trainingUUID)
+
+		ctx = context.WithValue(ctx, "bearerAuth.Scopes", []string{""})
+
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
 // RescheduleTraining operation middleware
 func RescheduleTrainingCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -171,6 +197,10 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 	r.Group(func(r chi.Router) {
 		r.Use(RejectRescheduleTrainingCtx)
 		r.Put("/trainings/{trainingUUID}/reject-reschedule", si.RejectRescheduleTraining)
+	})
+	r.Group(func(r chi.Router) {
+		r.Use(RequestRescheduleTrainingCtx)
+		r.Put("/trainings/{trainingUUID}/request-reschedule", si.RequestRescheduleTraining)
 	})
 	r.Group(func(r chi.Router) {
 		r.Use(RescheduleTrainingCtx)

@@ -44,6 +44,10 @@ lint:
 	@./scripts/lint.sh trainings
 	@./scripts/lint.sh users
 
+.PHONY: fmt
+fmt:
+	goimports -l -w internal/
+
 .PHONY: mycli
 mycli:
 	mycli -u ${MYSQL_USER} -p ${MYSQL_PASSWORD} ${MYSQL_DATABASE}

@@ -6,24 +6,28 @@ import (
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/auth"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/server/httperr"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app"
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app/query"
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/go-chi/render"
 )
 
 type HttpServer struct {
-	service app.HourService
+	app app.Application
 }
 
-func NewHttpServer(service app.HourService) HttpServer {
+func NewHttpServer(application app.Application) HttpServer {
 	return HttpServer{
-		service: service,
+		app: application,
 	}
 }
 
 func (h HttpServer) GetTrainerAvailableHours(w http.ResponseWriter, r *http.Request) {
 	queryParams := r.Context().Value("GetTrainerAvailableHoursParams").(*GetTrainerAvailableHoursParams)
 
-	dateModels, err := h.service.GetTrainerAvailableHours(r.Context(), queryParams.DateFrom, queryParams.DateTo)
+	dateModels, err := h.app.Queries.TrainerAvailableHours.Handle(r.Context(), query.AvailableHours{
+		From: queryParams.DateFrom,
+		To:   queryParams.DateTo,
+	})
 	if err != nil {
 		httperr.RespondWithSlugError(err, w, r)
 		return
@@ -33,7 +37,7 @@ func (h HttpServer) GetTrainerAvailableHours(w http.ResponseWriter, r *http.Requ
 	render.Respond(w, r, dates)
 }
 
-func dateModelsToResponse(models []app.Date) []Date {
+func dateModelsToResponse(models []query.Date) []Date {
 	var dates []Date
 	for _, d := range models {
 		var hours []Hour
@@ -75,7 +79,7 @@ func (h HttpServer) MakeHourAvailable(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.MakeHoursAvailable(r.Context(), hourUpdate.Hours)
+	err = h.app.Commands.MakeHoursAvailable.Handle(r.Context(), hourUpdate.Hours)
 	if err != nil {
 		httperr.RespondWithSlugError(err, w, r)
 		return
@@ -102,7 +106,7 @@ func (h HttpServer) MakeHourUnavailable(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err = h.service.MakeHoursUnavailable(r.Context(), hourUpdate.Hours)
+	err = h.app.Commands.MakeHoursUnavailable.Handle(r.Context(), hourUpdate.Hours)
 	if err != nil {
 		httperr.RespondWithSlugError(err, w, r)
 		return

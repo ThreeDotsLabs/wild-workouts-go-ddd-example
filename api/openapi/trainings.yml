@@ -99,6 +99,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /trainings/{trainingUUID}/request-reschedule:
+    put:
+      operationId: requestRescheduleTraining
+      requestBody:
+        description: todo
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostTraining'
+      parameters:
+        - in: path
+          name: trainingUUID
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: todo
+      responses:
+        '204':
+          description: todo
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /trainings/{trainingUUID}/approve-reschedule:
     put:
