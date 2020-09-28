@@ -27,7 +27,7 @@ func NewMemoryHourRepository(hourFactory hour.Factory) *MemoryHourRepository {
 	}
 }
 
-func (m MemoryHourRepository) GetOrCreateHour(_ context.Context, hourTime time.Time) (*hour.Hour, error) {
+func (m MemoryHourRepository) GetHour(_ context.Context, hourTime time.Time) (*hour.Hour, error) {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
 

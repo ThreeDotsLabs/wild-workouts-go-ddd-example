@@ -222,7 +222,7 @@ func testUpdateHour_rollback(t *testing.T, repository hour.Repository) {
 	})
 	require.Error(t, err)
 
-	persistedHour, err := repository.GetOrCreateHour(ctx, hourTime)
+	persistedHour, err := repository.GetHour(ctx, hourTime)
 	require.NoError(t, err)
 
 	assert.True(t, persistedHour.IsAvailable(), "availability change was persisted, not rolled back")
@@ -336,7 +336,7 @@ func newValidHourTime() time.Time {
 func assertHourInRepository(ctx context.Context, t *testing.T, repo hour.Repository, hour *hour.Hour) {
 	require.NotNil(t, hour)
 
-	hourFromRepo, err := repo.GetOrCreateHour(ctx, hour.Time())
+	hourFromRepo, err := repo.GetHour(ctx, hour.Time())
 	require.NoError(t, err)
 
 	assert.Equal(t, hour, hourFromRepo)

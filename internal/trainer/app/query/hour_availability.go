@@ -20,7 +20,7 @@ func NewHourAvailabilityHandler(hourRepo hour.Repository) HourAvailabilityHandle
 }
 
 func (h HourAvailabilityHandler) Handle(ctx context.Context, time time.Time) (bool, error) {
-	hour, err := h.hourRepo.GetOrCreateHour(ctx, time)
+	hour, err := h.hourRepo.GetHour(ctx, time)
 	if err != nil {
 		return false, err
 	}
