@@ -23,7 +23,8 @@ No application is perfect from the beginning. With over a dozen coming articles,
 8. [**4 practical principles of high-quality database integration tests in Go**](https://threedots.tech/post/database-integration-testing/?utm_source=github.com) _[[v2.3]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.3)_
 9. [**Introducing Clean Architecture by refactoring a Go project**](https://threedots.tech/post/introducing-clean-architecture/?utm_source=github.com) _[[v2.4]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.4)_
 10. [**Introducing basic CQRS by refactoring**](https://threedots.tech/post/basic-cqrs-in-go/?utm_source=github.com) _[[v2.5]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.5)_
-11. *More articles are on the way!*
+11. [**Combining DDD, CQRS, and Clean Architecture**](https://threedots.tech/post/ddd-cqrs-clean-architecture-combined/?utm_source=github.com)
+12. *More articles are on the way!*
 
 ### Directories
 
