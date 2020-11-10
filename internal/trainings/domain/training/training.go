@@ -44,11 +44,11 @@ func NewTraining(uuid string, userUUID string, userName string, trainingTime tim
 	}, nil
 }
 
-// UnmarshalHourFromDatabase unmarshals Training from the database.
+// UnmarshalTrainingFromDatabase unmarshals Training from the database.
 //
 // It should be used only for unmarshalling from the database!
-// You can't use UnmarshalHourFromDatabase as constructor - It may put domain into the invalid state!
-func UnmarshalHourFromDatabase(
+// You can't use UnmarshalTrainingFromDatabase as constructor - It may put domain into the invalid state!
+func UnmarshalTrainingFromDatabase(
 	uuid string,
 	userUUID string,
 	userName string,
