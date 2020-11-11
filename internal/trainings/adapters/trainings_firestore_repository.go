@@ -155,7 +155,7 @@ func (r TrainingsFirestoreRepository) unmarshalTraining(doc *firestore.DocumentS
 		proposedTime = *trainingModel.ProposedTime
 	}
 
-	return training.UnmarshalHourFromDatabase(
+	return training.UnmarshalTrainingFromDatabase(
 		trainingModel.UUID,
 		trainingModel.UserUUID,
 		trainingModel.User,
