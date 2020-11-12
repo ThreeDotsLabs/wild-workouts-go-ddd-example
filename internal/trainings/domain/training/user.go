@@ -8,33 +8,22 @@ import (
 )
 
 // UserType is enum-like type.
-// We are using struct instead of string, to ensure about immutability.
-type UserType struct {
-	s string
-}
+type UserType string
 
-func (u UserType) IsZero() bool {
-	return u == UserType{}
-}
-
-func (u UserType) String() string {
-	return u.s
-}
-
-var (
-	Trainer  = UserType{"trainer"}
-	Attendee = UserType{"attendee"}
+const (
+	TrainerUserType  UserType = "trainer"
+	AttendeeUserType UserType = "attendee"
 )
 
-func NewUserTypeFromString(userType string) (UserType, error) {
+func NewUserTypeFromString(userType string) (*UserType, error) {
 	switch userType {
 	case "trainer":
-		return Trainer, nil
+		return TrainerUserType, nil
 	case "attendee":
-		return Attendee, nil
+		return AttendeeUserType, nil
 	}
 
-	return UserType{}, commonErrors.NewSlugError(
+	return nil, commonErrors.NewSlugError(
 		fmt.Sprintf("invalid '%s' role", userType),
 		"invalid-role",
 	)
