@@ -15,6 +15,11 @@ resource "google_firestore_index" "trainings_user_time" {
   }
 
   fields {
+    field_path = "Canceled"
+    order      = "ASCENDING"
+  }
+
+  fields {
     field_path = "Time"
     order      = "ASCENDING"
   }
