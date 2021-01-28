@@ -98,6 +98,14 @@ services:
       - "127.0.0.1:4000:4000"
     restart: unless-stopped
 
+  firestore-component-tests:
+    image: karhoo/firestore-emulator:0.3.2
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:8788:8787"
+    restart: unless-stopped
+
   mysql:
     image: mysql:8
     env_file:

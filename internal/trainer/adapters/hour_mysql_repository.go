@@ -89,7 +89,7 @@ func (m MySQLHourRepository) UpdateHour(
 	for {
 		err := m.updateHour(ctx, hourTime, updateFn)
 
-		if val, ok := err.(*mysql.MySQLError); ok && val.Number == mySQLDeadlockErrorCode {
+		if val, ok := errors.Cause(err).(*mysql.MySQLError); ok && val.Number == mySQLDeadlockErrorCode {
 			continue
 		}
 
