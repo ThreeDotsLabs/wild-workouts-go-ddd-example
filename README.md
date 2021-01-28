@@ -24,7 +24,8 @@ No application is perfect from the beginning. With over a dozen coming articles,
 9. [**Introducing Clean Architecture by refactoring a Go project**](https://threedots.tech/post/introducing-clean-architecture/?utm_source=github.com) _[[v2.4]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.4)_
 10. [**Introducing basic CQRS by refactoring**](https://threedots.tech/post/basic-cqrs-in-go/?utm_source=github.com) _[[v2.5]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.5)_
 11. [**Combining DDD, CQRS, and Clean Architecture**](https://threedots.tech/post/ddd-cqrs-clean-architecture-combined/?utm_source=github.com)
-12. *More articles are on the way!*
+12. [**Microservices test architecture. Can you sleep well without end-to-end tests?**](https://threedots.tech/post/microservices-test-architecture/?utm_source=github.com) _[[v2.6]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.6)_
+13. *More articles are on the way!*
 
 ### Directories
 
