@@ -181,9 +181,7 @@ func init() {
 	proto.RegisterType((*EmptyResponse)(nil), "trainer.EmptyResponse")
 }
 
-func init() {
-	proto.RegisterFile("trainer.proto", fileDescriptor_8df4ffdae7cc5e40)
-}
+func init() { proto.RegisterFile("trainer.proto", fileDescriptor_8df4ffdae7cc5e40) }
 
 var fileDescriptor_8df4ffdae7cc5e40 = []byte{
 	// 274 bytes of a gzipped FileDescriptorProto

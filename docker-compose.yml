@@ -1,5 +1,13 @@
 version: '3'
 services:
+  dev:
+    build:
+      context: docker/dev
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - .:/app
+
   web:
     build:
       context: docker/web
