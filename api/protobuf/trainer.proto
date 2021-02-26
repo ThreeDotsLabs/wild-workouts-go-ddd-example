@@ -2,13 +2,14 @@ syntax = "proto3";
 
 package trainer;
 
+import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 service TrainerService {
   rpc IsHourAvailable(IsHourAvailableRequest) returns (IsHourAvailableResponse) {}
-  rpc ScheduleTraining(UpdateHourRequest) returns (EmptyResponse) {}
-  rpc CancelTraining(UpdateHourRequest) returns (EmptyResponse) {}
-  rpc MakeHourAvailable(UpdateHourRequest) returns (EmptyResponse) {}
+  rpc ScheduleTraining(UpdateHourRequest) returns (google.protobuf.Empty) {}
+  rpc CancelTraining(UpdateHourRequest) returns (google.protobuf.Empty) {}
+  rpc MakeHourAvailable(UpdateHourRequest) returns (google.protobuf.Empty) {}
 }
 
 message IsHourAvailableRequest {
@@ -22,5 +23,3 @@ message IsHourAvailableResponse {
 message UpdateHourRequest {
   google.protobuf.Timestamp time = 1;
 }
-
-message EmptyResponse {}
