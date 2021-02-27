@@ -65,7 +65,7 @@ func (f FactoryConfig) Validate() error {
 }
 
 type Factory struct {
-	// it's better to keep FactoryConfig as a private attributte,
+	// it's better to keep FactoryConfig as a private attribute,
 	// thanks to that we are always sure that our configuration is not changed in the not allowed way
 	fc FactoryConfig
 }

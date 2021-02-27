@@ -27,7 +27,7 @@ func TestIsUserAllowedToSeeTraining(t *testing.T) {
 		ExpectedIsAllowed bool
 	}{
 		{
-			Name: "attendes_training",
+			Name: "attendees_training",
 			CreateTraining: func(t *testing.T) *training.Training {
 				tr, err := training.NewTraining(
 					uuid.New().String(),
@@ -43,7 +43,7 @@ func TestIsUserAllowedToSeeTraining(t *testing.T) {
 			ExpectedIsAllowed: true,
 		},
 		{
-			Name: "another_attendes_training",
+			Name: "another_attendees_training",
 			CreateTraining: func(t *testing.T) *training.Training {
 				tr, err := training.NewTraining(
 					uuid.New().String(),
