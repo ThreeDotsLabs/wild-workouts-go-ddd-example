@@ -9,6 +9,7 @@ import (
 )
 
 func TestHour_MakeNotAvailable(t *testing.T) {
+	t.Parallel()
 	h, err := testHourFactory.NewAvailableHour(validTrainingHour())
 	require.NoError(t, err)
 
@@ -17,12 +18,14 @@ func TestHour_MakeNotAvailable(t *testing.T) {
 }
 
 func TestHour_MakeNotAvailable_with_scheduled_training(t *testing.T) {
+	t.Parallel()
 	h := newHourWithScheduledTraining(t)
 
 	assert.Equal(t, hour.ErrTrainingScheduled, h.MakeNotAvailable())
 }
 
 func TestHour_MakeAvailable(t *testing.T) {
+	t.Parallel()
 	h, err := testHourFactory.NewAvailableHour(validTrainingHour())
 	require.NoError(t, err)
 
@@ -33,12 +36,14 @@ func TestHour_MakeAvailable(t *testing.T) {
 }
 
 func TestHour_MakeAvailable_with_scheduled_training(t *testing.T) {
+	t.Parallel()
 	h := newHourWithScheduledTraining(t)
 
 	assert.Equal(t, hour.ErrTrainingScheduled, h.MakeAvailable())
 }
 
 func TestHour_ScheduleTraining(t *testing.T) {
+	t.Parallel()
 	h, err := testHourFactory.NewAvailableHour(validTrainingHour())
 	require.NoError(t, err)
 
@@ -49,11 +54,13 @@ func TestHour_ScheduleTraining(t *testing.T) {
 }
 
 func TestHour_ScheduleTraining_with_not_available(t *testing.T) {
+	t.Parallel()
 	h := newNotAvailableHour(t)
 	assert.Equal(t, hour.ErrHourNotAvailable, h.ScheduleTraining())
 }
 
 func TestHour_CancelTraining(t *testing.T) {
+	t.Parallel()
 	h := newHourWithScheduledTraining(t)
 
 	require.NoError(t, h.CancelTraining())
@@ -63,6 +70,7 @@ func TestHour_CancelTraining(t *testing.T) {
 }
 
 func TestHour_CancelTraining_no_training_scheduled(t *testing.T) {
+	t.Parallel()
 	h, err := testHourFactory.NewAvailableHour(validTrainingHour())
 	require.NoError(t, err)
 
@@ -70,14 +78,17 @@ func TestHour_CancelTraining_no_training_scheduled(t *testing.T) {
 }
 
 func TestNewAvailabilityFromString(t *testing.T) {
+	t.Parallel()
 	testCases := []hour.Availability{
 		hour.Available,
 		hour.NotAvailable,
 		hour.TrainingScheduled,
 	}
 
-	for _, expectedAvailability := range testCases {
+	for _, tc := range testCases {
+		expectedAvailability := tc
 		t.Run(expectedAvailability.String(), func(t *testing.T) {
+			t.Parallel()
 			availability, err := hour.NewAvailabilityFromString(expectedAvailability.String())
 			require.NoError(t, err)
 
@@ -87,6 +98,7 @@ func TestNewAvailabilityFromString(t *testing.T) {
 }
 
 func TestNewAvailabilityFromString_invalid(t *testing.T) {
+	t.Parallel()
 	_, err := hour.NewAvailabilityFromString("invalid_value")
 	assert.Error(t, err)
 
