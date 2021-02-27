@@ -14,7 +14,7 @@
                 has a validation state that can be triggered by attempting to submit the form without completing it.</p>
 
             <div class="alert alert-warning" role="alert" v-if="isPropose">
-                It's less than 24h left until the training. Proposition of re-shedule may be refused.
+                It's less than 24h left until the training. Proposition of re-schedule may be refused.
             </div>
 
             <div v-if="!isPropose">

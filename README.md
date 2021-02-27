@@ -33,7 +33,7 @@ No application is perfect from the beginning. With over a dozen coming articles,
 - [docker](docker/) Dockerfiles
 - [internal](internal/) application code
 - [scripts](scripts/) deployment and development scripts
-- [terraform](terraform/) - infrastructure defintion
+- [terraform](terraform/) - infrastructure definition
 - [web](web/) - frontend JavaScript code
 
 ### Live Demo
