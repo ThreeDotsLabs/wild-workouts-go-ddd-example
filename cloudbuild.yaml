@@ -28,31 +28,66 @@ steps:
   args: ["users", "$PROJECT_ID"]
   waitFor: [users-lint]
 
+- id: docker-compose
+  name: 'docker/compose:1.19.0'
+  args: ['-f', 'docker-compose.yml', '-f', 'docker-compose.ci.yml', 'up', '-d']
+  env:
+    - 'PROJECT_ID=$PROJECT_ID'
+  waitFor: [trainer-docker, trainings-docker, users-docker]
+
+- id: trainer-tests
+  name: golang
+  entrypoint: ./scripts/test.sh
+  args: ["trainer", ".test.ci.env"]
+  waitFor: [docker-compose]
+- id: trainings-tests
+  name: golang
+  entrypoint: ./scripts/test.sh
+  args: ["trainings", ".test.ci.env"]
+  waitFor: [docker-compose]
+- id: users-tests
+  name: golang
+  entrypoint: ./scripts/test.sh
+  args: ["users", ".test.ci.env"]
+  waitFor: [docker-compose]
+- id: e2e-tests
+  name: golang
+  entrypoint: ./scripts/test.sh
+  args: ["common", ".e2e.ci.env"]
+  waitFor: [trainer-tests, trainings-tests, users-tests]
+
+- id: docker-compose-down
+  name: 'docker/compose:1.19.0'
+  args: ['-f', 'docker-compose.yml', '-f', 'docker-compose.ci.yml', 'down']
+  env:
+    - 'PROJECT_ID=$PROJECT_ID'
+  waitFor: [e2e-tests]
+
 - id: trainer-http-deploy
   name: gcr.io/cloud-builders/gcloud
   entrypoint: ./scripts/deploy.sh
   args: [trainer, http, "$PROJECT_ID"]
-  waitFor: [trainer-docker]
+  waitFor: [e2e-tests]
 - id: trainer-grpc-deploy
   name: gcr.io/cloud-builders/gcloud
   entrypoint: ./scripts/deploy.sh
   args: [trainer, grpc, "$PROJECT_ID"]
-  waitFor: [trainer-docker]
+  waitFor: [e2e-tests]
 - id: trainings-http-deploy
   name: gcr.io/cloud-builders/gcloud
   entrypoint: ./scripts/deploy.sh
   args: [trainings, http, "$PROJECT_ID"]
-  waitFor: [trainings-docker]
+  waitFor: [e2e-tests]
 - id: users-http-deploy
   name: gcr.io/cloud-builders/gcloud
   entrypoint: ./scripts/deploy.sh
   args: [users, http, "$PROJECT_ID"]
-  waitFor: [users-docker]
+  waitFor: [e2e-tests]
 - id: users-grpc-deploy
   name: gcr.io/cloud-builders/gcloud
   entrypoint: ./scripts/deploy.sh
   args: [users, grpc, "$PROJECT_ID"]
-  waitFor: [users-docker]
+  waitFor: [e2e-tests]
 
 - id: web-deps
   name: node:12.16.2
