@@ -11,6 +11,7 @@ import (
 )
 
 func TestIsUserAllowedToSeeTraining(t *testing.T) {
+	t.Parallel()
 	attendee1, err := training.NewUser(uuid.New().String(), training.Attendee)
 	require.NoError(t, err)
 
@@ -77,7 +78,9 @@ func TestIsUserAllowedToSeeTraining(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.Name, func(t *testing.T) {
+			t.Parallel()
 			tr := c.CreateTraining(t)
 
 			err := training.CanUserSeeTraining(c.User, *tr)
