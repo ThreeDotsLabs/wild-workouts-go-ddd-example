@@ -2,9 +2,11 @@ syntax = "proto3";
 
 package users;
 
+import "google/protobuf/empty.proto";
+
 service UsersService {
   rpc GetTrainingBalance(GetTrainingBalanceRequest) returns (GetTrainingBalanceResponse) {}
-  rpc UpdateTrainingBalance(UpdateTrainingBalanceRequest) returns (EmptyResponse) {}
+  rpc UpdateTrainingBalance(UpdateTrainingBalanceRequest) returns (google.protobuf.Empty) {}
 }
 
 message GetTrainingBalanceRequest {
@@ -19,5 +21,3 @@ message UpdateTrainingBalanceRequest {
   string user_id = 1;
   int64 amount_change = 2;
 }
-
-message EmptyResponse {}
