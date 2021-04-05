@@ -21,6 +21,7 @@ import (
 // todo - make tests parallel after fix of emulator: https://github.com/firebase/firebase-tools/issues/2452
 
 func TestTrainingsFirestoreRepository_AddTraining(t *testing.T) {
+	t.Parallel()
 	repo := newFirebaseRepository(t)
 
 	testCases := []struct {
@@ -46,7 +47,9 @@ func TestTrainingsFirestoreRepository_AddTraining(t *testing.T) {
 	}
 
 	for _, c := range testCases {
+		c := c
 		t.Run(c.Name, func(t *testing.T) {
+			t.Parallel()
 			ctx := context.Background()
 
 			expectedTraining := c.TrainingConstructor(t)
@@ -60,6 +63,7 @@ func TestTrainingsFirestoreRepository_AddTraining(t *testing.T) {
 }
 
 func TestTrainingsFirestoreRepository_UpdateTraining(t *testing.T) {
+	t.Parallel()
 	repo := newFirebaseRepository(t)
 	ctx := context.Background()
 
@@ -91,6 +95,7 @@ func TestTrainingsFirestoreRepository_UpdateTraining(t *testing.T) {
 }
 
 func TestTrainingsFirestoreRepository_GetTraining_not_exists(t *testing.T) {
+	t.Parallel()
 	repo := newFirebaseRepository(t)
 
 	trainingUUID := uuid.New().String()
@@ -105,6 +110,7 @@ func TestTrainingsFirestoreRepository_GetTraining_not_exists(t *testing.T) {
 }
 
 func TestTrainingsFirestoreRepository_get_and_update_another_users_training(t *testing.T) {
+	t.Parallel()
 	repo := newFirebaseRepository(t)
 
 	ctx := context.Background()
@@ -150,6 +156,7 @@ func TestTrainingsFirestoreRepository_get_and_update_another_users_training(t *t
 }
 
 func TestTrainingsFirestoreRepository_AllTrainings(t *testing.T) {
+	t.Parallel()
 	repo := newFirebaseRepository(t)
 
 	// AllTrainings returns all documents, because of that we need to do exception and do DB cleanup
@@ -226,6 +233,7 @@ func TestTrainingsFirestoreRepository_AllTrainings(t *testing.T) {
 }
 
 func TestTrainingsFirestoreRepository_FindTrainingsForUser(t *testing.T) {
+	t.Parallel()
 	repo := newFirebaseRepository(t)
 
 	ctx := context.Background()

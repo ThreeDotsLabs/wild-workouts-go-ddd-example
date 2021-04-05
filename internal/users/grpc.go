@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -26,11 +27,11 @@ func (g GrpcServer) GetTrainingBalance(ctx context.Context, request *users.GetTr
 func (g GrpcServer) UpdateTrainingBalance(
 	ctx context.Context,
 	req *users.UpdateTrainingBalanceRequest,
-) (*users.EmptyResponse, error) {
+) (*empty.Empty, error) {
 	err := g.db.UpdateBalance(ctx, req.UserId, int(req.AmountChange))
 	if err != nil {
 		return nil, status.Error(codes.Internal, fmt.Sprintf("failed to update balance: %s", err))
 	}
 
-	return &users.EmptyResponse{}, nil
+	return &empty.Empty{}, nil
 }

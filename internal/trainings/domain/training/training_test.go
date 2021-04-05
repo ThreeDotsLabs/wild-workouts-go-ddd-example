@@ -12,6 +12,7 @@ import (
 )
 
 func TestNewTraining(t *testing.T) {
+	t.Parallel()
 	trainingUUID := uuid.New().String()
 	userUUID := uuid.New().String()
 	userName := "user name"
@@ -27,6 +28,7 @@ func TestNewTraining(t *testing.T) {
 }
 
 func TestNewTraining_invalid(t *testing.T) {
+	t.Parallel()
 	trainingUUID := uuid.New().String()
 	userUUID := uuid.New().String()
 	trainingTime := time.Now().Round(time.Hour)
@@ -46,6 +48,7 @@ func TestNewTraining_invalid(t *testing.T) {
 }
 
 func TestTraining_UpdateNotes(t *testing.T) {
+	t.Parallel()
 	tr := newExampleTraining(t)
 	// it's always a good idea to ensure about pre-conditions in the test ;-)
 	require.Equal(t, "", tr.Notes())
@@ -56,6 +59,7 @@ func TestTraining_UpdateNotes(t *testing.T) {
 }
 
 func TestTraining_UpdateNotes_too_long(t *testing.T) {
+	t.Parallel()
 	tr := newExampleTraining(t)
 
 	err := tr.UpdateNotes(strings.Repeat("x", 1001))
@@ -63,6 +67,7 @@ func TestTraining_UpdateNotes_too_long(t *testing.T) {
 }
 
 func TestTraining_MoreThanDayUntilTraining(t *testing.T) {
+	t.Parallel()
 	trainingNow := newExampleTrainingWithTime(t, time.Now())
 	assert.False(t, trainingNow.CanBeCanceledForFree())
 

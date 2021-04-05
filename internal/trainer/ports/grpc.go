@@ -8,6 +8,7 @@ import (
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/genproto/trainer"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app"
 	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -21,7 +22,7 @@ func NewGrpcServer(application app.Application) GrpcServer {
 	return GrpcServer{app: application}
 }
 
-func (g GrpcServer) MakeHourAvailable(ctx context.Context, request *trainer.UpdateHourRequest) (*trainer.EmptyResponse, error) {
+func (g GrpcServer) MakeHourAvailable(ctx context.Context, request *trainer.UpdateHourRequest) (*empty.Empty, error) {
 	trainingTime, err := protoTimestampToTime(request.Time)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "unable to parse time")
@@ -31,10 +32,10 @@ func (g GrpcServer) MakeHourAvailable(ctx context.Context, request *trainer.Upda
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &trainer.EmptyResponse{}, nil
+	return &empty.Empty{}, nil
 }
 
-func (g GrpcServer) ScheduleTraining(ctx context.Context, request *trainer.UpdateHourRequest) (*trainer.EmptyResponse, error) {
+func (g GrpcServer) ScheduleTraining(ctx context.Context, request *trainer.UpdateHourRequest) (*empty.Empty, error) {
 	trainingTime, err := protoTimestampToTime(request.Time)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "unable to parse time")
@@ -44,10 +45,10 @@ func (g GrpcServer) ScheduleTraining(ctx context.Context, request *trainer.Updat
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &trainer.EmptyResponse{}, nil
+	return &empty.Empty{}, nil
 }
 
-func (g GrpcServer) CancelTraining(ctx context.Context, request *trainer.UpdateHourRequest) (*trainer.EmptyResponse, error) {
+func (g GrpcServer) CancelTraining(ctx context.Context, request *trainer.UpdateHourRequest) (*empty.Empty, error) {
 	trainingTime, err := protoTimestampToTime(request.Time)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "unable to parse time")
@@ -57,7 +58,7 @@ func (g GrpcServer) CancelTraining(ctx context.Context, request *trainer.UpdateH
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &trainer.EmptyResponse{}, nil
+	return &empty.Empty{}, nil
 }
 
 func (g GrpcServer) IsHourAvailable(ctx context.Context, request *trainer.IsHourAvailableRequest) (*trainer.IsHourAvailableResponse, error) {

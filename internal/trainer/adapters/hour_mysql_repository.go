@@ -181,13 +181,14 @@ func (m MySQLHourRepository) finishTransaction(err error, tx *sqlx.Tx) error {
 }
 
 func NewMySQLConnection() (*sqlx.DB, error) {
-	config := mysql.Config{
-		Addr:      os.Getenv("MYSQL_ADDR"),
-		User:      os.Getenv("MYSQL_USER"),
-		Passwd:    os.Getenv("MYSQL_PASSWORD"),
-		DBName:    os.Getenv("MYSQL_DATABASE"),
-		ParseTime: true, // with that parameter, we can use time.Time in mysqlHour.Hour
-	}
+	config := mysql.NewConfig()
+
+	config.Net = "tcp"
+	config.Addr = os.Getenv("MYSQL_ADDR")
+	config.User = os.Getenv("MYSQL_USER")
+	config.Passwd = os.Getenv("MYSQL_PASSWORD")
+	config.DBName = os.Getenv("MYSQL_DATABASE")
+	config.ParseTime = true // with that parameter, we can use time.Time in mysqlHour.Hour
 
 	db, err := sqlx.Connect("mysql", config.FormatDSN())
 	if err != nil {

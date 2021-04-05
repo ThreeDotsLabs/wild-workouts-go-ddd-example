@@ -27,7 +27,11 @@ type TrainerHTTPClient struct {
 }
 
 func NewTrainerHTTPClient(t *testing.T, token string) TrainerHTTPClient {
-	url := fmt.Sprintf("http://%v/api", os.Getenv("TRAINER_HTTP_ADDR"))
+	addr := os.Getenv("TRAINER_HTTP_ADDR")
+	ok := WaitForPort(addr)
+	require.True(t, ok, "Trainer HTTP timed out")
+
+	url := fmt.Sprintf("http://%v/api", addr)
 
 	client, err := trainer.NewClientWithResponses(
 		url,
@@ -72,7 +76,12 @@ type TrainingsHTTPClient struct {
 }
 
 func NewTrainingsHTTPClient(t *testing.T, token string) TrainingsHTTPClient {
-	url := fmt.Sprintf("http://%v/api", os.Getenv("TRAININGS_HTTP_ADDR"))
+	addr := os.Getenv("TRAININGS_HTTP_ADDR")
+	fmt.Println("Trying trainings http:", addr)
+	ok := WaitForPort(addr)
+	require.True(t, ok, "Trainings HTTP timed out")
+
+	url := fmt.Sprintf("http://%v/api", addr)
 
 	client, err := trainings.NewClientWithResponses(
 		url,
@@ -126,7 +135,11 @@ type UsersHTTPClient struct {
 }
 
 func NewUsersHTTPClient(t *testing.T, token string) UsersHTTPClient {
-	url := fmt.Sprintf("http://%v/api", os.Getenv("USERS_HTTP_ADDR"))
+	addr := os.Getenv("USERS_HTTP_ADDR")
+	ok := WaitForPort(addr)
+	require.True(t, ok, "Users HTTP timed out")
+
+	url := fmt.Sprintf("http://%v/api", addr)
 
 	client, err := users.NewClientWithResponses(
 		url,

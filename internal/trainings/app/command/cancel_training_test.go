@@ -13,6 +13,7 @@ import (
 )
 
 func TestCancelTraining(t *testing.T) {
+	t.Parallel()
 	requestingUserID := "requesting-user-id"
 
 	testCases := []struct {
