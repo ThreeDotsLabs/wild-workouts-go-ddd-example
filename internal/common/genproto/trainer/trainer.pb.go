@@ -150,9 +150,7 @@ func init() {
 	proto.RegisterType((*UpdateHourRequest)(nil), "trainer.UpdateHourRequest")
 }
 
-func init() {
-	proto.RegisterFile("trainer.proto", fileDescriptor_8df4ffdae7cc5e40)
-}
+func init() { proto.RegisterFile("trainer.proto", fileDescriptor_8df4ffdae7cc5e40) }
 
 var fileDescriptor_8df4ffdae7cc5e40 = []byte{
 	// 277 bytes of a gzipped FileDescriptorProto

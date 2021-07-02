@@ -6,6 +6,10 @@ openapi: openapi_http openapi_js
 
 .PHONY: openapi_http
 openapi_http:
+	docker-compose run --rm --no-deps dev make _openapi_http
+
+.PHONY: _openapi_http
+_openapi_http:
 	oapi-codegen -generate types -o internal/trainings/ports/openapi_types.gen.go -package ports api/openapi/trainings.yml
 	oapi-codegen -generate chi-server -o internal/trainings/ports/openapi_api.gen.go -package ports api/openapi/trainings.yml
 	oapi-codegen -generate types -o internal/common/client/trainings/openapi_types.gen.go -package trainings api/openapi/trainings.yml
@@ -40,6 +44,10 @@ openapi_js:
 
 .PHONY: proto
 proto:
+	docker-compose run --rm --no-deps dev make _proto
+
+.PHONY: _proto
+_proto:
 	protoc --go_out=plugins=grpc:internal/common/genproto/trainer -I api/protobuf api/protobuf/trainer.proto
 	protoc --go_out=plugins=grpc:internal/common/genproto/users -I api/protobuf api/protobuf/users.proto
 
