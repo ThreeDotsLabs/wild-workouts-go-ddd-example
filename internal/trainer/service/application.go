@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"os"
 
 	"cloud.google.com/go/firestore"
+
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/adapters"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app/command"
@@ -13,10 +13,10 @@ import (
 )
 
 func NewApplication(ctx context.Context) app.Application {
-	firestoreClient, err := firestore.NewClient(ctx, os.Getenv("GCP_PROJECT"))
-	if err != nil {
-		panic(err)
-	}
+	firestoreClient := &firestore.Client{}
+	//if err != nil {
+	//	panic(err)
+	//}
 
 	factoryConfig := hour.FactoryConfig{
 		MaxWeeksInTheFutureToSet: 6,
