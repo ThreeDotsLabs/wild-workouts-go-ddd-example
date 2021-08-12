@@ -1,0 +1,34 @@
+view:
+  title: Service components
+  line_color: 000000ff
+  styles:
+    - id: ROOT
+      background_color: ffffffff
+      font_color: 000000ff
+      border_color: 000000ff
+    - id: APP
+      background_color: 1a4577ff
+      font_color: ffffffff
+      border_color: 000000ff
+    - id: ADAPTER
+      background_color: 2d69b7ff
+      font_color: ffffffff
+      border_color: 000000ff
+    - id: DOMAIN
+      background_color: ffffffff
+      font_color: 000000ff
+      border_color: 000000ff
+    - id: DB
+      background_color: c8c8c8ff
+      font_color: 000000ff
+      border_color: 000000ff
+      shape: database
+  root_component_tags:
+    - ROOT
+  component_tags:
+    - ROOT
+    - APP
+    - DOMAIN
+    - ADAPTER
+    - DB
+    - OTHER
