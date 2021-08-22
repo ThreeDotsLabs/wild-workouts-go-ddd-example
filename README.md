@@ -29,6 +29,10 @@ No application is perfect from the beginning. With over a dozen coming articles,
 14. [**Running integration tests on Google Cloud Build using docker-compose**](https://threedots.tech/post/running-integration-tests-on-google-cloud-build/?utm_source=github.com) _[[v2.7]](https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/releases/tag/v2.7)_
 15. *More articles are on the way!*
 
+### Community
+
+We're building a Discord community focused on modern business applications. It's the place to discuss hard topics, request a review, or ask if something's not clear. [Come join us!](https://discord.gg/kTVsGjPYDn)
+
 ### Directories
 
 - [api](api/) OpenAPI and gRPC definitions
