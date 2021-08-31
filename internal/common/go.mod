@@ -10,7 +10,7 @@ require (
 	github.com/go-chi/chi v4.1.0+incompatible
 	github.com/go-chi/cors v1.0.1
 	github.com/go-chi/render v1.0.1
-	github.com/golang/protobuf v1.3.3
+	github.com/golang/protobuf v1.5.0
 	github.com/google/uuid v1.1.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
 	github.com/mattn/go-colorable v0.1.6 // indirect
@@ -23,5 +23,6 @@ require (
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	go.opencensus.io v0.22.3 // indirect
 	google.golang.org/api v0.21.0
-	google.golang.org/grpc v1.28.0
+	google.golang.org/grpc v1.40.0
+	google.golang.org/protobuf v1.27.1
 )
