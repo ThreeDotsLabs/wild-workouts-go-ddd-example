@@ -40,8 +40,17 @@ openapi_js:
 
 .PHONY: proto
 proto:
-	protoc --go_out=plugins=grpc:internal/common/genproto/trainer -I api/protobuf api/protobuf/trainer.proto
-	protoc --go_out=plugins=grpc:internal/common/genproto/users -I api/protobuf api/protobuf/users.proto
+	protoc \
+		--proto_path=api/protobuf api/protobuf/trainer.proto \
+		--go_out=internal/common/genproto/trainer --go_opt=paths=source_relative \
+		--go-grpc_opt=require_unimplemented_servers=false \
+		--go-grpc_out=internal/common/genproto/trainer --go-grpc_opt=paths=source_relative \
+
+	protoc \
+		--proto_path=api/protobuf api/protobuf/users.proto \
+		--go_out=internal/common/genproto/users --go_opt=paths=source_relative \
+		--go-grpc_opt=require_unimplemented_servers=false \
+		--go-grpc_out=internal/common/genproto/users --go-grpc_opt=paths=source_relative \
 
 .PHONY: lint
 lint:
