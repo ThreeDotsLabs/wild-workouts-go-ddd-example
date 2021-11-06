@@ -8,7 +8,7 @@ import (
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/server"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/ports"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/service"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 func main() {

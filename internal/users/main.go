@@ -11,7 +11,7 @@ import (
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/genproto/users"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/logs"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/server"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"google.golang.org/grpc"
 )
 

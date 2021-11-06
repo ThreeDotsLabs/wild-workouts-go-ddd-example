@@ -1,7 +1,10 @@
 #!/bin/bash
-for service in trainer trainings users; do
-    /usr/local/bin/docker-entrypoint.sh generate \
-        -i "./api/openapi/$service.yml" \
-        -g javascript \
-        -o "./web/src/repositories/clients/$service"
-done
+set -e
+
+readonly service="$1"
+
+docker run --rm --env "JAVA_OPTS=-Dlog.level=error" -v "${PWD}:/local" \
+  "openapitools/openapi-generator-cli:v4.3.0" generate \
+  -i "/local/api/openapi/$service.yml" \
+  -g javascript \
+  -o "/local/web/src/repositories/clients/$service"
