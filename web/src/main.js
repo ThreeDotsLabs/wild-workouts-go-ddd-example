@@ -16,6 +16,8 @@ import Login from './pages/Login'
 import SetSchedule from './pages/SetSchedule'
 import {loadFirebaseConfig} from "./firebase";
 import {Auth, setApiClientsAuth} from "./repositories/auth";
+import RatingsList from "./pages/RatingsList";
+import RateTraining from "./pages/RateTraining";
 
 Vue.use(VueRouter)
 
@@ -76,6 +78,16 @@ const routes = [
         path: '/trainer/set-schedule',
         component: SetSchedule,
         name: 'setSchedule',
+    },
+    {
+        path: '/ratings',
+        component: RatingsList,
+        name: 'ratingsList',
+    },
+    {
+        path: '/ratings/:trainingID',
+        component: RateTraining,
+        name: 'rateTraining',
     },
 ]
 

@@ -14,6 +14,10 @@ services:
 
   users-grpc:
     image: "gcr.io/${PROJECT_ID}/users"
+
+  ratings-http:
+    image: "gcr.io/${PROJECT_ID}/ratings"
+
 networks:
   default:
     external:

@@ -89,6 +89,20 @@ services:
     depends_on:
       - firestore
 
+  ratings-http:
+    build:
+      context: docker/app
+    volumes:
+      - ./internal:/internal
+    #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
+    working_dir: /internal/ratings
+    ports:
+      - "127.0.0.1:3003:$PORT"
+    env_file:
+      - .env
+    depends_on:
+      - firestore
+
   firestore:
     image: karhoo/firestore-emulator:0.3.2
     env_file:

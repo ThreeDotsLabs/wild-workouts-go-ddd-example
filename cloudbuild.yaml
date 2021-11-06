@@ -11,6 +11,10 @@ steps:
   name: golang
   entrypoint: ./scripts/lint.sh
   args: [users]
+- id: ratings-lint
+  name: golang
+  entrypoint: ./scripts/lint.sh
+  args: [ratings]
 
 - id: trainer-docker
   name: gcr.io/cloud-builders/docker
@@ -27,13 +31,18 @@ steps:
   entrypoint: ./scripts/build-docker.sh
   args: ["users", "$PROJECT_ID"]
   waitFor: [users-lint]
+- id: ratings-docker
+  name: gcr.io/cloud-builders/docker
+  entrypoint: ./scripts/build-docker.sh
+  args: ["ratings", "$PROJECT_ID"]
+  waitFor: [ratings-lint]
 
 - id: docker-compose
   name: 'docker/compose:1.19.0'
   args: ['-f', 'docker-compose.yml', '-f', 'docker-compose.ci.yml', 'up', '-d']
   env:
     - 'PROJECT_ID=$PROJECT_ID'
-  waitFor: [trainer-docker, trainings-docker, users-docker]
+  waitFor: [trainer-docker, trainings-docker, users-docker, ratings-docker]
 
 - id: trainer-tests
   name: golang
@@ -49,6 +58,11 @@ steps:
   name: golang
   entrypoint: ./scripts/test.sh
   args: ["users", ".test.ci.env"]
+  waitFor: [docker-compose]
+- id: ratings-tests
+  name: golang
+  entrypoint: ./scripts/test.sh
+  args: ["ratings", ".test.ci.env"]
   waitFor: [docker-compose]
 - id: e2e-tests
   name: golang
@@ -88,6 +102,11 @@ steps:
   entrypoint: ./scripts/deploy.sh
   args: [users, grpc, "$PROJECT_ID"]
   waitFor: [e2e-tests]
+- id: ratings-http-deploy
+  name: gcr.io/cloud-builders/gcloud
+  entrypoint: ./scripts/deploy.sh
+  args: [ratings, http, "$PROJECT_ID"]
+  waitFor: [e2e-tests]
 
 - id: web-deps
   name: node:12.16.2
@@ -119,3 +138,4 @@ images:
 - 'gcr.io/$PROJECT_ID/trainer'
 - 'gcr.io/$PROJECT_ID/trainings'
 - 'gcr.io/$PROJECT_ID/users'
+- 'gcr.io/$PROJECT_ID/ratings'

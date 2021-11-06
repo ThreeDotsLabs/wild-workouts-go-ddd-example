@@ -22,7 +22,6 @@ func NewHttpServer(application app.Application) HttpServer {
 }
 
 func (h HttpServer) GetTrainerAvailableHours(w http.ResponseWriter, r *http.Request, params GetTrainerAvailableHoursParams) {
-
 	dateModels, err := h.app.Queries.TrainerAvailableHours.Handle(r.Context(), query.AvailableHours{
 		From: params.DateFrom,
 		To:   params.DateTo,

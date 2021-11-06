@@ -7,7 +7,7 @@
                 has a validation state that can be triggered by attempting to submit the form without completing it.</p>
         </div>
         <br><br>
-        <table class="table">
+        <table class="table" v-if="ready">
             <thead>
             <tr>
                 <th scope="col">#</th>
@@ -66,6 +66,12 @@
                             <span v-if="userRole === training.moveProposedBy">Cancel reschedule request</span>
                         </button>
                     </div>
+
+                  <router-link tag="button" class="btn btn-primary" v-if="training.canRate && !isTrainer" :id="training.uuid+training.canRate"
+                               :to="{ name: 'rateTraining', params: { trainingID: training.uuid }}">
+                    Rate
+                    <span class="badge badge-success">new!</span>
+                  </router-link>
                 </td>
             </tr>
             </tbody>
@@ -79,6 +85,7 @@
     import {approveReschedule, cancelTraining, getCalendar, rejectReschedule} from '../repositories/trainings'
     import {getUserRole, Trainer} from "../repositories/user";
     import {formatDateTime} from "../date";
+    import {canRate} from "../repositories/ratings";
 
     export default {
         components: {
@@ -89,12 +96,26 @@
                 'calendar': null,
                 'isTrainer': null,
                 'userRole': null,
+                'ready': false,
             }
         },
         mounted() {
             let self = this
-            getCalendar(function (calendar) {
-                self.calendar = calendar
+
+           getCalendar(function (calendar) {
+              self.calendar = calendar
+              let ratingsToGet = calendar.length
+
+              self.calendar.forEach(training => {
+                  canRate(training, function (canRate) {
+                    training.canRate = canRate
+                    ratingsToGet--
+
+                    if (ratingsToGet === 0) {
+                      self.ready = true
+                    }
+                  })
+                })
             })
             this.isTrainer = getUserRole() === Trainer;
             this.userRole = getUserRole()

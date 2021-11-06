@@ -9,12 +9,14 @@ openapi_http:
 	@./scripts/openapi-http.sh trainer internal/trainer/ports ports
 	@./scripts/openapi-http.sh trainings internal/trainings/ports ports
 	@./scripts/openapi-http.sh users internal/users main
+	@./scripts/openapi-http.sh ratings internal/ratings/ports ports
 
 .PHONY: openapi_js
 openapi_js:
 	@./scripts/openapi-js.sh trainer
 	@./scripts/openapi-js.sh trainings
 	@./scripts/openapi-js.sh users
+	@./scripts/openapi-js.sh ratings
 
 .PHONY: proto
 proto:
@@ -26,6 +28,7 @@ lint:
 	@./scripts/lint.sh trainer
 	@./scripts/lint.sh trainings
 	@./scripts/lint.sh users
+	@./scripts/lint.sh ratings
 
 .PHONY: fmt
 fmt:
@@ -40,3 +43,4 @@ test:
 	@./scripts/test.sh trainer .test.env
 	@./scripts/test.sh trainings .test.env
 	@./scripts/test.sh users .test.env
+	@./scripts/test.sh ratings .test.env

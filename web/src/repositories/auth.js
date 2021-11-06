@@ -2,6 +2,7 @@ import {getTestUsers, usersClient} from "./user";
 import firebase from "firebase";
 import {sign} from "jsonwebtoken";
 import {trainerClient, trainingsClient} from "./trainings";
+import {ratingsClient} from "./ratings";
 
 class FirebaseAuth {
     login(login, password) {
@@ -119,6 +120,7 @@ export function setApiClientsAuth(idToken) {
     usersClient.authentications['bearerAuth'].accessToken = idToken
     trainerClient.authentications['bearerAuth'].accessToken = idToken
     trainingsClient.authentications['bearerAuth'].accessToken = idToken
+    ratingsClient.authentications['bearerAuth'].accessToken = idToken
 }
 
 const MOCK_AUTH = process.env.NODE_ENV === 'development'

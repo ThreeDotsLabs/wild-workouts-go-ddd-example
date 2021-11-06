@@ -1,0 +1,136 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Wild Workouts ratings API
+  contact:
+    name: Three Dots Labs
+    url: https://threedots.tech/
+servers:
+  - url: https://{hostname}/api
+    variables:
+      hostname:
+        default: localhost
+security:
+  - bearerAuth: []
+paths:
+  /ratings:
+    get:
+      operationId: getRatings
+      responses:
+        '200':
+          description: list all trainer's ratings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ratings'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /ratings/{trainingUUID}:
+    get:
+      operationId: getTrainingRating
+      parameters:
+        - in: path
+          name: trainingUUID
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: get training's rating
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      operationId: postTrainingRating
+      parameters:
+        - in: path
+          name: trainingUUID
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostRating'
+      responses:
+        '204':
+          description: rating added successfully
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    PostRating:
+      type: object
+      required: [rating, comment]
+      properties:
+        rating:
+          type: integer
+          example: "5"
+          description: "rating score in scale from 1 to 5"
+        comment:
+          type: string
+
+    Rating:
+      type: object
+      required: [rated, canRate]
+      properties:
+        rated:
+          type: boolean
+        canRate:
+          type: boolean
+        rating:
+          type: integer
+          example: "5"
+          description: "rating score in scale from 1 to 5"
+        comment:
+          type: string
+        date:
+          type: string
+          format: date-time
+
+    Ratings:
+      type: object
+      required: [ratings]
+      properties:
+        ratings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rating'
+
+    Error:
+      type: object
+      required:
+        - slug
+        - message
+      properties:
+        slug:
+          type: string
+        message:
+          type: string

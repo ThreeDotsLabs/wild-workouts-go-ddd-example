@@ -27,7 +27,7 @@
                 <span v-if="showLoader" class="spinner-grow spinner-grow-sm" style="width: 1.3rem; height: 1.3rem;"
                       role="status" aria-hidden="true"></span>
             </button>
-            <p class="mt-5 mb-3 text-muted">&copy; 2017-2020</p>
+            <p class="mt-5 mb-3 text-muted">&copy; 2021</p>
         </form>
     </login-layout>
 </template>

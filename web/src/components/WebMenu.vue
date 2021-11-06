@@ -10,6 +10,10 @@
             <router-link class="p-2 text-dark" :to="{ name: 'setSchedule' }" v-if="userType === 'trainer'">Set
                 schedule
             </router-link>
+          <router-link class="p-2 text-dark" :to="{ name: 'ratingsList' }" v-if="userType === 'trainer'">
+            Ratings
+            <span class="badge badge-success">new!</span>
+          </router-link>
         </nav>
         <a class="btn btn-outline-primary" v-on:click="signOut" href="/login">Logout</a>
     </div>

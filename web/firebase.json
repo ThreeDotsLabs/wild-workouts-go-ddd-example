@@ -28,6 +28,13 @@
         }
       },
       {
+        "source": "/api/ratings{,/**}",
+        "run": {
+          "serviceId": "ratings-http",
+          "region": "europe-west1"
+        }
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
