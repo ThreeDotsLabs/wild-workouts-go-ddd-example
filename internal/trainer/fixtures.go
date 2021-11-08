@@ -25,7 +25,7 @@ func loadFixtures(app app.Application) {
 		return
 	}
 
-	logrus.WithField("after", time.Now().Sub(start)).Debug("Trainer service is available")
+	logrus.WithField("after", time.Since(start)).Debug("Trainer service is available")
 
 	if !canLoadFixtures(app, ctx) {
 		logrus.Debug("Trainer fixtures are already loaded")
@@ -42,7 +42,7 @@ func loadFixtures(app app.Application) {
 		time.Sleep(10 * time.Second)
 	}
 
-	logrus.WithField("after", time.Now().Sub(start)).Debug("Trainer fixtures loaded")
+	logrus.WithField("after", time.Since(start)).Debug("Trainer fixtures loaded")
 }
 
 func loadTrainerFixtures(ctx context.Context, application app.Application) error {

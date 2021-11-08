@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/genproto/trainer"
 )
@@ -19,26 +19,16 @@ func NewTrainerGrpc(client trainer.TrainerServiceClient) TrainerGrpc {
 }
 
 func (s TrainerGrpc) ScheduleTraining(ctx context.Context, trainingTime time.Time) error {
-	timestamp, err := ptypes.TimestampProto(trainingTime)
-	if err != nil {
-		return errors.Wrap(err, "unable to convert time to proto timestamp")
-	}
-
-	_, err = s.client.ScheduleTraining(ctx, &trainer.UpdateHourRequest{
-		Time: timestamp,
+	_, err := s.client.ScheduleTraining(ctx, &trainer.UpdateHourRequest{
+		Time: timestamppb.New(trainingTime),
 	})
 
 	return err
 }
 
 func (s TrainerGrpc) CancelTraining(ctx context.Context, trainingTime time.Time) error {
-	timestamp, err := ptypes.TimestampProto(trainingTime)
-	if err != nil {
-		return errors.Wrap(err, "unable to convert time to proto timestamp")
-	}
-
-	_, err = s.client.CancelTraining(ctx, &trainer.UpdateHourRequest{
-		Time: timestamp,
+	_, err := s.client.CancelTraining(ctx, &trainer.UpdateHourRequest{
+		Time: timestamppb.New(trainingTime),
 	})
 
 	return err

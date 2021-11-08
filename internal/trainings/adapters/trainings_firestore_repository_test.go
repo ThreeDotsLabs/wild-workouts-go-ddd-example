@@ -246,6 +246,8 @@ func TestTrainingsFirestoreRepository_FindTrainingsForUser(t *testing.T) {
 		"User",
 		time.Now(),
 	)
+	require.NoError(t, err)
+
 	err = repo.AddTraining(ctx, tr1)
 	require.NoError(t, err)
 
@@ -255,6 +257,8 @@ func TestTrainingsFirestoreRepository_FindTrainingsForUser(t *testing.T) {
 		"User",
 		time.Now(),
 	)
+	require.NoError(t, err)
+
 	err = repo.AddTraining(ctx, tr2)
 	require.NoError(t, err)
 
@@ -265,8 +269,11 @@ func TestTrainingsFirestoreRepository_FindTrainingsForUser(t *testing.T) {
 		"User",
 		time.Now(),
 	)
+	require.NoError(t, err)
+
 	err = canceledTraining.Cancel()
 	require.NoError(t, err)
+
 	err = repo.AddTraining(ctx, canceledTraining)
 	require.NoError(t, err)
 

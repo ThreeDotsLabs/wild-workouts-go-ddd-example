@@ -6,7 +6,7 @@ import (
 )
 
 func (t Training) CanBeCanceledForFree() bool {
-	return t.time.Sub(time.Now()) >= time.Hour*24
+	return time.Until(t.time) >= time.Hour*24
 }
 
 var ErrTrainingAlreadyCanceled = errors.New("training is already canceled")

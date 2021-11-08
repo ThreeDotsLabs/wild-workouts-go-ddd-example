@@ -23,6 +23,7 @@ proto:
 
 .PHONY: lint
 lint:
+	@go-cleanarch
 	@./scripts/lint.sh trainer
 	@./scripts/lint.sh trainings
 	@./scripts/lint.sh users

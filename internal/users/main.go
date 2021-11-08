@@ -28,7 +28,7 @@ func main() {
 	serverType := strings.ToLower(os.Getenv("SERVER_TO_RUN"))
 	switch serverType {
 	case "http":
-		go loadFixtures(firebaseDB)
+		go loadFixtures()
 
 		server.RunHTTPServer(func(router chi.Router) http.Handler {
 			return HandlerFromMux(HttpServer{firebaseDB}, router)
