@@ -10,7 +10,6 @@ import (
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/app/command"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/app/query"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/domain/training"
-	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
 )
@@ -84,9 +83,7 @@ func (h HttpServer) CreateTraining(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h HttpServer) CancelTraining(w http.ResponseWriter, r *http.Request) {
-	trainingUUID := r.Context().Value("trainingUUID").(string)
-
+func (h HttpServer) CancelTraining(w http.ResponseWriter, r *http.Request, trainingUUID string) {
 	user, err := newDomainUserFromAuthUser(r.Context())
 	if err != nil {
 		httperr.RespondWithSlugError(err, w, r)
@@ -103,9 +100,7 @@ func (h HttpServer) CancelTraining(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h HttpServer) RescheduleTraining(w http.ResponseWriter, r *http.Request) {
-	trainingUUID := chi.URLParam(r, "trainingUUID")
-
+func (h HttpServer) RescheduleTraining(w http.ResponseWriter, r *http.Request, trainingUUID string) {
 	rescheduleTraining := PostTraining{}
 	if err := render.Decode(r, &rescheduleTraining); err != nil {
 		httperr.BadRequest("invalid-request", err, w, r)
@@ -130,9 +125,7 @@ func (h HttpServer) RescheduleTraining(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h HttpServer) RequestRescheduleTraining(w http.ResponseWriter, r *http.Request) {
-	trainingUUID := chi.URLParam(r, "trainingUUID")
-
+func (h HttpServer) RequestRescheduleTraining(w http.ResponseWriter, r *http.Request, trainingUUID string) {
 	rescheduleTraining := PostTraining{}
 	if err := render.Decode(r, &rescheduleTraining); err != nil {
 		httperr.BadRequest("invalid-request", err, w, r)
@@ -157,9 +150,7 @@ func (h HttpServer) RequestRescheduleTraining(w http.ResponseWriter, r *http.Req
 	}
 }
 
-func (h HttpServer) ApproveRescheduleTraining(w http.ResponseWriter, r *http.Request) {
-	trainingUUID := chi.URLParam(r, "trainingUUID")
-
+func (h HttpServer) ApproveRescheduleTraining(w http.ResponseWriter, r *http.Request, trainingUUID string) {
 	user, err := newDomainUserFromAuthUser(r.Context())
 	if err != nil {
 		httperr.RespondWithSlugError(err, w, r)
@@ -176,9 +167,7 @@ func (h HttpServer) ApproveRescheduleTraining(w http.ResponseWriter, r *http.Req
 	}
 }
 
-func (h HttpServer) RejectRescheduleTraining(w http.ResponseWriter, r *http.Request) {
-	trainingUUID := chi.URLParam(r, "trainingUUID")
-
+func (h HttpServer) RejectRescheduleTraining(w http.ResponseWriter, r *http.Request, trainingUUID string) {
 	user, err := newDomainUserFromAuthUser(r.Context())
 	if err != nil {
 		httperr.RespondWithSlugError(err, w, r)

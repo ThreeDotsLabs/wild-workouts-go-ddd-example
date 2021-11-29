@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package users;
 
+option go_package = "github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/users";
+
 import "google/protobuf/empty.proto";
 
 service UsersService {

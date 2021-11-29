@@ -6,42 +6,20 @@ openapi: openapi_http openapi_js
 
 .PHONY: openapi_http
 openapi_http:
-	oapi-codegen -generate types -o internal/trainings/ports/openapi_types.gen.go -package ports api/openapi/trainings.yml
-	oapi-codegen -generate chi-server -o internal/trainings/ports/openapi_api.gen.go -package ports api/openapi/trainings.yml
-	oapi-codegen -generate types -o internal/common/client/trainings/openapi_types.gen.go -package trainings api/openapi/trainings.yml
-	oapi-codegen -generate client -o internal/common/client/trainings/openapi_client_gen.go -package trainings api/openapi/trainings.yml
-
-	oapi-codegen -generate types -o internal/trainer/ports/openapi_types.gen.go -package ports api/openapi/trainer.yml
-	oapi-codegen -generate chi-server -o internal/trainer/ports/openapi_api.gen.go -package ports api/openapi/trainer.yml
-	oapi-codegen -generate types -o internal/common/client/trainer/openapi_types.gen.go -package trainer api/openapi/trainer.yml
-	oapi-codegen -generate client -o internal/common/client/trainer/openapi_client_gen.go -package trainer api/openapi/trainer.yml
-
-	oapi-codegen -generate types -o internal/users/openapi_types.gen.go -package main api/openapi/users.yml
-	oapi-codegen -generate chi-server -o internal/users/openapi_api.gen.go -package main api/openapi/users.yml
-	oapi-codegen -generate types -o internal/common/client/users/openapi_types.gen.go -package users api/openapi/users.yml
-	oapi-codegen -generate client -o internal/common/client/users/openapi_client_gen.go -package users api/openapi/users.yml
+	@./scripts/openapi-http.sh trainer internal/trainer/ports ports
+	@./scripts/openapi-http.sh trainings internal/trainings/ports ports
+	@./scripts/openapi-http.sh users internal/users main
 
 .PHONY: openapi_js
 openapi_js:
-	docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli:v4.3.0 generate \
-        -i /local/api/openapi/trainings.yml \
-        -g javascript \
-        -o /local/web/src/repositories/clients/trainings
-
-	docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli:v4.3.0 generate \
-		-i /local/api/openapi/trainer.yml \
-		-g javascript \
-		-o /local/web/src/repositories/clients/trainer
-
-	docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli:v4.3.0 generate \
-		-i /local/api/openapi/users.yml \
-		-g javascript \
-		-o /local/web/src/repositories/clients/users
+	@./scripts/openapi-js.sh trainer
+	@./scripts/openapi-js.sh trainings
+	@./scripts/openapi-js.sh users
 
 .PHONY: proto
 proto:
-	protoc --go_out=plugins=grpc:internal/common/genproto/trainer -I api/protobuf api/protobuf/trainer.proto
-	protoc --go_out=plugins=grpc:internal/common/genproto/users -I api/protobuf api/protobuf/users.proto
+	@./scripts/proto.sh trainer
+	@./scripts/proto.sh users
 
 .PHONY: lint
 lint:

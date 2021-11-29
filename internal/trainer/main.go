@@ -12,7 +12,7 @@ import (
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/server"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/ports"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/service"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"google.golang.org/grpc"
 )
 
