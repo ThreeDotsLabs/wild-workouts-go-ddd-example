@@ -22,6 +22,18 @@ skinparam rectangle<<_GROUP>> {
   BorderColor #ffffff
 }
 
+skinparam rectangle<<DOMAIN>> {
+  BackgroundColor #ffffff
+  FontColor #000000
+  BorderColor #000000
+}
+
+skinparam database<<DB>> {
+  BackgroundColor #c8c8c8
+  FontColor #000000
+  BorderColor #000000
+}
+
 skinparam rectangle<<ROOT>> {
   BackgroundColor #ffffff
   FontColor #000000
@@ -40,27 +52,17 @@ skinparam rectangle<<ADAPTER>> {
   BorderColor #000000
 }
 
-skinparam rectangle<<DOMAIN>> {
-  BackgroundColor #ffffff
-  FontColor #000000
-  BorderColor #000000
+rectangle 0ROOT <<_GROUP>> {
+	rectangle "==app.Application\n<size:10>[component]</size>\n\napplication context" <<ROOT>> as 2102746645
 }
-
-skinparam database<<DB>> {
-  BackgroundColor #c8c8c8
-  FontColor #000000
-  BorderColor #000000
-}
-
 rectangle 0ROOT <<_GROUP>> {
 	rectangle "==app.Commands\n<size:10>[component]</size>\n\napplication context" <<ROOT>> as 1118686339
 }
 rectangle 0ROOT <<_GROUP>> {
 	rectangle "==app.Queries\n<size:10>[component]</size>\n\napplication context" <<ROOT>> as 441257907
 }
-rectangle 0ROOT <<_GROUP>> {
-	rectangle "==app.Application\n<size:10>[component]</size>\n\napplication context" <<ROOT>> as 2102746645
-}
+2102746645 .[#000000].> 1118686339 : ""
+2102746645 .[#000000].> 441257907 : ""
 rectangle 11186863391APP <<_GROUP>> {
 	rectangle "==command.CancelTrainingHandler\n<size:10>[component]</size>\n\napplication command" <<APP>> as 1938493317
 }
@@ -78,26 +80,24 @@ rectangle 11186863391APP <<_GROUP>> {
 }
 1118686339 .[#000000].> 3319250726 : ""
 rectangle 4412579071APP <<_GROUP>> {
-	rectangle "==query.AvailableHoursHandler\n<size:10>[component]</size>\n\napplication query" <<APP>> as 1971034922
-}
-441257907 .[#000000].> 1971034922 : ""
-rectangle 4412579071APP <<_GROUP>> {
 	rectangle "==query.HourAvailabilityHandler\n<size:10>[component]</size>\n\napplication query" <<APP>> as 2484812079
 }
 441257907 .[#000000].> 2484812079 : ""
-2102746645 .[#000000].> 441257907 : ""
-2102746645 .[#000000].> 1118686339 : ""
-rectangle 26762169452ADAPTER <<_GROUP>> {
+rectangle 4412579071APP <<_GROUP>> {
+	rectangle "==query.AvailableHoursHandler\n<size:10>[component]</size>\n\napplication query" <<APP>> as 1971034922
+}
+441257907 .[#000000].> 1971034922 : ""
+rectangle 6443183522ADAPTER <<_GROUP>> {
 	rectangle "==adapters.FirestoreHourRepository\n<size:10>[component]</size>\n\nadapter component" <<ADAPTER>> as 3637611987
 }
+644318352 .[#000000].> 3637611987 : ""
 2676216945 .[#000000].> 3637611987 : ""
 3319250726 .[#000000].> 3637611987 : ""
-644318352 .[#000000].> 3637611987 : ""
+2484812079 .[#000000].> 3637611987 : ""
 rectangle 19710349222ADAPTER <<_GROUP>> {
 	rectangle "==adapters.DatesFirestoreRepository\n<size:10>[component]</size>\n\nadapter component" <<ADAPTER>> as 2388943490
 }
 1971034922 .[#000000].> 2388943490 : ""
-2484812079 .[#000000].> 3637611987 : ""
 1938493317 .[#000000].> 3637611987 : ""
 rectangle 36376119873DB <<_GROUP>> {
 	database "==Firestore\n<size:10>[component]</size>\n\nfirestore client" <<DB>> as 650530190

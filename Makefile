@@ -37,7 +37,7 @@ mycli:
 
 .PHONY: c4
 c4:
-	cd tools/c4 && sh generate.sh
+	cd tools/c4 && go mod tidy && sh generate.sh
 
 test:
 	@./scripts/test.sh common .e2e.env
