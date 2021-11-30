@@ -31,7 +31,7 @@ func RunHTTPServerOnAddr(addr string, createHandler func(router chi.Router) http
 
 	logrus.Info("Starting HTTP server")
 
-	http.ListenAndServe(addr, rootRouter)
+	_ = http.ListenAndServe(addr, rootRouter)
 }
 
 func setMiddlewares(router *chi.Mux) {

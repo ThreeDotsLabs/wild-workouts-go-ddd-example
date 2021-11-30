@@ -70,7 +70,8 @@ func grpcDialOpts(grpcAddr string) ([]grpc.DialOption, error) {
 		return nil, errors.Wrap(err, "cannot load root CA cert")
 	}
 	creds := credentials.NewTLS(&tls.Config{
-		RootCAs: systemRoots,
+		RootCAs:    systemRoots,
+		MinVersion: tls.VersionTLS12,
 	})
 
 	return []grpc.DialOption{
