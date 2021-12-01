@@ -15,7 +15,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func loadFixtures(db db) {
+func loadFixtures() {
 	start := time.Now()
 	logrus.Debug("Waiting for users service")
 
@@ -25,7 +25,7 @@ func loadFixtures(db db) {
 		return
 	}
 
-	logrus.WithField("after", time.Now().Sub(start)).Debug("Users service is available")
+	logrus.WithField("after", time.Since(start)).Debug("Users service is available")
 
 	var attendeeUUIDs []string
 	var err error
@@ -55,7 +55,7 @@ func loadFixtures(db db) {
 		time.Sleep(10 * time.Second)
 	}
 
-	logrus.WithField("after", time.Now().Sub(start)).Debug("Users fixtures loaded")
+	logrus.WithField("after", time.Since(start)).Debug("Users fixtures loaded")
 }
 
 func createFirebaseUsers() ([]string, error) {
@@ -141,7 +141,9 @@ func setAttendeeTrainingsAmount(attendeeUUIDs []string) error {
 	if err != nil {
 		logrus.WithError(err).Error("Unable to set trainings amount")
 	}
-	defer usersClose()
+	defer func() {
+		_ = usersClose()
+	}()
 
 	for _, attendeeUUID := range attendeeUUIDs {
 		resp, err := usersClient.GetTrainingBalance(context.Background(), &users.GetTrainingBalanceRequest{

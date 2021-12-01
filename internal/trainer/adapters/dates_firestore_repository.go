@@ -7,6 +7,7 @@ import (
 
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app/query"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/domain/hour"
+	"github.com/pkg/errors"
 
 	"cloud.google.com/go/firestore"
 	"google.golang.org/api/iterator"
@@ -56,7 +57,7 @@ func (d DatesFirestoreRepository) AvailableHours(ctx context.Context, from time.
 
 	for {
 		doc, err := iter.Next()
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {

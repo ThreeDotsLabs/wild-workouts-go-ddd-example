@@ -1,16 +1,20 @@
 steps:
+- id: common-lint
+  name: golang
+  entrypoint: ./scripts/lint.sh
+  args: ['common', '-install']
 - id: trainer-lint
   name: golang
   entrypoint: ./scripts/lint.sh
-  args: [trainer]
+  args: ['trainer', '-install']
 - id: trainings-lint
   name: golang
   entrypoint: ./scripts/lint.sh
-  args: [trainings]
+  args: ['trainings', '-install']
 - id: users-lint
   name: golang
   entrypoint: ./scripts/lint.sh
-  args: [users]
+  args: ['users', '-install']
 
 - id: trainer-docker
   name: gcr.io/cloud-builders/docker
@@ -35,6 +39,11 @@ steps:
     - 'PROJECT_ID=$PROJECT_ID'
   waitFor: [trainer-docker, trainings-docker, users-docker]
 
+- id: common-tests
+  name: golang
+  entrypoint: ./scripts/test.sh
+  args: ["common", ".test.ci.env"]
+  waitFor: [docker-compose]
 - id: trainer-tests
   name: golang
   entrypoint: ./scripts/test.sh
@@ -96,7 +105,7 @@ steps:
   dir: web
   waitFor: ['-']
 - id: openapi-js
-  name: openapitools/openapi-generator-cli:v4.3.0 
+  name: openapitools/openapi-generator-cli:v4.3.0
   entrypoint: "./scripts/openapi-js.sh"
   waitFor: ['-']
 - id: web-build
