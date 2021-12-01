@@ -1,0 +1,57 @@
+configuration:
+  pkgs:
+    - "github.com"
+    - "cloud.google.com/go/firestore"
+
+rules:
+  - name_regexp: ".*"
+    pkg_regexps:
+      - ".*/app$"
+    component:
+      description: "application context"
+      tags:
+        - ROOT
+  - name_regexp: ".*"
+    pkg_regexps:
+      - ".*/app/command*"
+    component:
+      description: "application command"
+      tags:
+        - APP
+  - name_regexp: ".*"
+    pkg_regexps:
+      - ".*/app/query"
+    component:
+      description: "application query"
+      tags:
+        - APP
+  - name_regexp: ".*"
+    pkg_regexps:
+      - ".*/app/.*"
+    component:
+      description: "application component"
+      tags:
+        - APP
+  - name_regexp: ".*"
+    pkg_regexps:
+      - ".*/domain/.*"
+    component:
+      description: "domain component"
+      tags:
+        - DOMAIN
+  - name_regexp: ".*"
+    pkg_regexps:
+      - ".*/adapters"
+    component:
+      description: "adapter component"
+      tags:
+        - ADAPTER
+  - name_regexp: ".*Client$"
+    pkg_regexps:
+      - "cloud.google.com/go/firestore$"
+    component:
+      name: "Firestore"
+      description: "firestore client"
+      tags:
+        - DB
+

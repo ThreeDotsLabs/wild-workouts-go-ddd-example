@@ -35,6 +35,10 @@ fmt:
 mycli:
 	mycli -u ${MYSQL_USER} -p ${MYSQL_PASSWORD} ${MYSQL_DATABASE}
 
+.PHONY: c4
+c4:
+	cd tools/c4 && go mod tidy && sh generate.sh
+
 test:
 	@./scripts/test.sh common .e2e.env
 	@./scripts/test.sh trainer .test.env
