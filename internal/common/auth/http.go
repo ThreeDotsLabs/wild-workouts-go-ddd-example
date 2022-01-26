@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"firebase.google.com/go/auth"
+	"firebase.google.com/go/v4/auth"
 	commonerrors "github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/errors"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/server/httperr"
 )

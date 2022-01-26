@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	firebase "firebase.google.com/go"
+	firebase "firebase.google.com/go/v4"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/auth"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/logs"
 	"github.com/go-chi/chi/v5"

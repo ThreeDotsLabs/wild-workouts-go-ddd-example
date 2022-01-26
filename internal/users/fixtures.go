@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	firebase "firebase.google.com/go"
-	"firebase.google.com/go/auth"
+	firebase "firebase.google.com/go/v4"
+	"firebase.google.com/go/v4/auth"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/client"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/genproto/users"
 	"github.com/pkg/errors"
