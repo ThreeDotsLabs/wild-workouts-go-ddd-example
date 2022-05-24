@@ -31,7 +31,10 @@ func RunHTTPServerOnAddr(addr string, createHandler func(router chi.Router) http
 
 	logrus.Info("Starting HTTP server")
 
-	_ = http.ListenAndServe(addr, rootRouter)
+	err := http.ListenAndServe(addr, rootRouter)
+	if err != nil {
+		logrus.WithError(err).Panic("Unable to start HTTP server")
+	}
 }
 
 func setMiddlewares(router *chi.Mux) {
