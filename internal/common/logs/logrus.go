@@ -9,7 +9,13 @@ import (
 )
 
 func Init() {
-	logrus.SetFormatter(&logrus.JSONFormatter{
+	SetFormatter(logrus.StandardLogger())
+
+	logrus.SetLevel(logrus.DebugLevel)
+}
+
+func SetFormatter(logger *logrus.Logger) {
+	logger.SetFormatter(&logrus.JSONFormatter{
 		FieldMap: logrus.FieldMap{
 			logrus.FieldKeyTime:  "time",
 			logrus.FieldKeyLevel: "severity",
@@ -18,10 +24,8 @@ func Init() {
 	})
 
 	if isLocalEnv, _ := strconv.ParseBool(os.Getenv("LOCAL_ENV")); isLocalEnv {
-		logrus.SetFormatter(&prefixed.TextFormatter{
+		logger.SetFormatter(&prefixed.TextFormatter{
 			ForceFormatting: true,
 		})
 	}
-
-	logrus.SetLevel(logrus.DebugLevel)
 }

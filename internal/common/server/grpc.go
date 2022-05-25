@@ -5,6 +5,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/logs"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
@@ -13,7 +14,11 @@ import (
 )
 
 func init() {
-	grpc_logrus.ReplaceGrpcLogger(logrus.NewEntry(logrus.StandardLogger()))
+	logger := logrus.New()
+	logs.SetFormatter(logger)
+	logger.SetLevel(logrus.WarnLevel)
+
+	grpc_logrus.ReplaceGrpcLogger(logrus.NewEntry(logger))
 }
 
 func RunGRPCServer(registerServer func(server *grpc.Server)) {

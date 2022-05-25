@@ -6,6 +6,8 @@ import (
 
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/genproto/trainer"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app"
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app/command"
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app/query"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/grpc/codes"
@@ -23,7 +25,7 @@ func NewGrpcServer(application app.Application) GrpcServer {
 func (g GrpcServer) MakeHourAvailable(ctx context.Context, request *trainer.UpdateHourRequest) (*empty.Empty, error) {
 	trainingTime := protoTimestampToTime(request.Time)
 
-	if err := g.app.Commands.MakeHoursAvailable.Handle(ctx, []time.Time{trainingTime}); err != nil {
+	if err := g.app.Commands.MakeHoursAvailable.Handle(ctx, command.MakeHoursAvailable{Hours: []time.Time{trainingTime}}); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
@@ -33,7 +35,7 @@ func (g GrpcServer) MakeHourAvailable(ctx context.Context, request *trainer.Upda
 func (g GrpcServer) ScheduleTraining(ctx context.Context, request *trainer.UpdateHourRequest) (*empty.Empty, error) {
 	trainingTime := protoTimestampToTime(request.Time)
 
-	if err := g.app.Commands.ScheduleTraining.Handle(ctx, trainingTime); err != nil {
+	if err := g.app.Commands.ScheduleTraining.Handle(ctx, command.ScheduleTraining{Hour: trainingTime}); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
@@ -43,7 +45,7 @@ func (g GrpcServer) ScheduleTraining(ctx context.Context, request *trainer.Updat
 func (g GrpcServer) CancelTraining(ctx context.Context, request *trainer.UpdateHourRequest) (*empty.Empty, error) {
 	trainingTime := protoTimestampToTime(request.Time)
 
-	if err := g.app.Commands.CancelTraining.Handle(ctx, trainingTime); err != nil {
+	if err := g.app.Commands.CancelTraining.Handle(ctx, command.CancelTraining{Hour: trainingTime}); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
@@ -53,7 +55,7 @@ func (g GrpcServer) CancelTraining(ctx context.Context, request *trainer.UpdateH
 func (g GrpcServer) IsHourAvailable(ctx context.Context, request *trainer.IsHourAvailableRequest) (*trainer.IsHourAvailableResponse, error) {
 	trainingTime := protoTimestampToTime(request.Time)
 
-	isAvailable, err := g.app.Queries.HourAvailability.Handle(ctx, trainingTime)
+	isAvailable, err := g.app.Queries.HourAvailability.Handle(ctx, query.HourAvailability{Hour: trainingTime})
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

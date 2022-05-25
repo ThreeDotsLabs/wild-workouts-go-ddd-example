@@ -6,6 +6,7 @@ import (
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/auth"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/server/httperr"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app"
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app/command"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app/query"
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/go-chi/render"
@@ -77,7 +78,7 @@ func (h HttpServer) MakeHourAvailable(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.app.Commands.MakeHoursAvailable.Handle(r.Context(), hourUpdate.Hours)
+	err = h.app.Commands.MakeHoursAvailable.Handle(r.Context(), command.MakeHoursAvailable{Hours: hourUpdate.Hours})
 	if err != nil {
 		httperr.RespondWithSlugError(err, w, r)
 		return
@@ -104,7 +105,7 @@ func (h HttpServer) MakeHourUnavailable(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err = h.app.Commands.MakeHoursUnavailable.Handle(r.Context(), hourUpdate.Hours)
+	err = h.app.Commands.MakeHoursUnavailable.Handle(r.Context(), command.MakeHoursUnavailable{Hours: hourUpdate.Hours})
 	if err != nil {
 		httperr.RespondWithSlugError(err, w, r)
 		return

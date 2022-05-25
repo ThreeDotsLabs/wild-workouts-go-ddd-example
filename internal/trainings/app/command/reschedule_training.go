@@ -4,8 +4,10 @@ import (
 	"context"
 	"time"
 
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/decorator"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/logs"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/domain/training"
+	"github.com/sirupsen/logrus"
 )
 
 type RescheduleTraining struct {
@@ -17,13 +19,21 @@ type RescheduleTraining struct {
 	NewNotes string
 }
 
-type RescheduleTrainingHandler struct {
+type RescheduleTrainingHandler decorator.CommandHandler[RescheduleTraining]
+
+type rescheduleTrainingHandler struct {
 	repo           training.Repository
 	userService    UserService
 	trainerService TrainerService
 }
 
-func NewRescheduleTrainingHandler(repo training.Repository, userService UserService, trainerService TrainerService) RescheduleTrainingHandler {
+func NewRescheduleTrainingHandler(
+	repo training.Repository,
+	userService UserService,
+	trainerService TrainerService,
+	logger *logrus.Entry,
+	metricsClient decorator.MetricsClient,
+) RescheduleTrainingHandler {
 	if repo == nil {
 		panic("nil repo")
 	}
@@ -34,10 +44,14 @@ func NewRescheduleTrainingHandler(repo training.Repository, userService UserServ
 		panic("nil trainerService")
 	}
 
-	return RescheduleTrainingHandler{repo: repo, userService: userService, trainerService: trainerService}
+	return decorator.ApplyCommandDecorators[RescheduleTraining](
+		rescheduleTrainingHandler{repo: repo, userService: userService, trainerService: trainerService},
+		logger,
+		metricsClient,
+	)
 }
 
-func (h RescheduleTrainingHandler) Handle(ctx context.Context, cmd RescheduleTraining) (err error) {
+func (h rescheduleTrainingHandler) Handle(ctx context.Context, cmd RescheduleTraining) (err error) {
 	defer func() {
 		logs.LogCommandExecution("RescheduleTraining", cmd, err)
 	}()

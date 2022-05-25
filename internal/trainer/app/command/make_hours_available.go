@@ -4,24 +4,40 @@ import (
 	"context"
 	"time"
 
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/decorator"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/errors"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/domain/hour"
+	"github.com/sirupsen/logrus"
 )
 
-type MakeHoursAvailableHandler struct {
+type MakeHoursAvailable struct {
+	Hours []time.Time
+}
+
+type MakeHoursAvailableHandler decorator.CommandHandler[MakeHoursAvailable]
+
+type makeHoursAvailableHandler struct {
 	hourRepo hour.Repository
 }
 
-func NewMakeHoursAvailableHandler(hourRepo hour.Repository) MakeHoursAvailableHandler {
+func NewMakeHoursAvailableHandler(
+	hourRepo hour.Repository,
+	logger *logrus.Entry,
+	metricsClient decorator.MetricsClient,
+) MakeHoursAvailableHandler {
 	if hourRepo == nil {
 		panic("hourRepo is nil")
 	}
 
-	return MakeHoursAvailableHandler{hourRepo: hourRepo}
+	return decorator.ApplyCommandDecorators[MakeHoursAvailable](
+		makeHoursAvailableHandler{hourRepo: hourRepo},
+		logger,
+		metricsClient,
+	)
 }
 
-func (c MakeHoursAvailableHandler) Handle(ctx context.Context, hours []time.Time) error {
-	for _, hourToUpdate := range hours {
+func (c makeHoursAvailableHandler) Handle(ctx context.Context, cmd MakeHoursAvailable) error {
+	for _, hourToUpdate := range cmd.Hours {
 		if err := c.hourRepo.UpdateHour(ctx, hourToUpdate, func(h *hour.Hour) (*hour.Hour, error) {
 			if err := h.MakeAvailable(); err != nil {
 				return nil, err

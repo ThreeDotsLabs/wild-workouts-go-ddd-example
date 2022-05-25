@@ -5,11 +5,13 @@ import (
 	"os"
 
 	"cloud.google.com/go/firestore"
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/metrics"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/adapters"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app/command"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app/query"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/domain/hour"
+	"github.com/sirupsen/logrus"
 )
 
 func NewApplication(ctx context.Context) app.Application {
@@ -33,16 +35,19 @@ func NewApplication(ctx context.Context) app.Application {
 
 	hourRepository := adapters.NewFirestoreHourRepository(firestoreClient, hourFactory)
 
+	logger := logrus.NewEntry(logrus.StandardLogger())
+	metricsClient := metrics.NoOp{}
+
 	return app.Application{
 		Commands: app.Commands{
-			CancelTraining:       command.NewCancelTrainingHandler(hourRepository),
-			ScheduleTraining:     command.NewScheduleTrainingHandler(hourRepository),
-			MakeHoursAvailable:   command.NewMakeHoursAvailableHandler(hourRepository),
-			MakeHoursUnavailable: command.NewMakeHoursUnavailableHandler(hourRepository),
+			CancelTraining:       command.NewCancelTrainingHandler(hourRepository, logger, metricsClient),
+			ScheduleTraining:     command.NewScheduleTrainingHandler(hourRepository, logger, metricsClient),
+			MakeHoursAvailable:   command.NewMakeHoursAvailableHandler(hourRepository, logger, metricsClient),
+			MakeHoursUnavailable: command.NewMakeHoursUnavailableHandler(hourRepository, logger, metricsClient),
 		},
 		Queries: app.Queries{
-			HourAvailability:      query.NewHourAvailabilityHandler(hourRepository),
-			TrainerAvailableHours: query.NewAvailableHoursHandler(datesRepository),
+			HourAvailability:      query.NewHourAvailabilityHandler(hourRepository, logger, metricsClient),
+			TrainerAvailableHours: query.NewAvailableHoursHandler(datesRepository, logger, metricsClient),
 		},
 	}
 }

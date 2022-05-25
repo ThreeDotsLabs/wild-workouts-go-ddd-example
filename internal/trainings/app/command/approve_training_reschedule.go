@@ -3,8 +3,10 @@ package command
 import (
 	"context"
 
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/decorator"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/logs"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/domain/training"
+	"github.com/sirupsen/logrus"
 )
 
 type ApproveTrainingReschedule struct {
@@ -12,7 +14,9 @@ type ApproveTrainingReschedule struct {
 	User         training.User
 }
 
-type ApproveTrainingRescheduleHandler struct {
+type ApproveTrainingRescheduleHandler decorator.CommandHandler[ApproveTrainingReschedule]
+
+type approveTrainingRescheduleHandler struct {
 	repo           training.Repository
 	userService    UserService
 	trainerService TrainerService
@@ -22,7 +26,9 @@ func NewApproveTrainingRescheduleHandler(
 	repo training.Repository,
 	userService UserService,
 	trainerService TrainerService,
-) ApproveTrainingRescheduleHandler {
+	logger *logrus.Entry,
+	metricsClient decorator.MetricsClient,
+) decorator.CommandHandler[ApproveTrainingReschedule] {
 	if repo == nil {
 		panic("nil repo")
 	}
@@ -33,10 +39,14 @@ func NewApproveTrainingRescheduleHandler(
 		panic("nil trainerService")
 	}
 
-	return ApproveTrainingRescheduleHandler{repo, userService, trainerService}
+	return decorator.ApplyCommandDecorators[ApproveTrainingReschedule](
+		approveTrainingRescheduleHandler{repo, userService, trainerService},
+		logger,
+		metricsClient,
+	)
 }
 
-func (h ApproveTrainingRescheduleHandler) Handle(ctx context.Context, cmd ApproveTrainingReschedule) (err error) {
+func (h approveTrainingRescheduleHandler) Handle(ctx context.Context, cmd ApproveTrainingReschedule) (err error) {
 	defer func() {
 		logs.LogCommandExecution("ApproveTrainingReschedule", cmd, err)
 	}()

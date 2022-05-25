@@ -4,24 +4,40 @@ import (
 	"context"
 	"time"
 
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/decorator"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/errors"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/domain/hour"
+	"github.com/sirupsen/logrus"
 )
 
-type MakeHoursUnavailableHandler struct {
+type MakeHoursUnavailable struct {
+	Hours []time.Time
+}
+
+type MakeHoursUnavailableHandler decorator.CommandHandler[MakeHoursUnavailable]
+
+type makeHoursUnavailableHandler struct {
 	hourRepo hour.Repository
 }
 
-func NewMakeHoursUnavailableHandler(hourRepo hour.Repository) MakeHoursUnavailableHandler {
+func NewMakeHoursUnavailableHandler(
+	hourRepo hour.Repository,
+	logger *logrus.Entry,
+	metricsClient decorator.MetricsClient,
+) MakeHoursUnavailableHandler {
 	if hourRepo == nil {
 		panic("hourRepo is nil")
 	}
 
-	return MakeHoursUnavailableHandler{hourRepo: hourRepo}
+	return decorator.ApplyCommandDecorators[MakeHoursUnavailable](
+		makeHoursUnavailableHandler{hourRepo: hourRepo},
+		logger,
+		metricsClient,
+	)
 }
 
-func (c MakeHoursUnavailableHandler) Handle(ctx context.Context, hours []time.Time) error {
-	for _, hourToUpdate := range hours {
+func (c makeHoursUnavailableHandler) Handle(ctx context.Context, cmd MakeHoursUnavailable) error {
+	for _, hourToUpdate := range cmd.Hours {
 		if err := c.hourRepo.UpdateHour(ctx, hourToUpdate, func(h *hour.Hour) (*hour.Hour, error) {
 			if err := h.MakeNotAvailable(); err != nil {
 				return nil, err

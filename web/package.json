@@ -9,12 +9,14 @@
   },
   "dependencies": {
     "@babel/compat-data": "^7.9.0",
+    "@babel/core": "^7.18.2",
     "@fullcalendar/core": "^4.4.2",
     "@fullcalendar/daygrid": "^4.4.2",
     "@fullcalendar/interaction": "^4.4.0",
     "@fullcalendar/list": "^4.4.0",
     "@fullcalendar/timegrid": "^4.4.0",
     "@fullcalendar/vue": "^4.4.0",
+    "babel-loader": "^8.2.5",
     "bootstrap": "^4.4.1",
     "core-js": "^3.22.6",
     "firebase": "^7.14.0",
@@ -28,7 +30,8 @@
     "vue": "^2.6.11",
     "vue-router": "^3.1.6",
     "vue-toast-notification": "^0.2.0",
-    "vuejs-dialog": "^1.4.1"
+    "vuejs-dialog": "^1.4.1",
+    "@babel/preset-env": "^7.10.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.2.0",
