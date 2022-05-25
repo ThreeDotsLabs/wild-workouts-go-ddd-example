@@ -1,4 +1,4 @@
-set -e
+set -ex
 
-npm install
+yarn install
 yarn serve
