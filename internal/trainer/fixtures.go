@@ -7,6 +7,7 @@ import (
 
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/client"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app"
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app/command"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app/query"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -59,7 +60,10 @@ func loadTrainerFixtures(ctx context.Context, application app.Application) error
 			}
 
 			if localRand.NormFloat64() > 0 {
-				err := application.Commands.MakeHoursAvailable.Handle(ctx, []time.Time{trainingTime})
+				err := application.Commands.MakeHoursAvailable.Handle(
+					ctx,
+					command.MakeHoursAvailable{Hours: []time.Time{trainingTime}},
+				)
 				if err != nil {
 					return errors.Wrap(err, "unable to update hour")
 				}

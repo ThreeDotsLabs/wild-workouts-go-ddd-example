@@ -4,24 +4,40 @@ import (
 	"context"
 	"time"
 
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/decorator"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/errors"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/domain/hour"
+	"github.com/sirupsen/logrus"
 )
 
-type CancelTrainingHandler struct {
+type CancelTraining struct {
+	Hour time.Time
+}
+
+type CancelTrainingHandler decorator.CommandHandler[CancelTraining]
+
+type cancelTrainingHandler struct {
 	hourRepo hour.Repository
 }
 
-func NewCancelTrainingHandler(hourRepo hour.Repository) CancelTrainingHandler {
+func NewCancelTrainingHandler(
+	hourRepo hour.Repository,
+	logger *logrus.Entry,
+	metricsClient decorator.MetricsClient,
+) CancelTrainingHandler {
 	if hourRepo == nil {
 		panic("nil hourRepo")
 	}
 
-	return CancelTrainingHandler{hourRepo: hourRepo}
+	return decorator.ApplyCommandDecorators[CancelTraining](
+		cancelTrainingHandler{hourRepo: hourRepo},
+		logger,
+		metricsClient,
+	)
 }
 
-func (h CancelTrainingHandler) Handle(ctx context.Context, hourToCancel time.Time) error {
-	if err := h.hourRepo.UpdateHour(ctx, hourToCancel, func(h *hour.Hour) (*hour.Hour, error) {
+func (h cancelTrainingHandler) Handle(ctx context.Context, cmd CancelTraining) error {
+	if err := h.hourRepo.UpdateHour(ctx, cmd.Hour, func(h *hour.Hour) (*hour.Hour, error) {
 		if err := h.CancelTraining(); err != nil {
 			return nil, err
 		}

@@ -32,9 +32,9 @@ func (h HttpServer) GetTrainings(w http.ResponseWriter, r *http.Request) {
 	var appTrainings []query.Training
 
 	if user.Role == "trainer" {
-		appTrainings, err = h.app.Queries.AllTrainings.Handle(r.Context())
+		appTrainings, err = h.app.Queries.AllTrainings.Handle(r.Context(), query.AllTrainings{})
 	} else {
-		appTrainings, err = h.app.Queries.TrainingsForUser.Handle(r.Context(), user)
+		appTrainings, err = h.app.Queries.TrainingsForUser.Handle(r.Context(), query.TrainingsForUser{User: user})
 	}
 
 	if err != nil {

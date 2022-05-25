@@ -6,10 +6,12 @@ import (
 
 	"cloud.google.com/go/firestore"
 	grpcClient "github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/client"
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/metrics"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/adapters"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/app"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/app/command"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/app/query"
+	"github.com/sirupsen/logrus"
 )
 
 func NewApplication(ctx context.Context) (app.Application, func()) {
@@ -44,18 +46,21 @@ func newApplication(ctx context.Context, trainerGrpc command.TrainerService, use
 
 	trainingsRepository := adapters.NewTrainingsFirestoreRepository(client)
 
+	logger := logrus.NewEntry(logrus.StandardLogger())
+	metricsClient := metrics.NoOp{}
+
 	return app.Application{
 		Commands: app.Commands{
-			ApproveTrainingReschedule: command.NewApproveTrainingRescheduleHandler(trainingsRepository, usersGrpc, trainerGrpc),
-			CancelTraining:            command.NewCancelTrainingHandler(trainingsRepository, usersGrpc, trainerGrpc),
-			RejectTrainingReschedule:  command.NewRejectTrainingRescheduleHandler(trainingsRepository),
-			RescheduleTraining:        command.NewRescheduleTrainingHandler(trainingsRepository, usersGrpc, trainerGrpc),
-			RequestTrainingReschedule: command.NewRequestTrainingRescheduleHandler(trainingsRepository),
-			ScheduleTraining:          command.NewScheduleTrainingHandler(trainingsRepository, usersGrpc, trainerGrpc),
+			ApproveTrainingReschedule: command.NewApproveTrainingRescheduleHandler(trainingsRepository, usersGrpc, trainerGrpc, logger, metricsClient),
+			CancelTraining:            command.NewCancelTrainingHandler(trainingsRepository, usersGrpc, trainerGrpc, logger, metricsClient),
+			RejectTrainingReschedule:  command.NewRejectTrainingRescheduleHandler(trainingsRepository, logger, metricsClient),
+			RescheduleTraining:        command.NewRescheduleTrainingHandler(trainingsRepository, usersGrpc, trainerGrpc, logger, metricsClient),
+			RequestTrainingReschedule: command.NewRequestTrainingRescheduleHandler(trainingsRepository, logger, metricsClient),
+			ScheduleTraining:          command.NewScheduleTrainingHandler(trainingsRepository, usersGrpc, trainerGrpc, logger, metricsClient),
 		},
 		Queries: app.Queries{
-			AllTrainings:     query.NewAllTrainingsHandler(trainingsRepository),
-			TrainingsForUser: query.NewTrainingsForUserHandler(trainingsRepository),
+			AllTrainings:     query.NewAllTrainingsHandler(trainingsRepository, logger, metricsClient),
+			TrainingsForUser: query.NewTrainingsForUserHandler(trainingsRepository, logger, metricsClient),
 		},
 	}
 }

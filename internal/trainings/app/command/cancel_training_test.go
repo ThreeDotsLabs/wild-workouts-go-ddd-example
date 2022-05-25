@@ -5,10 +5,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/metrics"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/app/command"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainings/domain/training"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 )
 
@@ -128,11 +130,14 @@ func newDependencies() dependencies {
 	trainerService := &trainerServiceMock{}
 	userService := &userServiceMock{}
 
+	logger := logrus.NewEntry(logrus.StandardLogger())
+	metricsClient := metrics.NoOp{}
+
 	return dependencies{
 		repository:     repository,
 		trainerService: trainerService,
 		userService:    userService,
-		handler:        command.NewCancelTrainingHandler(repository, userService, trainerService),
+		handler:        command.NewCancelTrainingHandler(repository, userService, trainerService, logger, metricsClient),
 	}
 }
 
