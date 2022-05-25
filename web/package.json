@@ -8,14 +8,15 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@fullcalendar/core": "^4.4.0",
-    "@fullcalendar/daygrid": "^4.4.0",
+    "@babel/compat-data": "^7.9.0",
+    "@fullcalendar/core": "^4.4.2",
+    "@fullcalendar/daygrid": "^4.4.2",
     "@fullcalendar/interaction": "^4.4.0",
     "@fullcalendar/list": "^4.4.0",
     "@fullcalendar/timegrid": "^4.4.0",
     "@fullcalendar/vue": "^4.4.0",
     "bootstrap": "^4.4.1",
-    "core-js": "^3.6.4",
+    "core-js": "^3.22.6",
     "firebase": "^7.14.0",
     "firebase-auth": "^0.1.2",
     "jquery": "^3.4.1",

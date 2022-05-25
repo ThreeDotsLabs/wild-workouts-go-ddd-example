@@ -1,4 +1,5 @@
-version: '3'
+version: '3.8'
+name: 'wild-workouts'
 services:
   web:
     build:
@@ -16,6 +17,8 @@ services:
       context: docker/app
     volumes:
       - ./internal:/internal
+      - ./.go/pkg:/go/pkg
+      - ./.go-cache:/go-cache
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
     working_dir: /internal/trainer
     ports:
@@ -24,6 +27,7 @@ services:
       - .env
     environment:
       SERVER_TO_RUN: http
+      GOCACHE: /go-cache
     depends_on:
       - firestore
 
@@ -32,6 +36,8 @@ services:
       context: docker/app
     volumes:
       - ./internal:/internal
+      - ./.go/pkg:/go/pkg
+      - ./.go-cache:/go-cache
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
     working_dir: /internal/trainer
     ports:
@@ -40,6 +46,7 @@ services:
       - .env
     environment:
       SERVER_TO_RUN: grpc
+      GOCACHE: /go-cache
     depends_on:
       - firestore
 
@@ -48,12 +55,16 @@ services:
       context: docker/app
     volumes:
       - ./internal:/internal
+      - ./.go/pkg:/go/pkg
+      - ./.go-cache:/go-cache
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
     working_dir: /internal/trainings
     ports:
       - "127.0.0.1:3001:$PORT"
     env_file:
       - .env
+    environment:
+      GOCACHE: /go-cache
     depends_on:
       - firestore
 
@@ -62,12 +73,15 @@ services:
       context: docker/app
     volumes:
       - ./internal:/internal
+      - ./.go/pkg:/go/pkg
+      - ./.go-cache:/go-cache
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
     working_dir: /internal/users
     ports:
       - "127.0.0.1:3002:$PORT"
     environment:
       SERVER_TO_RUN: http
+      GOCACHE: /go-cache
     env_file:
       - .env
     depends_on:
@@ -78,19 +92,23 @@ services:
       context: docker/app
     volumes:
       - ./internal:/internal
+      - ./.go/pkg:/go/pkg
+      - ./.go-cache:/go-cache
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
     working_dir: /internal/users
     ports:
       - "127.0.0.1:3020:$PORT"
     environment:
       SERVER_TO_RUN: grpc
+      GOCACHE: /go-cache
     env_file:
       - .env
     depends_on:
       - firestore
 
   firestore:
-    image: karhoo/firestore-emulator:0.3.2
+    build:
+      context: docker/firestore-emulator
     env_file:
       - .env
     ports:
@@ -99,7 +117,8 @@ services:
     restart: unless-stopped
 
   firestore-component-tests:
-    image: karhoo/firestore-emulator:0.3.2
+    build:
+      context: docker/firestore-emulator
     env_file:
       - .env
     ports:
@@ -107,7 +126,7 @@ services:
     restart: unless-stopped
 
   mysql:
-    image: mysql:8
+    image: mariadb:10
     env_file:
       - .env
     volumes:
