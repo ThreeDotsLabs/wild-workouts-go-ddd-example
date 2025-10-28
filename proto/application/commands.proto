@@ -1,0 +1,73 @@
+edition = "2024";
+
+package wildworkouts.application;
+
+import "google/protobuf/timestamp.proto";
+import "options/ddd_options.proto";
+import "domain/training.proto";
+
+// =============================================================================
+// Training Commands
+// =============================================================================
+
+// CancelTrainingCommand cancels a scheduled training session
+message CancelTrainingCommand {
+  option (wildworkouts.options.command) = true;
+  option (wildworkouts.options.requires_implementation) = true;
+
+  // Dependencies required by this command
+  option (wildworkouts.options.dependencies) = "TrainingRepository";
+  option (wildworkouts.options.dependencies) = "UserService";
+  option (wildworkouts.options.dependencies) = "TrainerService";
+
+  // Execution flow for this command
+  option (wildworkouts.options.execution_flow) = {
+    steps: [
+      {
+        type: STEP_TYPE_LOAD,
+        target: "Training",
+        operation: "UpdateTraining",
+        parameters: ["cmd.TrainingUUID", "cmd.User"],
+        comment: "Load training from repository (within transaction)"
+      },
+      {
+        type: STEP_TYPE_CALL_METHOD,
+        target: "training",
+        operation: "Cancel",
+        comment: "Call training.Cancel() to mark as canceled"
+      },
+      {
+        type: STEP_TYPE_CONDITION,
+        condition: "balanceDelta := training.CancelBalanceDelta(*tr, cmd.User.Type()); balanceDelta != 0",
+        comment: "Check if balance needs updating based on cancellation policy"
+      },
+      {
+        type: STEP_TYPE_CALL_SERVICE,
+        target: "userService",
+        operation: "UpdateTrainingBalance",
+        parameters: ["tr.UserUUID()", "balanceDelta"],
+        condition: "balanceDelta != 0",
+        comment: "Update user balance if cancellation affects credits"
+      },
+      {
+        type: STEP_TYPE_CALL_SERVICE,
+        target: "trainerService",
+        operation: "CancelTraining",
+        parameters: ["tr.Time()"],
+        comment: "Update trainer availability"
+      },
+      {
+        type: STEP_TYPE_SAVE,
+        target: "training",
+        operation: "UpdateTraining",
+        comment: "Save training to repository (transaction completes)"
+      }
+    ]
+  };
+
+  // The UUID of the training to cancel
+  string training_uuid = 1 [(wildworkouts.options.required) = true];
+
+  // The user requesting the cancellation
+  wildworkouts.domain.User user = 2 [(wildworkouts.options.required) = true];
+}

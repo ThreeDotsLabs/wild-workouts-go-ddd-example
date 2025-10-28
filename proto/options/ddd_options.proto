@@ -1,0 +1,148 @@
+edition = "2024";
+
+package wildworkouts.options;
+
+import "google/protobuf/descriptor.proto";
+
+// =============================================================================
+// Domain-Driven Design Marker Options
+// =============================================================================
+
+// Entity and aggregate markers for messages
+extend google.protobuf.MessageOptions {
+  // Marks a message as a domain entity
+  bool entity = 50001;
+
+  // Marks a message as a value object
+  bool value_object = 50002;
+
+  // Marks a message as an aggregate root
+  bool aggregate_root = 50003;
+}
+
+// Field-level DDD options
+extend google.protobuf.FieldOptions {
+  // Marks a field as an entity identifier
+  bool identifier = 60001;
+
+  // Marks a field as required (must be provided during construction)
+  bool required = 60002;
+
+  // Marks a field that has validation rules/invariants
+  bool invariant = 60003;
+}
+
+// Method-level options for services
+extend google.protobuf.MethodOptions {
+  // Marks a method as a domain service operation
+  bool domain_service = 70001;
+
+  // Marks a method as a command
+  bool command = 70002;
+
+  // Marks a method as a query
+  bool query = 70003;
+
+  // Specifies validation rule name for this operation
+  string validation = 70004;
+
+  // Specifies authorization rule for this operation
+  string authorization = 70005;
+}
+
+// =============================================================================
+// Execution Flow Definition
+// =============================================================================
+
+// Step types for command execution flows
+enum StepType {
+  STEP_TYPE_UNSPECIFIED = 0;
+
+  // Load entity from repository
+  STEP_TYPE_LOAD = 1;
+
+  // Save entity to repository
+  STEP_TYPE_SAVE = 2;
+
+  // Call a domain method on an entity
+  STEP_TYPE_CALL_METHOD = 3;
+
+  // Call an external service
+  STEP_TYPE_CALL_SERVICE = 4;
+
+  // Update an entity property
+  STEP_TYPE_UPDATE = 5;
+
+  // Conditional logic
+  STEP_TYPE_CONDITION = 6;
+}
+
+// Defines a single execution step in a command handler
+message ExecutionStep {
+  // Type of step being executed
+  StepType type = 1;
+
+  // Target entity or service being operated on
+  string target = 2;
+
+  // Method or operation to call
+  string operation = 3;
+
+  // Parameters or arguments to pass
+  repeated string parameters = 4;
+
+  // Optional condition for conditional steps
+  string condition = 5;
+
+  // Human-readable description of this step
+  string comment = 6;
+}
+
+// Defines the entire execution flow for a command
+message ExecutionFlow {
+  repeated ExecutionStep steps = 1;
+}
+
+// =============================================================================
+// Domain Method Definition
+// =============================================================================
+
+// Defines a domain method available on an entity
+// (Since RPCs can only be in services, we use a message-based approach)
+message DomainMethod {
+  // Name of the method
+  string name = 1;
+
+  // Request message type (optional, empty string if no parameters)
+  string request_type = 2;
+
+  // Response message type (optional, empty string for void/error only)
+  string response_type = 3;
+
+  // Validation rule name
+  string validation = 4;
+
+  // Human-readable description
+  string comment = 5;
+}
+
+// =============================================================================
+// Application Layer Options
+// =============================================================================
+
+// Application-specific options for commands and queries
+extend google.protobuf.MessageOptions {
+  // Service dependencies required by this command/query
+  // Can be repeated to specify multiple dependencies
+  repeated string dependencies = 80001;
+
+  // Type-safe execution flow for commands
+  ExecutionFlow execution_flow = 80002;
+
+  // Whether this command/query requires custom business logic implementation
+  // Defaults to true - build will fail if implementation is missing
+  bool requires_implementation = 80003;
+
+  // Domain methods available on this entity
+  repeated DomainMethod domain_methods = 80004;
+}

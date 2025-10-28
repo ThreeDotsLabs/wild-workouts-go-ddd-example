@@ -1,0 +1,80 @@
+edition = "2024";
+
+package wildworkouts.domain;
+
+import "google/protobuf/timestamp.proto";
+import "options/ddd_options.proto";
+
+// =============================================================================
+// Training Domain
+// =============================================================================
+
+// Training represents a workout session scheduled between a user and trainer
+message Training {
+  option (wildworkouts.options.entity) = true;
+  option (wildworkouts.options.aggregate_root) = true;
+
+  // Define domain methods available on this entity
+  option (wildworkouts.options.domain_methods) = {
+    name: "Cancel",
+    validation: "cannot_cancel_if_already_canceled",
+    comment: "Cancels the training session"
+  };
+
+  option (wildworkouts.options.domain_methods) = {
+    name: "Reschedule",
+    request_type: "RescheduleRequest",
+    validation: "cannot_reschedule_if_too_late",
+    comment: "Reschedules the training to a new time"
+  };
+
+  option (wildworkouts.options.domain_methods) = {
+    name: "UpdateNotes",
+    request_type: "UpdateNotesRequest",
+    validation: "notes_not_too_long",
+    comment: "Updates the training notes"
+  };
+
+  // Entity identifier
+  string uuid = 1 [(wildworkouts.options.identifier) = true, (wildworkouts.options.required) = true];
+
+  // User information
+  string user_uuid = 2 [(wildworkouts.options.required) = true];
+  string user_name = 3 [(wildworkouts.options.required) = true];
+
+  // Training details
+  google.protobuf.Timestamp time = 4 [(wildworkouts.options.required) = true];
+  string notes = 5;
+
+  // Reschedule proposal state
+  google.protobuf.Timestamp proposed_new_time = 6;
+  UserType move_proposed_by = 7;
+
+  // Status
+  bool canceled = 8;
+
+  // Supporting message types for domain methods
+  message RescheduleRequest {
+    google.protobuf.Timestamp new_time = 1;
+    string new_notes = 2;
+  }
+
+  message UpdateNotesRequest {
+    string notes = 1;
+  }
+}
+
+// User type enumeration
+enum UserType {
+  USER_TYPE_UNSPECIFIED = 0;
+  USER_TYPE_ATTENDEE = 1;
+  USER_TYPE_TRAINER = 2;
+}
+
+// User represents a user in the system (attendee or trainer)
+message User {
+  option (wildworkouts.options.value_object) = true;
+
+  string uuid = 1 [(wildworkouts.options.required) = true];
+  UserType type = 2 [(wildworkouts.options.required) = true];
+}
