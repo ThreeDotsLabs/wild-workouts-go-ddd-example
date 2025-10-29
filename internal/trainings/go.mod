@@ -11,6 +11,7 @@ require (
 	github.com/google/go-cmp v0.5.5
 	github.com/google/uuid v1.1.2
 	github.com/pkg/errors v0.9.1
+	github.com/sirupsen/logrus v1.5.0
 	github.com/stretchr/testify v1.7.0
 	google.golang.org/api v0.40.0
 	google.golang.org/grpc v1.40.0
@@ -35,7 +36,6 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/sirupsen/logrus v1.5.0 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2 // indirect
 	go.opencensus.io v0.22.5 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect

@@ -1,4 +1,3 @@
-version: "3"
 services:
   trainer-http:
     image: "gcr.io/${PROJECT_ID}/trainer"

@@ -1,4 +1,3 @@
-version: '3.8'
 name: 'wild-workouts'
 services:
   web:
@@ -20,12 +19,13 @@ services:
       - ./.go/pkg:/go/pkg
       - ./.go-cache:/go-cache
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
-    working_dir: /internal/trainer
+    working_dir: /internal
     ports:
       - "127.0.0.1:3000:$PORT"
     env_file:
       - .env
     environment:
+      SERVICE: trainer
       SERVER_TO_RUN: http
       GOCACHE: /go-cache
     depends_on:
@@ -39,12 +39,13 @@ services:
       - ./.go/pkg:/go/pkg
       - ./.go-cache:/go-cache
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
-    working_dir: /internal/trainer
+    working_dir: /internal
     ports:
       - "127.0.0.1:3010:$PORT"
     env_file:
       - .env
     environment:
+      SERVICE: trainer
       SERVER_TO_RUN: grpc
       GOCACHE: /go-cache
     depends_on:
@@ -58,12 +59,13 @@ services:
       - ./.go/pkg:/go/pkg
       - ./.go-cache:/go-cache
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
-    working_dir: /internal/trainings
+    working_dir: /internal
     ports:
       - "127.0.0.1:3001:$PORT"
     env_file:
       - .env
     environment:
+      SERVICE: trainings
       GOCACHE: /go-cache
     depends_on:
       - firestore
@@ -76,10 +78,11 @@ services:
       - ./.go/pkg:/go/pkg
       - ./.go-cache:/go-cache
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
-    working_dir: /internal/users
+    working_dir: /internal
     ports:
       - "127.0.0.1:3002:$PORT"
     environment:
+      SERVICE: users
       SERVER_TO_RUN: http
       GOCACHE: /go-cache
     env_file:
@@ -95,10 +98,11 @@ services:
       - ./.go/pkg:/go/pkg
       - ./.go-cache:/go-cache
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
-    working_dir: /internal/users
+    working_dir: /internal
     ports:
       - "127.0.0.1:3020:$PORT"
     environment:
+      SERVICE: users
       SERVER_TO_RUN: grpc
       GOCACHE: /go-cache
     env_file:

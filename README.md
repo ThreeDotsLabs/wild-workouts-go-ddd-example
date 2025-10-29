@@ -99,6 +99,6 @@ If you need help, feel free to contact us at https://threedots.tech
 
 ### Screenshots
 
-![Wild Workouts login](https://threedots.tech/media/serverless-cloud-run-firebase-modern-go-app/login.png "Logo Title Text 1")
-![Wild Workouts trainer's schedule](https://threedots.tech/media/serverless-cloud-run-firebase-modern-go-app/schedule.png "Logo Title Text 1")
-![Wild Workouts schedule training](https://threedots.tech/media/serverless-cloud-run-firebase-modern-go-app/new-training.png "Logo Title Text 1")
+![Wild Workouts login](.github/login.png)
+![Wild Workouts trainer's schedule](.github/schedule.png)
+![Wild Workouts schedule training](.github/new-training.png)
