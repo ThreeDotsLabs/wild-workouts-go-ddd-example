@@ -23,7 +23,7 @@ proto:
 
 .PHONY: lint
 lint:
-	@go-cleanarch
+	@go-cleanarch -interfaces ports -infrastructure adapters
 	@./scripts/lint.sh common
 	@./scripts/lint.sh trainer
 	@./scripts/lint.sh trainings
