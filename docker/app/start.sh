@@ -1,1 +1,1 @@
-go run .
+cd $SERVICE && go run .
