@@ -15,7 +15,7 @@ func TestCreateTraining(t *testing.T) {
 
 	hour := RelativeDate(12, 12)
 
-	userID := "TestCreateTraining-user"
+	userID := "8b112ac8-e1d5-4f91-ad9e-b30bc1495db6"
 	trainerJWT := FakeTrainerJWT(t, uuid.New().String())
 	attendeeJWT := FakeAttendeeJWT(t, userID)
 	trainerHTTPClient := NewTrainerHTTPClient(t, trainerJWT)
@@ -30,7 +30,7 @@ func TestCreateTraining(t *testing.T) {
 	for _, training := range trainings.Trainings {
 		if training.Time.Equal(hour) {
 			trainingsTrainerHTTPClient := NewTrainingsHTTPClient(t, trainerJWT)
-			trainingsTrainerHTTPClient.CancelTraining(t, training.Uuid, 200)
+			trainingsTrainerHTTPClient.CancelTraining(t, training.Uuid.String(), 200)
 			break
 		}
 	}
@@ -62,7 +62,7 @@ func TestCreateTraining(t *testing.T) {
 
 	trainingsResponse := trainingsHTTPClient.GetTrainings(t)
 	require.Len(t, trainingsResponse.Trainings, 1)
-	require.Equal(t, trainingUUID, trainingsResponse.Trainings[0].Uuid, "Attendee should see the training")
+	require.Equal(t, trainingUUID, trainingsResponse.Trainings[0].Uuid.String(), "Attendee should see the training")
 
 	user = usersHTTPClient.GetCurrentUser(t)
 	require.Equal(t, originalBalance, user.Balance, "Attendee's balance should be updated after a training is scheduled")

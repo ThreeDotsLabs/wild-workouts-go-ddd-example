@@ -8,8 +8,8 @@ import (
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app/command"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/trainer/app/query"
-	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/go-chi/render"
+	"github.com/oapi-codegen/runtime/types"
 )
 
 type HttpServer struct {
@@ -49,7 +49,7 @@ func dateModelsToResponse(models []query.Date) []Date {
 		}
 
 		dates = append(dates, Date{
-			Date: openapi_types.Date{
+			Date: types.Date{
 				Time: d.Date,
 			},
 			HasFreeHours: d.HasFreeHours,

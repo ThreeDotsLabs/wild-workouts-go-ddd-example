@@ -28,7 +28,7 @@ func TestCreateTraining(t *testing.T) {
 
 	var trainingsUUIDs []string
 	for _, t := range trainingsResponse.Trainings {
-		trainingsUUIDs = append(trainingsUUIDs, t.Uuid)
+		trainingsUUIDs = append(trainingsUUIDs, t.Uuid.String())
 	}
 
 	require.Contains(t, trainingsUUIDs, trainingUUID)
@@ -49,7 +49,7 @@ func TestCancelTraining(t *testing.T) {
 
 	var trainingsUUIDs []string
 	for _, t := range trainingsResponse.Trainings {
-		trainingsUUIDs = append(trainingsUUIDs, t.Uuid)
+		trainingsUUIDs = append(trainingsUUIDs, t.Uuid.String())
 	}
 
 	require.NotContains(t, trainingsUUIDs, trainingUUID)

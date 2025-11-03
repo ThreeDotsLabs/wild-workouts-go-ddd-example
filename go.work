@@ -1,0 +1,10 @@
+go 1.25.0
+
+use (
+	.
+	./internal/common
+	./internal/trainer
+	./internal/trainings
+	./internal/users
+	./tools/c4
+)

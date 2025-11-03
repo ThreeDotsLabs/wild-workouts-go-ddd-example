@@ -12,6 +12,7 @@ import (
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/client/trainer"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/client/trainings"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/client/users"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
@@ -131,7 +132,7 @@ func (c TrainingsHTTPClient) GetTrainings(t *testing.T) trainings.Trainings {
 }
 
 func (c TrainingsHTTPClient) CancelTraining(t *testing.T, trainingUUID string, expectedStatusCode int) {
-	response, err := c.client.CancelTraining(context.Background(), trainingUUID)
+	response, err := c.client.CancelTraining(context.Background(), uuid.MustParse(trainingUUID))
 	require.NoError(t, err)
 	require.NoError(t, response.Body.Close())
 
