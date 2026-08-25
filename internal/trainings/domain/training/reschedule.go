@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	commonErrors "github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/errors"
 	"github.com/pkg/errors"
 )
 
@@ -21,9 +22,18 @@ type CantRescheduleBeforeTimeError struct {
 
 func (c CantRescheduleBeforeTimeError) Error() string {
 	return fmt.Sprintf(
-		"can't reschedule training, not enough time before, training time: %s",
-		c.TrainingTime,
+		"Training can be rescheduled up to %.0f hours before it starts (training time: %s)",
+		FreeCancellationPeriod.Hours(),
+		c.TrainingTime.Format("2006-01-02 15:04 MST"),
 	)
+}
+
+func (c CantRescheduleBeforeTimeError) Slug() string {
+	return "training-reschedule-too-late"
+}
+
+func (c CantRescheduleBeforeTimeError) ErrorType() commonErrors.ErrorType {
+	return commonErrors.ErrorTypeIncorrectInput
 }
 
 func (t *Training) RescheduleTraining(newTime time.Time) error {

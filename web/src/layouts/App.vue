@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <div class="ww-app">
         <WebMenu/>
-        <div class="container">
+        <div class="ww-container ww-app__content">
             <slot></slot>
             <WebFooter/>
         </div>
@@ -30,5 +30,16 @@
 </script>
 
 <style scoped>
+    .ww-app {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
+    .ww-app__content {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        width: 100%;
+    }
 </style>

@@ -19,27 +19,28 @@ trainerClient.basePath = trainerClient.getBasePathFromSettings(0, serverSettings
 let trainerAPI = new TrainerDefaultApi(trainerClient)
 
 if (process.env.NODE_ENV === 'development') {
-    trainingsClient.basePath = "http://localhost:3001/api"
-    trainerClient.basePath = "http://localhost:3000/api"
+    trainingsClient.basePath = `http://localhost:${process.env.VUE_APP_TRAININGS_HTTP_PORT || 3001}/api`
+    trainerClient.basePath = `http://localhost:${process.env.VUE_APP_TRAINER_HTTP_PORT || 3000}/api`
 }
 
-export function getSchedule(dateFrom, dateTo, callback) {
+export function getSchedule(dateFrom, dateTo, callback, errorCallback) {
     trainerAPI.getTrainerAvailableHours(dateFrom, dateTo, (error, data) => {
         if (error) {
             console.error(error)
+            errorCallback && errorCallback(error)
         } else {
-            callback(data)
+            callback(data || [])
         }
     })
 }
 
-export function getAvailableDates(callback) {
+export function getAvailableDates(callback, errorCallback) {
     let to = new Date()
     to.setDate(to.getDate() + (7 * 3))
 
     getSchedule(formatDate(new Date()), formatDate(to), function (data) {
         callback(data.filter(obj => obj.hasFreeHours))
-    })
+    }, errorCallback)
 }
 
 export function setHourAvailability(updates, availability, callback, errorCallback) {
@@ -64,6 +65,7 @@ export function setHourAvailability(updates, availability, callback, errorCallba
         trainerAPI.makeHourUnavailable(hourUpdate, (error) => {
             if (error) {
                 console.error(error)
+                errorCallback && errorCallback()
             } else {
                 callback && callback()
             }
@@ -71,12 +73,13 @@ export function setHourAvailability(updates, availability, callback, errorCallba
     }
 }
 
-export function getCalendar(callback) {
+export function getCalendar(callback, errorCallback) {
     trainingsAPI.getTrainings((error, data) => {
         if (error) {
             console.error(error);
+            errorCallback && errorCallback(error)
         } else {
-            callback(data.trainings)
+            callback(data.trainings || [])
         }
     });
 }

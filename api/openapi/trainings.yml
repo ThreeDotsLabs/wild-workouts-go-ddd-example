@@ -187,8 +187,8 @@ components:
           type: string
           example: Mariusz Pudzianowski
         userUuid:
+          # not a UUID: this is the auth provider's user ID (Firebase UID, or a mock ID locally)
           type: string
-          format: uuid
         notes:
           type: string
           example: "let's do leg day!"

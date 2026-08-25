@@ -17,15 +17,10 @@
     "@fullcalendar/timegrid": "^4.4.0",
     "@fullcalendar/vue": "^4.4.0",
     "babel-loader": "^8.2.5",
-    "bootstrap": "^4.4.1",
     "core-js": "^3.22.6",
     "firebase": "^7.14.0",
     "firebase-auth": "^0.1.2",
-    "jquery": "^3.4.1",
     "jsonwebtoken": "^8.5.1",
-    "node-sass": "^4.13.1",
-    "popper.js": "^1.16.1",
-    "sass-loader": "^8.0.2",
     "superagent": "^5.2.2",
     "vue": "^2.6.11",
     "vue-router": "^3.1.6",
@@ -41,6 +36,9 @@
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.1.2",
     "vue-template-compiler": "^2.6.11"
+  },
+  "resolutions": {
+    "@achrinza/node-ipc": "9.2.10"
   },
   "eslintConfig": {
     "root": true,

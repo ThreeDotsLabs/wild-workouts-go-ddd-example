@@ -1,8 +1,9 @@
-FROM node:12.22.8-alpine3.13
+FROM node:24-alpine
 
-ENV NODE_ENV development
+ENV NODE_ENV=development
+# webpack 4 (vue-cli 4) hashes with md4, which OpenSSL 3 no longer provides
+ENV NODE_OPTIONS=--openssl-legacy-provider
 
-RUN apk --no-cache add yarn python2 make gcc g++
 ADD start.sh /
 RUN chmod +x /start.sh
 

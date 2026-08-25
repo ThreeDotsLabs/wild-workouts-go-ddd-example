@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
 	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/pkg/errors"
 )
 
 type HttpServer struct {
@@ -43,7 +44,11 @@ func (h HttpServer) GetTrainings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	trainings := appTrainingsToResponse(appTrainings)
+	trainings, err := appTrainingsToResponse(appTrainings)
+	if err != nil {
+		httperr.RespondWithSlugError(err, w, r)
+		return
+	}
 	trainingsResp := Trainings{trainings}
 
 	render.Respond(w, r, trainingsResp)
@@ -185,9 +190,14 @@ func (h HttpServer) RejectRescheduleTraining(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-func appTrainingsToResponse(appTrainings []query.Training) []Training {
+func appTrainingsToResponse(appTrainings []query.Training) ([]Training, error) {
 	var trainings []Training
 	for _, tm := range appTrainings {
+		trainingUUID, err := uuid.Parse(tm.UUID)
+		if err != nil {
+			return nil, errors.Wrapf(err, "invalid training UUID %q", tm.UUID)
+		}
+
 		t := Training{
 			CanBeCancelled:     tm.CanBeCancelled,
 			MoveProposedBy:     tm.MoveProposedBy,
@@ -196,14 +206,14 @@ func appTrainingsToResponse(appTrainings []query.Training) []Training {
 			ProposedTime:       tm.ProposedTime,
 			Time:               tm.Time,
 			User:               tm.User,
-			UserUuid:           uuid.MustParse(tm.UserUUID),
-			Uuid:               uuid.MustParse(tm.UUID),
+			UserUuid:           tm.UserUUID,
+			Uuid:               trainingUUID,
 		}
 
 		trainings = append(trainings, t)
 	}
 
-	return trainings
+	return trainings, nil
 }
 
 func newDomainUserFromAuthUser(ctx context.Context) (training.User, error) {

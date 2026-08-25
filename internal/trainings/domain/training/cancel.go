@@ -5,8 +5,12 @@ import (
 	"time"
 )
 
+// FreeCancellationPeriod is how long before the training it can still be canceled or
+// rescheduled without losing credits.
+const FreeCancellationPeriod = time.Hour * 24
+
 func (t Training) CanBeCanceledForFree() bool {
-	return time.Until(t.time) >= time.Hour*24
+	return time.Until(t.time) >= FreeCancellationPeriod
 }
 
 var ErrTrainingAlreadyCanceled = errors.New("training is already canceled")

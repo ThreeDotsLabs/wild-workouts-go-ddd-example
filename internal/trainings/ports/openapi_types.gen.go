@@ -35,7 +35,7 @@ type Training struct {
 
 	// User Example: Mariusz Pudzianowski
 	User     string             `json:"user"`
-	UserUuid openapi_types.UUID `json:"userUuid"`
+	UserUuid string             `json:"userUuid"`
 	Uuid     openapi_types.UUID `json:"uuid"`
 }
 

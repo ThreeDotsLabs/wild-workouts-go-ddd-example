@@ -1,48 +1,65 @@
 <template>
-    <footer class="pt-4 my-md-5 pt-md-5 border-top">
-        <div class="row">
-            <div class="col-12 col-md">
-                <small class="d-block mb-3 text-muted">&copy; 2017-2025</small>
-            </div>
-            <div class="col-6 col-md">
-                <h5>Features</h5>
-                <ul class="list-unstyled text-small">
-                    <li><a class="text-muted" href="#">Cool stuff</a></li>
-                    <li><a class="text-muted" href="#">Random feature</a></li>
-                    <li><a class="text-muted" href="#">Team feature</a></li>
-                    <li><a class="text-muted" href="#">Stuff for developers</a></li>
-                    <li><a class="text-muted" href="#">Another one</a></li>
-                    <li><a class="text-muted" href="#">Last time</a></li>
-                </ul>
-            </div>
-            <div class="col-6 col-md">
-                <h5>Resources</h5>
-                <ul class="list-unstyled text-small">
-                    <li><a class="text-muted" href="#">Resource</a></li>
-                    <li><a class="text-muted" href="#">Resource name</a></li>
-                    <li><a class="text-muted" href="#">Another resource</a></li>
-                    <li><a class="text-muted" href="#">Final resource</a></li>
-                </ul>
-            </div>
-            <div class="col-6 col-md">
-                <h5>About</h5>
-                <ul class="list-unstyled text-small">
-                    <li><a class="text-muted" href="#">Team</a></li>
-                    <li><a class="text-muted" href="#">Locations</a></li>
-                    <li><a class="text-muted" href="#">Privacy</a></li>
-                    <li><a class="text-muted" href="#">Terms</a></li>
-                </ul>
-            </div>
+    <footer class="ww-footer">
+        <div class="ww-footer__meta">
+            <span>&copy; Wild Workouts 2017&ndash;2026</span>
+            <span class="ww-footer__sep"></span>
+            <a href="https://github.com/ThreeDotsLabs/wild-workouts-go-ddd-example" target="_blank" rel="noopener">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                          d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+                </svg>
+                Source on GitHub
+            </a>
+            <span class="ww-footer__sep"></span>
+            <span>An example app by <a href="https://threedots.tech/go-with-the-domain/?utm_source=wild-workouts"
+                                       target="_blank" rel="noopener">Three Dots Labs</a></span>
         </div>
+        <span>Cancelling less than 24h before a session doesn&rsquo;t return the credit.</span>
     </footer>
 </template>
 
 <script>
     export default {
-        name: "WebFoot"
+        name: "WebFooter"
     }
 </script>
 
 <style scoped>
+    .ww-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding: 32px 0;
+        margin-top: auto;
+        font-size: 13px;
+        color: var(--ww-faint);
+    }
 
+    .ww-footer__meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .ww-footer__sep {
+        width: 3px;
+        height: 3px;
+        border-radius: 999px;
+        background: var(--ww-line);
+    }
+
+    .ww-footer a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--ww-muted);
+        font-weight: 600;
+    }
+
+    .ww-footer a:hover {
+        color: var(--ww-ink);
+    }
 </style>
