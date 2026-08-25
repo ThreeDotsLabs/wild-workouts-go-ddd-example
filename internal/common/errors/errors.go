@@ -10,6 +10,16 @@ var (
 	ErrorTypeIncorrectInput = ErrorType{"incorrect-input"}
 )
 
+// SlugErrorer is implemented by errors that know how they should be presented to the API client.
+// Apart from SlugError, domain errors with their own types can implement it as well.
+//
+// It's matched with errors.As, so it keeps working for wrapped errors.
+type SlugErrorer interface {
+	error
+	Slug() string
+	ErrorType() ErrorType
+}
+
 type SlugError struct {
 	error     string
 	slug      string

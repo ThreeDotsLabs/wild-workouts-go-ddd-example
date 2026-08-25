@@ -16,20 +16,21 @@ usersClient.basePath = usersClient.getBasePathFromSettings(0, serverSettings);
 let usersAPI = new UsersDefaultApi(usersClient)
 
 if (process.env.NODE_ENV === 'development') {
-    usersClient.basePath = "http://localhost:3002/api"
+    usersClient.basePath = `http://localhost:${process.env.VUE_APP_USERS_HTTP_PORT || 3002}/api`
 }
 
 export function getUserRole() {
     return localStorage.getItem('role')
 }
 
-export function getTrainingBalance(callback) {
+export function getTrainingBalance(callback, errorCallback) {
     return usersAPI.getCurrentUser((error, data) => {
         if (!error) {
             callback(data.balance)
             return
         }
         console.error(error)
+        errorCallback && errorCallback(error)
     })
 }
 

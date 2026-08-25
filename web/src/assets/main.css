@@ -1,7 +1,377 @@
-body, html {
+/* Wild Workouts design system — "editorial athletic"
+   Warm off-white surfaces, ink navigation, one ember accent,
+   Barlow Condensed display type over Instrument Sans UI text. */
+
+:root {
+    --ww-bg: #F7F5F1;
+    --ww-surface: #FFFFFF;
+    --ww-ink: #191713;
+    --ww-muted: #6E6A61;
+    --ww-faint: #8A8578;
+    --ww-line: #E7E3DB;
+    --ww-line-soft: #EFECE5;
+    --ww-disabled-bg: #F1EEE8;
+    --ww-disabled-text: #B3AEA3;
+
+    --ww-accent: #E0491F;
+    --ww-accent-hover: #C63E17;
+    --ww-accent-soft: #FBEDE7;
+    --ww-accent-deep: #B3341A;
+    --ww-danger-line: #F2DCD3;
+
+    --ww-green: #2F9E62;
+    --ww-green-soft: #E9F5EE;
+    --ww-green-line: #BFE3CE;
+    --ww-green-deep: #1E7245;
+
+    --ww-amber-soft: #FBF3E2;
+    --ww-amber-line: #EEDCB4;
+    --ww-amber-deep: #8C5E08;
+
+    --ww-font-ui: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+    --ww-font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
     height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    background-color: #f5f5f5;
+    background-color: var(--ww-bg);
+    color: var(--ww-ink);
+    font-family: var(--ww-font-ui);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, p {
+    margin: 0;
+}
+
+a {
+    color: var(--ww-accent);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--ww-accent-hover);
+}
+
+button {
+    font-family: inherit;
+}
+
+.ww-display {
+    font-family: var(--ww-font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+}
+
+.ww-container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+/* Page header */
+
+.ww-page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 40px 0 24px 0;
+}
+
+.ww-page-head h1 {
+    font-family: var(--ww-font-display);
+    text-transform: uppercase;
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.ww-page-head .ww-page-sub {
+    margin-top: 6px;
+    font-size: 15px;
+    color: var(--ww-muted);
+}
+
+/* Buttons */
+
+.ww-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border-radius: 9px;
+    border: 1px solid transparent;
+    background: none;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--ww-ink);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.ww-btn--primary {
+    background: var(--ww-accent);
+    border-color: var(--ww-accent);
+    color: #FFFFFF;
+}
+
+.ww-btn--primary:hover {
+    background: var(--ww-accent-hover);
+    border-color: var(--ww-accent-hover);
+    color: #FFFFFF;
+}
+
+.ww-btn--ghost {
+    background: var(--ww-surface);
+    border-color: var(--ww-line);
+}
+
+.ww-btn--ghost:hover {
+    border-color: var(--ww-ink);
+    color: var(--ww-ink);
+}
+
+.ww-btn--danger {
+    background: var(--ww-surface);
+    border-color: var(--ww-danger-line);
+    color: var(--ww-accent-deep);
+}
+
+.ww-btn--danger:hover {
+    border-color: var(--ww-accent-deep);
+    color: var(--ww-accent-deep);
+}
+
+.ww-btn--success {
+    background: var(--ww-green);
+    border-color: var(--ww-green);
+    color: #FFFFFF;
+}
+
+.ww-btn--success:hover {
+    background: var(--ww-green-deep);
+    border-color: var(--ww-green-deep);
+    color: #FFFFFF;
+}
+
+.ww-btn--lg {
+    padding: 13px 22px;
+    font-size: 15px;
+    border-radius: 10px;
+}
+
+.ww-btn--block {
+    display: flex;
+    width: 100%;
+}
+
+/* Cards */
+
+.ww-card {
+    background: var(--ww-surface);
+    border: 1px solid var(--ww-line);
+    border-radius: 14px;
+}
+
+/* Badges */
+
+.ww-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.ww-badge--amber {
+    background: var(--ww-amber-soft);
+    color: var(--ww-amber-deep);
+}
+
+/* Segmented control */
+
+.ww-seg {
+    display: inline-flex;
+    gap: 2px;
+    padding: 4px;
+    background: var(--ww-surface);
+    border: 1px solid var(--ww-line);
+    border-radius: 10px;
+}
+
+.ww-seg__opt {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 7px;
+    background: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ww-muted);
+    cursor: pointer;
+}
+
+.ww-seg__opt:hover {
+    color: var(--ww-ink);
+}
+
+.ww-seg__opt.is-active {
+    background: var(--ww-ink);
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+/* Forms */
+
+.ww-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.ww-input, .ww-textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--ww-line);
+    border-radius: 10px;
+    background: var(--ww-surface);
+    font-family: var(--ww-font-ui);
+    font-size: 15px;
+    color: var(--ww-ink);
+}
+
+.ww-input:focus, .ww-textarea:focus {
+    outline: none;
+    border-color: var(--ww-ink);
+}
+
+.ww-input::placeholder, .ww-textarea::placeholder {
+    color: var(--ww-disabled-text);
+}
+
+/* Section labels (numbered steps, column heads) */
+
+.ww-step-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ww-muted);
+}
+
+/* vuejs-dialog confirmation modals, restyled to the design system */
+
+.dg-backdrop {
+    background: rgba(25, 23, 19, 0.55);
+}
+
+.dg-main-content {
+    border-radius: 14px;
+    padding: 24px 26px;
+    max-width: 440px;
+    background: var(--ww-surface);
+    font-family: var(--ww-font-ui);
+}
+
+.dg-content-body {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.dg-title {
+    font-family: var(--ww-font-display);
+    text-transform: uppercase;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--ww-ink);
+}
+
+.dg-content {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ww-muted);
+}
+
+.dg-content b {
+    color: var(--ww-ink);
+}
+
+/* Title-only confirmations: don't leave a gap where the body would be */
+.dg-content:empty {
+    display: none;
+}
+
+.dg-content-footer {
+    margin-top: 20px;
+    padding: 0;
+}
+
+.dg-btn {
+    border-radius: 9px;
+    border: 1px solid transparent;
+    padding: 9px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.dg-btn--cancel {
+    background: var(--ww-surface);
+    border-color: var(--ww-line);
+    color: var(--ww-ink);
+}
+
+.dg-btn--cancel:hover {
+    border-color: var(--ww-ink);
+}
+
+.dg-btn--ok {
+    background: var(--ww-accent);
+    border-color: var(--ww-accent);
+    color: #FFFFFF;
+}
+
+.dg-btn--ok:hover {
+    background: var(--ww-accent-hover);
+    border-color: var(--ww-accent-hover);
+}
+
+.dg-btn-loader .dg-circle {
+    background-color: #FFFFFF;
+}
+
+/* Loading spinner (on solid buttons) */
+
+.ww-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #FFFFFF;
+    border-radius: 50%;
+    animation: ww-spin 0.7s linear infinite;
+}
+
+@keyframes ww-spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

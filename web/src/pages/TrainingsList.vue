@@ -1,75 +1,113 @@
 <template>
     <app-layout>
-        <div class="py-5 text-center">
-            <h2>Your trainings</h2>
-            <p class="lead">Below is an example form built entirely with Bootstrap’s form controls. Each required form
-                group
-                has a validation state that can be triggered by attempting to submit the form without completing it.</p>
+        <div class="ww-page-head">
+            <div>
+                <h1>Your trainings</h1>
+                <p class="ww-page-sub" v-if="!isTrainer">Upcoming sessions with your trainer</p>
+                <p class="ww-page-sub" v-if="isTrainer">Upcoming sessions with your attendees</p>
+            </div>
+            <div class="ww-trainings-head-actions" v-if="!isTrainer">
+                <div class="ww-card ww-balance" v-if="trainingBalance !== null">
+                    <span class="ww-display ww-balance__value">{{ trainingBalance }}</span>
+                    <span class="ww-balance__label">Trainings<br>left</span>
+                </div>
+                <router-link tag="button" class="ww-btn ww-btn--primary ww-btn--lg"
+                             :to="{ name: 'scheduleTraining' }">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Schedule training
+                </router-link>
+            </div>
         </div>
-        <br><br>
-        <table class="table">
-            <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">When</th>
-                <th scope="col">Notes</th>
-                <th scope="col" v-if="isTrainer">Attendee</th>
-                <th scope="col">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(training, idx) in calendar" :key="training.uuid"
-                v-bind:class="{'table-info': training.requireRescheduleApproval}">
-                <th scope="row">{{ idx+1 }}</th>
-                <td>
-                    <span v-bind:class="{'old-date': training.proposedTime}">{{ formatDateTime(training.time) }}</span>
-                    <span v-if="training.proposedTime" v-bind:title="'proposed by ' + training.moveProposedBy"><br>{{ formatDateTime(training.proposedTime) }}</span>
-                </td>
-                <th>{{ training.notes }}</th>
-                <th v-if="isTrainer">{{ training.user }}</th>
-                <td>
-                    <button type="button"
-                            v-bind:class="training.canBeCancelled ? 'btn btn-warning' : 'btn btn-danger'"
-                            v-bind:title="training.canBeCancelled ? 'Your training balance will be returned' : 'Your training balance will be not returned because it\s less than 24h before training'"
-                            @click="cancelTraining"
-                            v-bind:data-training-uuid="training.uuid"
-                    >
-                        Cancel
-                    </button>
-                    &nbsp;
-                    <router-link tag="button" class="btn btn-info"
-                                 :to="{ name: 'proposeNewDate', params: { trainingID: training.uuid }}"
-                                 v-if="training.moveRequiresAccept"
-                    >
-                        Propose new time
-                    </router-link>
-                    &nbsp;
-                    <router-link tag="button" class="btn btn-primary" v-if="!training.moveRequiresAccept"
-                                 :to="{ name: 'rescheduleTraining', params: { trainingID: training.uuid }}"
-                    >
+
+        <div class="ww-trainings">
+            <div class="ww-card ww-training" v-for="training in calendar" :key="training.uuid"
+                 v-bind:class="{'ww-training--pending': training.proposedTime}">
+                <div class="ww-training__date">
+                    <span class="ww-training__weekday">{{ weekdayShort(training.time) }}</span>
+                    <span class="ww-display ww-training__day">{{ dayOfMonth(training.time) }}</span>
+                    <span class="ww-training__month">{{ monthShort(training.time) }}</span>
+                </div>
+                <div class="ww-training__divider"></div>
+                <div class="ww-training__body">
+                    <div class="ww-training__time-row">
+                        <template v-if="!training.proposedTime">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.6"/>
+                                <path d="M8 5v3l2 1.5" stroke="currentColor" stroke-width="1.6"
+                                      stroke-linecap="round"/>
+                            </svg>
+                            <span class="ww-training__time">{{ formatHourRange(training.time) }}</span>
+                        </template>
+                        <template v-if="training.proposedTime">
+                            <span class="ww-training__time-old">{{ formatHourRange(training.time) }}</span>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M2 8h11M9 4l4 4-4 4" stroke="#B97E10" stroke-width="1.8"
+                                      stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span class="ww-training__time">{{ formatDayLong(training.proposedTime) }},
+                                {{ formatHourRange(training.proposedTime) }}</span>
+                            <span class="ww-badge ww-badge--amber">
+                                Reschedule proposed by {{ training.moveProposedBy }}</span>
+                        </template>
+                    </div>
+                    <span class="ww-training__notes" v-if="training.notes">{{ training.notes }}</span>
+                    <span class="ww-training__attendee" v-if="isTrainer">with {{ training.user }}</span>
+                </div>
+                <div class="ww-training__actions">
+                    <router-link tag="button" class="ww-btn ww-btn--ghost" v-if="!training.moveRequiresAccept"
+                                 :to="{ name: 'rescheduleTraining', params: { trainingID: training.uuid }}">
                         Move
                     </router-link>
+                    <router-link tag="button" class="ww-btn ww-btn--ghost"
+                                 :to="{ name: 'proposeNewDate', params: { trainingID: training.uuid }}"
+                                 v-if="training.moveRequiresAccept">
+                        Propose new time
+                    </router-link>
+                    <button type="button" class="ww-btn ww-btn--danger"
+                            v-bind:title="training.canBeCancelled ? 'Your training balance will be returned' : 'Your training balance will not be returned because it\'s less than 24h before the training'"
+                            @click="cancelTraining"
+                            v-bind:data-training-uuid="training.uuid">
+                        Cancel
+                    </button>
+                    <template v-if="training.proposedTime">
+                        <button type="button" class="ww-btn ww-btn--success" @click="acceptReschedule"
+                                v-bind:data-training-uuid="training.uuid"
+                                v-if="userRole !== training.moveProposedBy">
+                            Approve
+                        </button>
+                        <button type="button" class="ww-btn ww-btn--ghost" @click="rejectReschedule"
+                                v-bind:data-training-uuid="training.uuid">
+                            <span v-if="userRole !== training.moveProposedBy">Reject</span>
+                            <span v-if="userRole === training.moveProposedBy">Cancel request</span>
+                        </button>
+                    </template>
+                </div>
+            </div>
 
-                    <div v-if="training.proposedTime">
-                        <br>
-                        <button type="button" class="btn btn-warning" @click="acceptReschedule"
-                                v-bind:data-training-uuid="training.uuid"
-                                v-if="userRole !== training.moveProposedBy"
-                        >
-                            Approve reschedule
-                        </button>
-                        &nbsp;
-                        <button type="button" class="btn btn-warning" @click="rejectReschedule"
-                                v-bind:data-training-uuid="training.uuid"
-                        >
-                            <span v-if="userRole !== training.moveProposedBy">Reject reschedule</span>
-                            <span v-if="userRole === training.moveProposedBy">Cancel reschedule request</span>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+            <div class="ww-card ww-trainings-empty" v-if="calendar !== null && calendar.length === 0">
+                <svg class="ww-trainings-empty__art" width="150" height="32" viewBox="0 0 150 32" fill="none"
+                     aria-hidden="true">
+                    <rect x="6" y="11.5" width="20" height="9" rx="4.5" fill="#191713"/>
+                    <rect x="124" y="11.5" width="20" height="9" rx="4.5" fill="#191713"/>
+                    <rect x="24" y="8" width="9" height="16" rx="3" fill="#191713"/>
+                    <rect x="117" y="8" width="9" height="16" rx="3" fill="#191713"/>
+                    <rect x="30" y="13" width="90" height="6" rx="3" fill="#191713"/>
+                </svg>
+                <span class="ww-display ww-trainings-empty__title">Nothing on the bar yet</span>
+                <p v-if="!isTrainer">Your trainer is waiting. Grab an hour and get to work.</p>
+                <p v-if="isTrainer">No sessions booked so far. Open some hours so attendees can book you.</p>
+                <router-link tag="button" class="ww-btn ww-btn--primary ww-btn--lg" v-if="!isTrainer"
+                             :to="{ name: 'scheduleTraining' }">
+                    Schedule your first training
+                </router-link>
+                <router-link tag="button" class="ww-btn ww-btn--ghost ww-btn--lg" v-if="isTrainer"
+                             :to="{ name: 'setSchedule' }">
+                    Set your availability
+                </router-link>
+            </div>
+        </div>
     </app-layout>
 </template>
 
@@ -77,8 +115,9 @@
     import AppLayout from '../layouts/App.vue'
 
     import {approveReschedule, cancelTraining, getCalendar, rejectReschedule} from '../repositories/trainings'
-    import {getUserRole, Trainer} from "../repositories/user";
-    import {formatDateTime} from "../date";
+    import {getTrainingBalance, getUserRole, Trainer} from "../repositories/user";
+    import {apiErrorMessage} from "../repositories/errors";
+    import {dayOfMonth, formatDayLong, formatHourRange, monthShort, weekdayShort} from "../date";
 
     export default {
         components: {
@@ -89,21 +128,35 @@
                 'calendar': null,
                 'isTrainer': null,
                 'userRole': null,
+                'trainingBalance': null,
             }
         },
         mounted() {
             let self = this
-            getCalendar(function (calendar) {
-                self.calendar = calendar
-            })
+            this.refreshTrainings()
             this.isTrainer = getUserRole() === Trainer;
             this.userRole = getUserRole()
+
+            if (!this.isTrainer) {
+                getTrainingBalance(
+                    balance => self.trainingBalance = balance,
+                    () => self.$toast.error('Failed to load training balance'),
+                );
+            }
         },
         methods: {
+            refreshTrainings() {
+                let self = this
+                getCalendar(function (calendar) {
+                    self.calendar = calendar
+                }, function () {
+                    self.$toast.error('Failed to load trainings')
+                })
+            },
             cancelTraining(event) {
                 let self = this
 
-                let trainingUUID = event.target.getAttribute('data-training-uuid');
+                let trainingUUID = event.currentTarget.getAttribute('data-training-uuid');
                 let training = self.calendar.find(t => t.uuid === trainingUUID);
 
                 let msg = 'Are you sure you want to cancel training?';
@@ -124,13 +177,11 @@
                 this.$dialog.confirm(opts)
                     .then(dialog => {
                         cancelTraining(trainingUUID, function () {
-                            getCalendar(function (calendar) {
-                                self.calendar = calendar
-                            })
+                            self.refreshTrainings()
                             self.$toast.info('Training cancelled');
                             dialog.close()
-                        }, function () {
-                            self.$toast.error('Failed to cancel training');
+                        }, function (err) {
+                            self.$toast.error(apiErrorMessage(err, 'Failed to cancel training'));
                             dialog.close()
                         })
                     })
@@ -140,18 +191,16 @@
             },
             acceptReschedule(event) {
                 let self = this;
-                let trainingUUID = event.target.getAttribute('data-training-uuid');
+                let trainingUUID = event.currentTarget.getAttribute('data-training-uuid');
 
-                this.$dialog.confirm("Are you sure you want to accept?")
+                this.$dialog.confirm({title: 'Are you sure you want to accept?'})
                     .then(dialog => {
                         approveReschedule(trainingUUID, function () {
-                            getCalendar(function (calendar) {
-                                self.calendar = calendar
-                            })
+                            self.refreshTrainings()
                             self.$toast.info('Reschedule accepted');
                             dialog.close()
-                        }, function () {
-                            self.$toast.error('Failed to accept reschedule');
+                        }, function (err) {
+                            self.$toast.error(apiErrorMessage(err, 'Failed to accept reschedule'));
                             dialog.close()
                         })
                     })
@@ -161,19 +210,17 @@
             },
             rejectReschedule(event) {
                 let self = this;
-                let trainingUUID = event.target.getAttribute('data-training-uuid');
+                let trainingUUID = event.currentTarget.getAttribute('data-training-uuid');
 
-                this.$dialog.confirm("Are you sure you want to reject?")
+                this.$dialog.confirm({title: 'Are you sure you want to reject?'})
                     .then(dialog => {
                         rejectReschedule(trainingUUID, function () {
-                            getCalendar(function (calendar) {
-                                self.calendar = calendar
-                            })
+                            self.refreshTrainings()
 
                             self.$toast.info('Reschedule rejected');
                             dialog.close()
-                        }, function () {
-                            self.$toast.error('Failed to reject reschedule');
+                        }, function (err) {
+                            self.$toast.error(apiErrorMessage(err, 'Failed to reject reschedule'));
                             dialog.close()
                         })
                     })
@@ -181,36 +228,163 @@
                         console.log('Clicked on cancel')
                     })
             },
-            formatDateTime,
+            weekdayShort,
+            monthShort,
+            dayOfMonth,
+            formatHourRange,
+            formatDayLong,
         },
     }
 </script>
 
 <style scoped>
-    h3 {
-        margin: 40px 0 0;
+    .ww-trainings-head-actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
     }
 
-    ul {
-        list-style-type: none;
-        padding: 0;
+    .ww-balance {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 18px;
+        border-radius: 12px;
     }
 
-    li {
-        display: inline-block;
-        margin: 0 10px;
+    .ww-balance__value {
+        font-size: 30px;
+        font-weight: 700;
+        color: var(--ww-accent);
+        line-height: 1;
     }
 
-    a {
-        color: #42b983;
+    .ww-balance__label {
+        font-size: 12px;
+        color: var(--ww-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        line-height: 1.3;
     }
 
-    body {
-        background-color: #f5f5f5;
+    .ww-trainings {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
     }
 
-    .old-date {
+    .ww-training {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 18px 24px;
+    }
+
+    .ww-training--pending {
+        border-color: var(--ww-amber-line);
+    }
+
+    .ww-training__date {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 64px;
+        flex-shrink: 0;
+    }
+
+    .ww-training__weekday, .ww-training__month {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ww-muted);
+    }
+
+    .ww-training__day {
+        font-size: 34px;
+        font-weight: 700;
+        line-height: 1.05;
+    }
+
+    .ww-training__divider {
+        width: 1px;
+        height: 56px;
+        background: var(--ww-line);
+        flex-shrink: 0;
+    }
+
+    .ww-training__body {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .ww-training__time-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .ww-training__time {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .ww-training__time-old {
+        font-size: 15px;
+        font-weight: 500;
+        color: #A29C90;
         text-decoration: line-through;
-        opacity: 0.5;
+    }
+
+    .ww-training__notes {
+        font-size: 14px;
+        color: var(--ww-muted);
+    }
+
+    .ww-training__attendee {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .ww-training__actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .ww-trainings-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 56px 48px 60px 48px;
+        border-style: dashed;
+        text-align: center;
+        color: var(--ww-muted);
+    }
+
+    .ww-trainings-empty__art {
+        margin-bottom: 14px;
+    }
+
+    .ww-trainings-empty__title {
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--ww-ink);
+    }
+
+    .ww-trainings-empty p {
+        max-width: 400px;
+        font-size: 14px;
+    }
+
+    .ww-trainings-empty .ww-btn {
+        margin-top: 16px;
     }
 </style>

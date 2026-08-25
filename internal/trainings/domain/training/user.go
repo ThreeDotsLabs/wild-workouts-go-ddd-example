@@ -89,6 +89,14 @@ func (f ForbiddenToSeeTrainingError) Error() string {
 	)
 }
 
+func (f ForbiddenToSeeTrainingError) Slug() string {
+	return "forbidden-to-see-training"
+}
+
+func (f ForbiddenToSeeTrainingError) ErrorType() commonErrors.ErrorType {
+	return commonErrors.ErrorTypeAuthorization
+}
+
 func CanUserSeeTraining(user User, training Training) error {
 	if user.Type() == Trainer {
 		return nil
