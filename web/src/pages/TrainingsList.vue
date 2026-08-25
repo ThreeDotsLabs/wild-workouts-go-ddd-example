@@ -87,17 +87,13 @@
             </div>
 
             <div class="ww-card ww-trainings-empty" v-if="calendar !== null && calendar.length === 0">
-                <svg class="ww-trainings-empty__art" width="150" height="70" viewBox="0 0 150 70" fill="none"
+                <svg class="ww-trainings-empty__art" width="150" height="32" viewBox="0 0 150 32" fill="none"
                      aria-hidden="true">
-                    <line x1="32" y1="35" x2="118" y2="35" stroke="#191713" stroke-width="5" stroke-linecap="round"/>
-                    <rect x="26" y="13" width="12" height="44" rx="5" fill="#FBEDE7" stroke="#E0491F"
-                          stroke-width="2.5"/>
-                    <rect x="12" y="21" width="12" height="28" rx="5" fill="#FFFFFF" stroke="#191713"
-                          stroke-width="2.5"/>
-                    <rect x="112" y="13" width="12" height="44" rx="5" fill="#FBEDE7" stroke="#E0491F"
-                          stroke-width="2.5"/>
-                    <rect x="126" y="21" width="12" height="28" rx="5" fill="#FFFFFF" stroke="#191713"
-                          stroke-width="2.5"/>
+                    <rect x="6" y="11.5" width="20" height="9" rx="4.5" fill="#191713"/>
+                    <rect x="124" y="11.5" width="20" height="9" rx="4.5" fill="#191713"/>
+                    <rect x="24" y="8" width="9" height="16" rx="3" fill="#191713"/>
+                    <rect x="117" y="8" width="9" height="16" rx="3" fill="#191713"/>
+                    <rect x="30" y="13" width="90" height="6" rx="3" fill="#191713"/>
                 </svg>
                 <span class="ww-display ww-trainings-empty__title">Nothing on the bar yet</span>
                 <p v-if="!isTrainer">Your trainer is waiting. Grab an hour and get to work.</p>

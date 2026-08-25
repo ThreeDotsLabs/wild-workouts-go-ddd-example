@@ -1,9 +1,12 @@
 <template>
     <header class="ww-nav">
         <div class="ww-nav__brand">
-            <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
-                <path d="M2 5 L7 21 L13 9 L19 21 L24 5" stroke="#E0491F" stroke-width="3"
-                      stroke-linecap="round" stroke-linejoin="round"/>
+            <svg width="44" height="24" viewBox="0 0 48 26" fill="none">
+                <path d="M3 5.5 L8.74 23 L13.5 1.8 L18.26 23 L24 5.5" stroke="#E0491F" stroke-width="3.6"
+                      stroke-linecap="round" stroke-linejoin="miter" stroke-miterlimit="8"/>
+                <path d="M3 5.5 L8.74 23 L13.5 1.8 L18.26 23 L24 5.5" transform="translate(21 0)"
+                      stroke="#F7F5F1" stroke-width="3.6"
+                      stroke-linecap="round" stroke-linejoin="miter" stroke-miterlimit="8"/>
             </svg>
             <span class="ww-display ww-nav__title">Wild Workouts</span>
         </div>
