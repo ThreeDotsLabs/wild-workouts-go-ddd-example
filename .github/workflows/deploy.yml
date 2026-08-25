@@ -70,19 +70,15 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: go.work
-
-      - name: Install Task
-        run: go install github.com/go-task/task/v3/cmd/task@latest
-
       - uses: actions/setup-node@v4
         with:
           node-version: 24
 
       - name: Build web
         working-directory: web
+        env:
+          # webpack 4 uses a hash algorithm removed from OpenSSL 3 (Node 17+)
+          NODE_OPTIONS: --openssl-legacy-provider
         run: |
           yarn install
           yarn build
