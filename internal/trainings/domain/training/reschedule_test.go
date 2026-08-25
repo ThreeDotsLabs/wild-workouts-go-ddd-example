@@ -74,7 +74,7 @@ func TestTraining_ProposeReschedule_by_attendee(t *testing.T) {
 			err := tr.ApproveReschedule(c.Approver)
 			require.NoError(t, err)
 
-			tr.Time().Equal(rescheduleRequestTime)
+			assert.True(t, tr.Time().Equal(rescheduleRequestTime))
 			assert.False(t, tr.IsRescheduleProposed())
 		})
 	}
@@ -106,7 +106,7 @@ func TestTraining_ProposeReschedule_approve_by_proposer(t *testing.T) {
 			err := tr.ApproveReschedule(c.Proposer)
 			assert.Error(t, err)
 
-			tr.Time().Equal(originalTime)
+			assert.True(t, tr.Time().Equal(originalTime))
 			assert.True(t, tr.IsRescheduleProposed())
 		})
 	}
@@ -130,6 +130,6 @@ func TestTraining_RejectRescheduleTraining(t *testing.T) {
 	err := tr.RejectReschedule()
 	assert.NoError(t, err)
 
-	tr.Time().Equal(originalTime)
+	assert.True(t, tr.Time().Equal(originalTime))
 	assert.False(t, tr.IsRescheduleProposed())
 }

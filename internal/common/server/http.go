@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	firebase "firebase.google.com/go/v4"
 	"github.com/ThreeDotsLabs/wild-workouts-go-ddd-example/internal/common/auth"
@@ -31,7 +32,13 @@ func RunHTTPServerOnAddr(addr string, createHandler func(router chi.Router) http
 
 	logrus.Info("Starting HTTP server")
 
-	err := http.ListenAndServe(addr, rootRouter)
+	server := &http.Server{
+		Addr:              addr,
+		Handler:           rootRouter,
+		ReadHeaderTimeout: 10 * time.Second,
+	}
+
+	err := server.ListenAndServe()
 	if err != nil {
 		logrus.WithError(err).Panic("Unable to start HTTP server")
 	}
@@ -39,7 +46,6 @@ func RunHTTPServerOnAddr(addr string, createHandler func(router chi.Router) http
 
 func setMiddlewares(router *chi.Mux) {
 	router.Use(middleware.RequestID)
-	router.Use(middleware.RealIP)
 	router.Use(logs.NewStructuredLogger(logrus.StandardLogger()))
 	router.Use(middleware.Recoverer)
 
@@ -61,7 +67,7 @@ func addAuthMiddleware(router *chi.Mux) {
 
 	var opts []option.ClientOption
 	if file := os.Getenv("SERVICE_ACCOUNT_FILE"); file != "" {
-		opts = append(opts, option.WithCredentialsFile(file))
+		opts = append(opts, option.WithAuthCredentialsFile(option.ServiceAccount, file))
 	}
 
 	config := &firebase.Config{ProjectID: os.Getenv("GCP_PROJECT")}
@@ -75,7 +81,7 @@ func addAuthMiddleware(router *chi.Mux) {
 		logrus.WithError(err).Fatal("Unable to create firebase Auth client")
 	}
 
-	router.Use(auth.FirebaseHttpMiddleware{authClient}.Middleware)
+	router.Use(auth.FirebaseHttpMiddleware{AuthClient: authClient}.Middleware)
 }
 
 func addCorsMiddleware(router *chi.Mux) {

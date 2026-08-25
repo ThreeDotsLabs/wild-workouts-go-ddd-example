@@ -19,7 +19,6 @@ import (
 
 func TestRepository(t *testing.T) {
 	t.Parallel()
-	rand.Seed(time.Now().UTC().UnixNano())
 
 	repositories := createRepositories(t)
 

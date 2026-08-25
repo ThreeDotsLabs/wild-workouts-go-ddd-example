@@ -20,6 +20,8 @@ import (
 
 // todo - make tests parallel after fix of emulator: https://github.com/firebase/firebase-tools/issues/2452
 
+const testUserName = "User"
+
 func TestTrainingsFirestoreRepository_AddTraining(t *testing.T) {
 	t.Parallel()
 	repo := newFirebaseRepository(t)
@@ -106,7 +108,7 @@ func TestTrainingsFirestoreRepository_GetTraining_not_exists(t *testing.T) {
 		training.MustNewUser(uuid.New().String(), training.Attendee),
 	)
 	assert.Nil(t, tr)
-	assert.EqualError(t, err, training.NotFoundError{trainingUUID}.Error())
+	assert.EqualError(t, err, training.NotFoundError{TrainingUUID: trainingUUID}.Error())
 }
 
 func TestTrainingsFirestoreRepository_get_and_update_another_users_training(t *testing.T) {
@@ -195,7 +197,7 @@ func TestTrainingsFirestoreRepository_AllTrainings(t *testing.T) {
 		{
 			UUID:           exampleTraining.UUID(),
 			UserUUID:       exampleTraining.UserUUID(),
-			User:           "User",
+			User:           testUserName,
 			Time:           exampleTraining.Time(),
 			Notes:          "",
 			CanBeCancelled: true,
@@ -203,7 +205,7 @@ func TestTrainingsFirestoreRepository_AllTrainings(t *testing.T) {
 		{
 			UUID:           trainingWithNote.UUID(),
 			UserUUID:       trainingWithNote.UserUUID(),
-			User:           "User",
+			User:           testUserName,
 			Time:           trainingWithNote.Time(),
 			Notes:          trainingWithNote.Notes(),
 			CanBeCancelled: true,
@@ -211,7 +213,7 @@ func TestTrainingsFirestoreRepository_AllTrainings(t *testing.T) {
 		{
 			UUID:           trainingWithProposedReschedule.UUID(),
 			UserUUID:       trainingWithProposedReschedule.UserUUID(),
-			User:           "User",
+			User:           testUserName,
 			Time:           trainingWithProposedReschedule.Time(),
 			Notes:          "",
 			ProposedTime:   &proposedNewTime,
@@ -243,7 +245,7 @@ func TestTrainingsFirestoreRepository_FindTrainingsForUser(t *testing.T) {
 	tr1, err := training.NewTraining(
 		uuid.New().String(),
 		userUUID,
-		"User",
+		testUserName,
 		time.Now(),
 	)
 	require.NoError(t, err)
@@ -254,7 +256,7 @@ func TestTrainingsFirestoreRepository_FindTrainingsForUser(t *testing.T) {
 	tr2, err := training.NewTraining(
 		uuid.New().String(),
 		userUUID,
-		"User",
+		testUserName,
 		time.Now(),
 	)
 	require.NoError(t, err)
@@ -266,7 +268,7 @@ func TestTrainingsFirestoreRepository_FindTrainingsForUser(t *testing.T) {
 	canceledTraining, err := training.NewTraining(
 		uuid.New().String(),
 		userUUID,
-		"User",
+		testUserName,
 		time.Now(),
 	)
 	require.NoError(t, err)
@@ -284,13 +286,13 @@ func TestTrainingsFirestoreRepository_FindTrainingsForUser(t *testing.T) {
 		{
 			UUID:     tr1.UUID(),
 			UserUUID: userUUID,
-			User:     "User",
+			User:     testUserName,
 			Time:     tr1.Time(),
 		},
 		{
 			UUID:     tr2.UUID(),
 			UserUUID: userUUID,
-			User:     "User",
+			User:     testUserName,
 			Time:     tr2.Time(),
 		},
 	})
@@ -310,7 +312,7 @@ func newExampleTraining(t *testing.T) *training.Training {
 	tr, err := training.NewTraining(
 		uuid.New().String(),
 		uuid.New().String(),
-		"User",
+		testUserName,
 		newRandomTrainingTime(),
 	)
 	require.NoError(t, err)
@@ -323,7 +325,7 @@ func newCanceledTraining(t *testing.T) *training.Training {
 	tr, err := training.NewTraining(
 		uuid.New().String(),
 		uuid.New().String(),
-		"User",
+		testUserName,
 		newRandomTrainingTime(),
 	)
 	require.NoError(t, err)

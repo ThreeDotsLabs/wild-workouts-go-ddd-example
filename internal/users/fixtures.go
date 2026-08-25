@@ -15,6 +15,8 @@ import (
 	"google.golang.org/api/option"
 )
 
+const attendeeRole = "attendee"
+
 func loadFixtures() {
 	start := time.Now()
 	logrus.Debug("Waiting for users service")
@@ -63,7 +65,7 @@ func createFirebaseUsers() ([]string, error) {
 
 	var opts []option.ClientOption
 	if file := os.Getenv("SERVICE_ACCOUNT_FILE"); file != "" {
-		opts = append(opts, option.WithCredentialsFile(file))
+		opts = append(opts, option.WithAuthCredentialsFile(option.ServiceAccount, file))
 	}
 
 	config := &firebase.Config{ProjectID: os.Getenv("GCP_PROJECT")}
@@ -91,12 +93,12 @@ func createFirebaseUsers() ([]string, error) {
 		{
 			Email:       "attendee@threedots.tech",
 			DisplayName: "Mariusz Pudzianowski",
-			Role:        "attendee",
+			Role:        attendeeRole,
 		},
 		{
 			Email:       "attendee2@threedots.tech",
 			DisplayName: "Arnold Schwarzenegger",
-			Role:        "attendee",
+			Role:        attendeeRole,
 		},
 	}
 
@@ -112,7 +114,7 @@ func createFirebaseUsers() ([]string, error) {
 			if err != nil {
 				return nil, errors.Wrap(err, "unable to get created user")
 			}
-			if user.Role == "attendee" {
+			if user.Role == attendeeRole {
 				attendeeUUIDs = append(attendeeUUIDs, existingUser.UID)
 			}
 			continue
@@ -128,7 +130,7 @@ func createFirebaseUsers() ([]string, error) {
 			return nil, err
 		}
 
-		if user.Role == "attendee" {
+		if user.Role == attendeeRole {
 			attendeeUUIDs = append(attendeeUUIDs, createdUser.UID)
 		}
 	}

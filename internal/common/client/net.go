@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"net"
 	"time"
 )
@@ -18,8 +19,9 @@ func waitForPort(addr string, timeout time.Duration) bool {
 				// continue
 			}
 
-			_, err := net.Dial("tcp", addr)
+			conn, err := new(net.Dialer).DialContext(context.Background(), "tcp", addr)
 			if err == nil {
+				_ = conn.Close()
 				close(portAvailable)
 				return
 			}

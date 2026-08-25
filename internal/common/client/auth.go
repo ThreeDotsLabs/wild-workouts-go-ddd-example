@@ -26,7 +26,7 @@ func newMetadataServerToken(grpcAddr string) credentials.PerRPCCredentials {
 func (t metadataServerToken) GetRequestMetadata(ctx context.Context, in ...string) (map[string]string, error) {
 	// based on https://cloud.google.com/run/docs/authenticating/service-to-service#go
 	tokenURL := fmt.Sprintf("/instance/service-accounts/default/identity?audience=%s", t.serviceURL)
-	idToken, err := metadata.Get(tokenURL)
+	idToken, err := metadata.GetWithContext(ctx, tokenURL)
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot query id token for gRPC")
 	}
