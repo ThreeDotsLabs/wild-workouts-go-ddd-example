@@ -38,7 +38,7 @@ We're building a Discord community focused on modern business applications. It's
 - [api](api/) OpenAPI and gRPC definitions
 - [docker](docker/) Dockerfiles
 - [internal](internal/) application code
-- [scripts](scripts/) deployment and development scripts
+- [Taskfile.yml](Taskfile.yml) deployment and development tasks
 - [terraform](terraform/) - infrastructure definition
 - [web](web/) - frontend JavaScript code
 

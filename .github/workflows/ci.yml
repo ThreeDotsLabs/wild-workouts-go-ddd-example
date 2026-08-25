@@ -1,0 +1,120 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # PR builds (including forks) don't need a real project — the images stay local.
+  PROJECT_ID: ${{ vars.GCP_PROJECT_ID || 'ci' }}
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.work
+
+      - name: Install Task
+        run: go install github.com/go-task/task/v3/cmd/task@latest
+
+      - name: Lint
+        run: |
+          task lint:install
+          task lint
+
+      - name: Build images
+        run: |
+          task docker:build SERVICE=trainer PROJECT_ID="$PROJECT_ID"
+          task docker:build SERVICE=trainings PROJECT_ID="$PROJECT_ID"
+          task docker:build SERVICE=users PROJECT_ID="$PROJECT_ID"
+
+      - name: Start services
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+
+      - name: Test
+        run: task test
+
+      - name: Show service logs
+        if: failure()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs
+
+      - uses: google-github-actions/auth@v2
+        if: github.ref == 'refs/heads/master'
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+        if: github.ref == 'refs/heads/master'
+
+      - name: Push images
+        if: github.ref == 'refs/heads/master'
+        run: |
+          gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
+          task docker:push SERVICE=trainer PROJECT_ID="$PROJECT_ID"
+          task docker:push SERVICE=trainings PROJECT_ID="$PROJECT_ID"
+          task docker:push SERVICE=users PROJECT_ID="$PROJECT_ID"
+
+      - name: Deploy to Cloud Run
+        if: github.ref == 'refs/heads/master'
+        run: |
+          task deploy SERVICE=trainer SERVER=http PROJECT_ID="$PROJECT_ID"
+          task deploy SERVICE=trainer SERVER=grpc PROJECT_ID="$PROJECT_ID"
+          task deploy SERVICE=trainings SERVER=http PROJECT_ID="$PROJECT_ID"
+          task deploy SERVICE=users SERVER=http PROJECT_ID="$PROJECT_ID"
+          task deploy SERVICE=users SERVER=grpc PROJECT_ID="$PROJECT_ID"
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.work
+
+      - name: Install Task
+        run: go install github.com/go-task/task/v3/cmd/task@latest
+
+      - name: Generate OpenAPI clients
+        run: task openapi:js
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 12
+
+      - name: Build web
+        working-directory: web
+        run: |
+          yarn install
+          yarn build
+
+      - uses: google-github-actions/auth@v2
+        if: github.ref == 'refs/heads/master'
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      # firebase-tools needs a newer Node than the legacy web build above
+      - uses: actions/setup-node@v4
+        if: github.ref == 'refs/heads/master'
+        with:
+          node-version: 20
+
+      - name: Deploy to Firebase Hosting
+        if: github.ref == 'refs/heads/master'
+        working-directory: web
+        run: npx firebase-tools@13 deploy --project "$PROJECT_ID"

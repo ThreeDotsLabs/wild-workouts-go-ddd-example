@@ -11,10 +11,6 @@ locals {
   ]
 }
 
-data "google_container_registry_image" "image" {
-  name = var.name
-}
-
 resource "google_cloud_run_service" "service" {
   name     = "${var.name}-${var.protocol}"
   location = var.location
@@ -22,7 +18,7 @@ resource "google_cloud_run_service" "service" {
   template {
     spec {
       containers {
-        image = data.google_container_registry_image.image.image_url
+        image = "${var.location}-docker.pkg.dev/${var.project}/${var.repository}/${var.name}"
 
         dynamic "env" {
           for_each = concat(local.default_envs, var.envs)

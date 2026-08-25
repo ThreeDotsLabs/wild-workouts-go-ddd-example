@@ -1,12 +1,16 @@
-resource "null_resource" "enable_firestore" {
-  provisioner "local-exec" {
-    command = "make firestore"
-  }
+resource "google_firestore_database" "default" {
+  name        = "(default)"
+  location_id = var.firebase_location
+  type        = "FIRESTORE_NATIVE"
 
-  depends_on = [google_firebase_project_location.default]
+  depends_on = [
+    google_project_service.firestore,
+    google_firebase_project.default,
+  ]
 }
 
 resource "google_firestore_index" "trainings_user_time" {
+  database   = google_firestore_database.default.name
   collection = "trainings"
 
   fields {
@@ -23,11 +27,4 @@ resource "google_firestore_index" "trainings_user_time" {
     field_path = "Time"
     order      = "ASCENDING"
   }
-
-  fields {
-    field_path = "__name__"
-    order      = "ASCENDING"
-  }
-
-  depends_on = [null_resource.enable_firestore]
 }

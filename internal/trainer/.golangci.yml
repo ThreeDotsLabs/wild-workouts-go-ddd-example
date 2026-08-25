@@ -1,47 +1,59 @@
+version: "2"
 linters:
-  disable-all: true
+  default: none
   enable:
-    - deadcode
-    - errcheck
-    - gosimple
-    - govet
-    - ineffassign
-    - staticcheck
-    - structcheck
-    - typecheck
-    - unused
-    - varcheck
     - asciicheck
     - bodyclose
     - dogsled
+    - errcheck
     - exhaustive
-    - exportloopref
     - gocognit
     - goconst
-    - gofmt
     - goheader
-    - goimports
     - gosec
+    - govet
+    - ineffassign
     - misspell
     - nakedret
     - nestif
     - noctx
     - rowserrcheck
     - sqlclosecheck
+    - staticcheck
     - unconvert
     - unparam
+    - unused
     - whitespace
-
-issues:
-  exclude:
-    - "composite literal uses unkeyed fields"
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - gosec
-        - noctx
-        - unparam
-        - bodyclose
-    - path: fixtures.go
-      linters:
-        - gosec
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - bodyclose
+          - gosec
+          - noctx
+          - unparam
+        path: _test\.go
+      - linters:
+          - gosec
+        path: fixtures.go
+      - path: (.+)\.go$
+        text: composite literal uses unkeyed fields
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

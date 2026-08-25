@@ -7,6 +7,7 @@ variable "billing_account" {
   description = "Billing account display name"
 }
 
-variable "repository_name" {
-  default = "wild-workouts"
+variable "github_repository" {
+  description = "GitHub repository (owner/name) allowed to deploy via GitHub Actions"
+  default     = "ThreeDotsLabs/wild-workouts-go-ddd-example"
 }

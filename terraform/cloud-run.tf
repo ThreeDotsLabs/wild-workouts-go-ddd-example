@@ -1,19 +1,21 @@
-module cloud_run_trainer_grpc {
+module "cloud_run_trainer_grpc" {
   source = "./service"
 
   project    = var.project
   location   = var.region
+  repository = google_artifact_registry_repository.docker.repository_id
   dependency = null_resource.init_docker_images
 
   name     = "trainer"
   protocol = "grpc"
 }
 
-module cloud_run_trainer_http {
+module "cloud_run_trainer_http" {
   source = "./service"
 
   project    = var.project
   location   = var.region
+  repository = google_artifact_registry_repository.docker.repository_id
   dependency = null_resource.init_docker_images
 
   name     = "trainer"
@@ -28,11 +30,12 @@ module cloud_run_trainer_http {
   ]
 }
 
-module cloud_run_trainings_http {
+module "cloud_run_trainings_http" {
   source = "./service"
 
   project    = var.project
   location   = var.region
+  repository = google_artifact_registry_repository.docker.repository_id
   dependency = null_resource.init_docker_images
 
   name     = "trainings"
@@ -51,22 +54,24 @@ module cloud_run_trainings_http {
   ]
 }
 
-module cloud_run_users_grpc {
+module "cloud_run_users_grpc" {
   source = "./service"
 
   project    = var.project
   location   = var.region
+  repository = google_artifact_registry_repository.docker.repository_id
   dependency = null_resource.init_docker_images
 
   name     = "users"
   protocol = "grpc"
 }
 
-module cloud_run_users_http {
+module "cloud_run_users_http" {
   source = "./service"
 
   project    = var.project
   location   = var.region
+  repository = google_artifact_registry_repository.docker.repository_id
   dependency = null_resource.init_docker_images
 
   name     = "users"

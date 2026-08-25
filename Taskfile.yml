@@ -1,0 +1,169 @@
+version: '3'
+
+dotenv: ['.env.custom', '.env']
+
+includes:
+  terraform:
+    taskfile: terraform/Taskfile.yml
+    dir: terraform
+  c4:
+    taskfile: tools/c4/Taskfile.yml
+    dir: tools/c4
+
+tasks:
+  openapi:
+    cmds:
+      - task: openapi:go
+      - task: openapi:js
+
+  openapi:go:
+    cmds:
+      - task: openapi:go:gen
+        vars: {SERVICE: trainer, OUTPUT_DIR: internal/trainer/ports, PACKAGE: ports}
+      - task: openapi:go:gen
+        vars: {SERVICE: trainings, OUTPUT_DIR: internal/trainings/ports, PACKAGE: ports}
+      - task: openapi:go:gen
+        vars: {SERVICE: users, OUTPUT_DIR: internal/users, PACKAGE: main}
+
+  openapi:go:gen:
+    internal: true
+    requires:
+      vars: [SERVICE, OUTPUT_DIR, PACKAGE]
+    cmds:
+      - go tool oapi-codegen -generate types -o "{{.OUTPUT_DIR}}/openapi_types.gen.go" -package "{{.PACKAGE}}" "api/openapi/{{.SERVICE}}.yml"
+      - go tool oapi-codegen -generate chi-server -o "{{.OUTPUT_DIR}}/openapi_api.gen.go" -package "{{.PACKAGE}}" "api/openapi/{{.SERVICE}}.yml"
+      - go tool oapi-codegen -generate types -o "internal/common/client/{{.SERVICE}}/openapi_types.gen.go" -package "{{.SERVICE}}" "api/openapi/{{.SERVICE}}.yml"
+      - go tool oapi-codegen -generate client -o "internal/common/client/{{.SERVICE}}/openapi_client_gen.go" -package "{{.SERVICE}}" "api/openapi/{{.SERVICE}}.yml"
+
+  openapi:js:
+    cmds:
+      - for: [trainer, trainings, users]
+        task: openapi:js:gen
+        vars: {SERVICE: '{{.ITEM}}'}
+
+  openapi:js:gen:
+    internal: true
+    requires:
+      vars: [SERVICE]
+    cmds:
+      - >-
+        docker run --rm --env "JAVA_OPTS=-Dlog.level=error" -v "{{.PWD}}:/local"
+        openapitools/openapi-generator-cli:v4.3.0 generate
+        -i "/local/api/openapi/{{.SERVICE}}.yml"
+        -g javascript
+        -o "/local/web/src/repositories/clients/{{.SERVICE}}"
+
+  proto:
+    cmds:
+      - for: [trainer, users]
+        task: proto:gen
+        vars: {SERVICE: '{{.ITEM}}'}
+
+  proto:gen:
+    internal: true
+    requires:
+      vars: [SERVICE]
+    cmds:
+      - >-
+        protoc
+        --proto_path=api/protobuf "api/protobuf/{{.SERVICE}}.proto"
+        --go_out=internal/common/genproto/{{.SERVICE}} --go_opt=paths=source_relative
+        --go-grpc_opt=require_unimplemented_servers=false
+        --go-grpc_out=internal/common/genproto/{{.SERVICE}} --go-grpc_opt=paths=source_relative
+
+  lint:
+    cmds:
+      - go-cleanarch -interfaces ports -infrastructure adapters
+      - for: [common, trainer, trainings, users]
+        task: lint:service
+        vars: {SERVICE: '{{.ITEM}}'}
+
+  lint:service:
+    internal: true
+    requires:
+      vars: [SERVICE]
+    dir: internal/{{.SERVICE}}
+    cmds:
+      - golangci-lint run
+
+  lint:install:
+    cmds:
+      - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.13.1
+      - go install github.com/roblaszczak/go-cleanarch@latest
+
+  fmt:
+    cmds:
+      - goimports -l -w internal/
+
+  test:
+    cmds:
+      - task: test:service
+        vars: {SERVICE: common, ENV_FILE: .env.e2e}
+      - for: [trainer, trainings, users]
+        task: test:service
+        vars: {SERVICE: '{{.ITEM}}', ENV_FILE: .env.test}
+
+  test:service:
+    requires:
+      vars: [SERVICE]
+    vars:
+      ENV_FILE: '{{.ENV_FILE | default ".env.test"}}'
+    dir: internal/{{.SERVICE}}
+    dotenv: ['{{.ROOT_DIR}}/{{.ENV_FILE}}']
+    cmds:
+      - go test -count=1 -p=8 -parallel=8 -race ./...
+
+  docker:build:
+    requires:
+      vars: [SERVICE, PROJECT_ID]
+    cmds:
+      - docker build -t "europe-west1-docker.pkg.dev/{{.PROJECT_ID}}/docker/{{.SERVICE}}" ./internal -f ./docker/app-prod/Dockerfile --build-arg "SERVICE={{.SERVICE}}"
+
+  docker:push:
+    requires:
+      vars: [SERVICE, PROJECT_ID]
+    cmds:
+      - docker push "europe-west1-docker.pkg.dev/{{.PROJECT_ID}}/docker/{{.SERVICE}}"
+
+  deploy:
+    requires:
+      vars: [SERVICE, SERVER, PROJECT_ID]
+    cmds:
+      - >-
+        gcloud run deploy "{{.SERVICE}}-{{.SERVER}}"
+        --image "europe-west1-docker.pkg.dev/{{.PROJECT_ID}}/docker/{{.SERVICE}}"
+        --region europe-west1
+        --platform managed
+
+  mycli:
+    interactive: true
+    cmds:
+      - mycli -u $MYSQL_USER -p $MYSQL_PASSWORD $MYSQL_DATABASE
+
+  claude:
+    env:
+      HERDR_AGENT: claude
+    cmds:
+      - docker build -t claude-code ./docker/claude
+      - >-
+        docker run -it --rm
+        -v "{{.PWD}}:/src"
+        -v "{{.HOME}}/.claude.json:/home/claude/.claude.json.host:ro"
+        -v "{{.HOME}}/.claude:/home/claude/.claude-host:ro"
+        -e TERM_PROGRAM
+        -e CLAUDE_CODE_OAUTH_TOKEN
+        -e GH_TOKEN
+        claude-code
+        --dangerously-skip-permissions
+
+  claude-sbx:
+    env:
+      HERDR_AGENT: claude
+    cmds:
+      - >-
+        sbx run
+        --name=wild-workouts
+        -e TERM_PROGRAM
+        -e CLAUDE_CODE_OAUTH_TOKEN
+        -e GH_TOKEN
+        claude {{.PWD}}

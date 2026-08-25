@@ -1,19 +1,15 @@
 services:
   trainer-http:
-    image: "gcr.io/${PROJECT_ID}/trainer"
+    image: "europe-west1-docker.pkg.dev/${PROJECT_ID}/docker/trainer"
 
   trainer-grpc:
-    image: "gcr.io/${PROJECT_ID}/trainer"
+    image: "europe-west1-docker.pkg.dev/${PROJECT_ID}/docker/trainer"
 
   trainings-http:
-    image: "gcr.io/${PROJECT_ID}/trainings"
+    image: "europe-west1-docker.pkg.dev/${PROJECT_ID}/docker/trainings"
 
   users-http:
-    image: "gcr.io/${PROJECT_ID}/users"
+    image: "europe-west1-docker.pkg.dev/${PROJECT_ID}/docker/users"
 
   users-grpc:
-    image: "gcr.io/${PROJECT_ID}/users"
-networks:
-  default:
-    external:
-      name: cloudbuild
+    image: "europe-west1-docker.pkg.dev/${PROJECT_ID}/docker/users"

@@ -3,7 +3,7 @@ readonly env_prefix=TF_VAR_
 readonly example_file=.env.example
 readonly target_file=.env
 readonly default_region=europe-west1
-readonly default_firebase_location=europe-west
+readonly default_firebase_location=eur3
 
 answer=""
 
@@ -75,7 +75,7 @@ fi
 echo
 echo "You need to pick a region where Cloud Run is available!"
 echo "See full list of supported regions: https://cloud.google.com/run/docs/locations"
-echo "See available Firebase locations here: https://firebase.google.com/docs/projects/locations"
+echo "See available Firestore locations here: https://firebase.google.com/docs/firestore/locations"
 echo
 
 echo "Fill all required parameters:"

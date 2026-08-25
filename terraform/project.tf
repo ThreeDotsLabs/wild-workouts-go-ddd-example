@@ -11,13 +11,13 @@ resource "google_project" "project" {
   name            = "Wild Workouts"
   project_id      = var.project
   billing_account = data.google_billing_account.account.id
+  deletion_policy = "DELETE"
 }
 
 resource "google_project_iam_member" "owner" {
-  role   = "roles/owner"
-  member = "user:${var.user}"
-
-  depends_on = [google_project.project]
+  project = google_project.project.project_id
+  role    = "roles/owner"
+  member  = "user:${var.user}"
 }
 
 resource "google_project_service" "compute" {
@@ -25,8 +25,8 @@ resource "google_project_service" "compute" {
   depends_on = [google_project.project]
 }
 
-resource "google_project_service" "container_registry" {
-  service    = "containerregistry.googleapis.com"
+resource "google_project_service" "artifact_registry" {
+  service    = "artifactregistry.googleapis.com"
   depends_on = [google_project.project]
 
   disable_dependent_services = true
@@ -37,8 +37,8 @@ resource "google_project_service" "cloud_run" {
   depends_on = [google_project.project]
 }
 
-resource "google_project_service" "cloud_build" {
-  service    = "cloudbuild.googleapis.com"
+resource "google_project_service" "iam_credentials" {
+  service    = "iamcredentials.googleapis.com"
   depends_on = [google_project.project]
 }
 
@@ -51,10 +51,5 @@ resource "google_project_service" "firebase" {
 
 resource "google_project_service" "firestore" {
   service    = "firestore.googleapis.com"
-  depends_on = [google_project.project]
-}
-
-resource "google_project_service" "source_repo" {
-  service    = "sourcerepo.googleapis.com"
   depends_on = [google_project.project]
 }

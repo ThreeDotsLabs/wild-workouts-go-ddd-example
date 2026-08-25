@@ -22,12 +22,6 @@ skinparam rectangle<<_GROUP>> {
   BorderColor #ffffff
 }
 
-skinparam rectangle<<APP>> {
-  BackgroundColor #1a4577
-  FontColor #ffffff
-  BorderColor #000000
-}
-
 skinparam rectangle<<ADAPTER>> {
   BackgroundColor #2d69b7
   FontColor #ffffff
@@ -52,74 +46,80 @@ skinparam rectangle<<ROOT>> {
   BorderColor #000000
 }
 
+skinparam rectangle<<APP>> {
+  BackgroundColor #1a4577
+  FontColor #ffffff
+  BorderColor #000000
+}
+
+rectangle 0ROOT <<_GROUP>> {
+	rectangle "==app.Commands\n<size:10>[component]</size>\n\napplication context" <<ROOT>> as 2042358025
+}
 rectangle 0ROOT <<_GROUP>> {
 	rectangle "==app.Application\n<size:10>[component]</size>\n\napplication context" <<ROOT>> as 1595196051
 }
 rectangle 0ROOT <<_GROUP>> {
 	rectangle "==app.Queries\n<size:10>[component]</size>\n\napplication context" <<ROOT>> as 2827497597
 }
-rectangle 0ROOT <<_GROUP>> {
-	rectangle "==app.Commands\n<size:10>[component]</size>\n\napplication context" <<ROOT>> as 2042358025
+rectangle 28274975971APP <<_GROUP>> {
+	rectangle "==query.allTrainingsHandler\n<size:10>[component]</size>\n\napplication query" <<APP>> as 3842680776
 }
+2827497597 .[#000000].> 3842680776 : ""
+rectangle 28274975971APP <<_GROUP>> {
+	rectangle "==query.trainingsForUserHandler\n<size:10>[component]</size>\n\napplication query" <<APP>> as 677601637
+}
+2827497597 .[#000000].> 677601637 : ""
+rectangle 20423580251APP <<_GROUP>> {
+	rectangle "==command.approveTrainingRescheduleHandler\n<size:10>[component]</size>\n\napplication command" <<APP>> as 809422308
+}
+2042358025 .[#000000].> 809422308 : ""
+rectangle 20423580251APP <<_GROUP>> {
+	rectangle "==command.cancelTrainingHandler\n<size:10>[component]</size>\n\napplication command" <<APP>> as 1081289115
+}
+2042358025 .[#000000].> 1081289115 : ""
+rectangle 20423580251APP <<_GROUP>> {
+	rectangle "==command.rejectTrainingRescheduleHandler\n<size:10>[component]</size>\n\napplication command" <<APP>> as 3515646600
+}
+2042358025 .[#000000].> 3515646600 : ""
+rectangle 20423580251APP <<_GROUP>> {
+	rectangle "==command.rescheduleTrainingHandler\n<size:10>[component]</size>\n\napplication command" <<APP>> as 3269324937
+}
+2042358025 .[#000000].> 3269324937 : ""
+rectangle 20423580251APP <<_GROUP>> {
+	rectangle "==command.requestTrainingRescheduleHandler\n<size:10>[component]</size>\n\napplication command" <<APP>> as 555257820
+}
+2042358025 .[#000000].> 555257820 : ""
+rectangle 20423580251APP <<_GROUP>> {
+	rectangle "==command.scheduleTrainingHandler\n<size:10>[component]</size>\n\napplication command" <<APP>> as 1216381826
+}
+2042358025 .[#000000].> 1216381826 : ""
 1595196051 .[#000000].> 2042358025 : ""
 1595196051 .[#000000].> 2827497597 : ""
-rectangle 28274975971APP <<_GROUP>> {
-	rectangle "==query.AllTrainingsHandler\n<size:10>[component]</size>\n\napplication query" <<APP>> as 3287812968
-}
-2827497597 .[#000000].> 3287812968 : ""
-rectangle 28274975971APP <<_GROUP>> {
-	rectangle "==query.TrainingsForUserHandler\n<size:10>[component]</size>\n\napplication query" <<APP>> as 1094798405
-}
-2827497597 .[#000000].> 1094798405 : ""
-rectangle 20423580251APP <<_GROUP>> {
-	rectangle "==command.ApproveTrainingRescheduleHandler\n<size:10>[component]</size>\n\napplication command" <<APP>> as 3887158788
-}
-2042358025 .[#000000].> 3887158788 : ""
-rectangle 20423580251APP <<_GROUP>> {
-	rectangle "==command.CancelTrainingHandler\n<size:10>[component]</size>\n\napplication command" <<APP>> as 224341371
-}
-2042358025 .[#000000].> 224341371 : ""
-rectangle 20423580251APP <<_GROUP>> {
-	rectangle "==command.RejectTrainingRescheduleHandler\n<size:10>[component]</size>\n\napplication command" <<APP>> as 2302791080
-}
-2042358025 .[#000000].> 2302791080 : ""
-rectangle 20423580251APP <<_GROUP>> {
-	rectangle "==command.RescheduleTrainingHandler\n<size:10>[component]</size>\n\napplication command" <<APP>> as 3456104041
-}
-2042358025 .[#000000].> 3456104041 : ""
-rectangle 20423580251APP <<_GROUP>> {
-	rectangle "==command.RequestTrainingRescheduleHandler\n<size:10>[component]</size>\n\napplication command" <<APP>> as 4186077052
-}
-2042358025 .[#000000].> 4186077052 : ""
-rectangle 20423580251APP <<_GROUP>> {
-	rectangle "==command.ScheduleTrainingHandler\n<size:10>[component]</size>\n\napplication command" <<APP>> as 142372322
-}
-2042358025 .[#000000].> 142372322 : ""
-rectangle 34561040412ADAPTER <<_GROUP>> {
-	rectangle "==adapters.TrainingsFirestoreRepository\n<size:10>[component]</size>\n\nadapter component" <<ADAPTER>> as 1383687574
-}
-3456104041 .[#000000].> 1383687574 : ""
-rectangle 34561040412ADAPTER <<_GROUP>> {
+rectangle 10812891152ADAPTER <<_GROUP>> {
 	rectangle "==adapters.UsersGrpc\n<size:10>[component]</size>\n\nadapter component" <<ADAPTER>> as 881049450
 }
-3456104041 .[#000000].> 881049450 : ""
-rectangle 34561040412ADAPTER <<_GROUP>> {
+1081289115 .[#000000].> 881049450 : ""
+rectangle 10812891152ADAPTER <<_GROUP>> {
 	rectangle "==adapters.TrainerGrpc\n<size:10>[component]</size>\n\nadapter component" <<ADAPTER>> as 2401551451
 }
-3456104041 .[#000000].> 2401551451 : ""
-4186077052 .[#000000].> 1383687574 : ""
-3287812968 .[#000000].> 1383687574 : ""
-224341371 .[#000000].> 881049450 : ""
-224341371 .[#000000].> 2401551451 : ""
-224341371 .[#000000].> 1383687574 : ""
-2302791080 .[#000000].> 1383687574 : ""
-3887158788 .[#000000].> 1383687574 : ""
-3887158788 .[#000000].> 881049450 : ""
-3887158788 .[#000000].> 2401551451 : ""
-142372322 .[#000000].> 1383687574 : ""
-142372322 .[#000000].> 881049450 : ""
-142372322 .[#000000].> 2401551451 : ""
-1094798405 .[#000000].> 1383687574 : ""
+1081289115 .[#000000].> 2401551451 : ""
+rectangle 10812891152ADAPTER <<_GROUP>> {
+	rectangle "==adapters.TrainingsFirestoreRepository\n<size:10>[component]</size>\n\nadapter component" <<ADAPTER>> as 1383687574
+}
+1081289115 .[#000000].> 1383687574 : ""
+3515646600 .[#000000].> 1383687574 : ""
+1216381826 .[#000000].> 1383687574 : ""
+1216381826 .[#000000].> 881049450 : ""
+1216381826 .[#000000].> 2401551451 : ""
+555257820 .[#000000].> 1383687574 : ""
+809422308 .[#000000].> 1383687574 : ""
+809422308 .[#000000].> 881049450 : ""
+809422308 .[#000000].> 2401551451 : ""
+3269324937 .[#000000].> 1383687574 : ""
+3269324937 .[#000000].> 881049450 : ""
+3269324937 .[#000000].> 2401551451 : ""
+3842680776 .[#000000].> 1383687574 : ""
+677601637 .[#000000].> 1383687574 : ""
 rectangle 13836875743DB <<_GROUP>> {
 	database "==Firestore\n<size:10>[component]</size>\n\nfirestore client" <<DB>> as 650530190
 }

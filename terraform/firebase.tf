@@ -14,8 +14,9 @@ resource "google_service_account" "firebase" {
 }
 
 resource "google_project_iam_member" "service_account_firebase_admin" {
-  role   = "roles/editor"
-  member = "serviceAccount:${google_service_account.firebase.email}"
+  project = google_project.project.project_id
+  role    = "roles/editor"
+  member  = "serviceAccount:${google_service_account.firebase.email}"
 }
 
 resource "google_service_account_key" "firebase_key" {
@@ -28,16 +29,6 @@ resource "google_firebase_project" "default" {
   depends_on = [
     google_project_service.firebase,
     google_project_iam_member.service_account_firebase_admin,
-  ]
-}
-
-resource "google_firebase_project_location" "default" {
-  provider = google-beta
-
-  location_id = var.firebase_location
-
-  depends_on = [
-    google_firebase_project.default,
   ]
 }
 

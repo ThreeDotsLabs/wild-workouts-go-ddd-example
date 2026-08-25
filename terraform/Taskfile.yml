@@ -1,0 +1,81 @@
+version: '3'
+
+vars:
+  BASE_IMAGE: us-docker.pkg.dev/cloudrun/container/hello
+
+tasks:
+  default:
+    cmds:
+      - task: check
+      - task: init
+      - task: apply
+      - task: done
+
+  check:
+    silent: true
+    cmds:
+      - command -v terraform >/dev/null || ( echo "terraform is not installed"; exit 1 )
+      - command -v gcloud >/dev/null || ( echo "gcloud is not installed"; exit 1 )
+
+  init:
+    cmds:
+      - ./set-envs.sh
+      - terraform init
+
+  apply:
+    dotenv: ['.env']
+    cmds:
+      - terraform apply
+
+  done:
+    dotenv: ['.env']
+    silent: true
+    cmds:
+      - |
+        echo
+        printf "=%.0s" {1..80}
+        echo
+        echo
+        printf "\e[93mThe setup is almost done!\e[0m\n"
+        echo
+        printf "Configure GitHub Actions deployments by setting these variables on your repository:\n"
+        echo "	gh variable set GCP_PROJECT_ID --body \"$TF_VAR_project\""
+        echo "	gh variable set GCP_WORKLOAD_IDENTITY_PROVIDER --body \"$(terraform output -raw github_workload_identity_provider)\""
+        echo "	gh variable set GCP_SERVICE_ACCOUNT --body \"$(terraform output -raw github_actions_service_account)\""
+        echo
+        printf "Now you need to enable \e[1mEmail/Password\e[0m provider in the Firebase console.\n"
+        echo "To do this, visit https://console.firebase.google.com/u/0/project/$TF_VAR_project/authentication/providers"
+        echo
+        printf "You can also downgrade the subscription plan to \e[1mSpark\e[0m (it's set to Blaze by default).\n"
+        echo "The Spark plan is completely free and has all features needed for running this project."
+        echo
+        printf "\e[92mCongratulations!\e[0m Your project should be available at: https://$TF_VAR_project.web.app \n"
+        echo
+        echo "If it's not, check if the GitHub Actions workflow finished successfully: https://github.com/$(terraform output -raw github_repository)/actions"
+        echo
+        echo "If you need help, feel free to contact us at https://threedots.tech"
+
+  set-project:
+    dotenv: ['.env']
+    cmds:
+      - gcloud config set project "$TF_VAR_project"
+
+  docker-images:
+    dotenv: ['.env']
+    cmds:
+      - docker pull "{{.BASE_IMAGE}}"
+      - gcloud auth configure-docker "$TF_VAR_region-docker.pkg.dev" --quiet
+      - |
+        for service in trainer trainings users; do
+          tag="$TF_VAR_region-docker.pkg.dev/$TF_VAR_project/docker/$service"
+          docker tag "{{.BASE_IMAGE}}" "$tag"
+          docker push "$tag"
+        done
+
+  destroy:
+    dotenv: ['.env']
+    cmds:
+      - terraform state rm "google_project_iam_member.owner"
+      - terraform state rm "google_project_service.artifact_registry"
+      - terraform state rm "google_project_service.cloud_run"
+      - terraform destroy

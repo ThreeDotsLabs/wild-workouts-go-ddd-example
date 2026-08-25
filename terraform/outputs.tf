@@ -18,6 +18,14 @@ output "users_http_url" {
   value = module.cloud_run_users_http.url
 }
 
-output "repo_url" {
-  value = google_sourcerepo_repository.wild_workouts.url
+output "github_repository" {
+  value = var.github_repository
+}
+
+output "github_actions_service_account" {
+  value = google_service_account.github_actions.email
+}
+
+output "github_workload_identity_provider" {
+  value = google_iam_workload_identity_pool_provider.github.name
 }
