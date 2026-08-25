@@ -1,6 +1,10 @@
 version: '3'
 
-dotenv: ['.env.custom', '.env']
+dotenv: ['.env.worktree', '.env.custom', '.env']
+
+vars:
+  GCP_REGION: europe-west1
+  DOCKER_REGISTRY: '{{.GCP_REGION}}-docker.pkg.dev'
 
 includes:
   terraform:
@@ -11,6 +15,18 @@ includes:
     dir: tools/c4
 
 tasks:
+  up:
+    desc: Start the local environment (per-worktree ports, see tools/worktree-env.sh)
+    cmds:
+      - ./tools/worktree-env.sh
+      - docker compose --env-file .env --env-file .env.worktree up -d {{.CLI_ARGS}}
+
+  down:
+    desc: Stop the local environment
+    cmds:
+      - ./tools/worktree-env.sh
+      - docker compose --env-file .env --env-file .env.worktree down {{.CLI_ARGS}}
+
   openapi:
     cmds:
       - task: openapi:go
@@ -109,30 +125,36 @@ tasks:
     vars:
       ENV_FILE: '{{.ENV_FILE | default ".env.test"}}'
     dir: internal/{{.SERVICE}}
-    dotenv: ['{{.ROOT_DIR}}/{{.ENV_FILE}}']
+    dotenv: ['{{.ROOT_DIR}}/.env.worktree', '{{.ROOT_DIR}}/{{.ENV_FILE}}']
     cmds:
       - go test -count=1 -p=8 -parallel=8 -race ./...
 
   docker:build:
     requires:
       vars: [SERVICE, PROJECT_ID]
+    vars:
+      IMAGE: '{{.DOCKER_REGISTRY}}/{{.PROJECT_ID}}/docker/{{.SERVICE}}'
     cmds:
-      - docker build -t "europe-west1-docker.pkg.dev/{{.PROJECT_ID}}/docker/{{.SERVICE}}" ./internal -f ./docker/app-prod/Dockerfile --build-arg "SERVICE={{.SERVICE}}"
+      - docker build -t "{{.IMAGE}}" ./internal -f ./docker/app-prod/Dockerfile --build-arg "SERVICE={{.SERVICE}}"
 
   docker:push:
     requires:
       vars: [SERVICE, PROJECT_ID]
+    vars:
+      IMAGE: '{{.DOCKER_REGISTRY}}/{{.PROJECT_ID}}/docker/{{.SERVICE}}'
     cmds:
-      - docker push "europe-west1-docker.pkg.dev/{{.PROJECT_ID}}/docker/{{.SERVICE}}"
+      - docker push "{{.IMAGE}}"
 
   deploy:
     requires:
       vars: [SERVICE, SERVER, PROJECT_ID]
+    vars:
+      IMAGE: '{{.DOCKER_REGISTRY}}/{{.PROJECT_ID}}/docker/{{.SERVICE}}'
     cmds:
       - >-
         gcloud run deploy "{{.SERVICE}}-{{.SERVER}}"
-        --image "europe-west1-docker.pkg.dev/{{.PROJECT_ID}}/docker/{{.SERVICE}}"
-        --region europe-west1
+        --image "{{.IMAGE}}"
+        --region {{.GCP_REGION}}
         --platform managed
 
   mycli:
@@ -166,4 +188,6 @@ tasks:
         -e TERM_PROGRAM
         -e CLAUDE_CODE_OAUTH_TOKEN
         -e GH_TOKEN
-        claude {{.PWD}}
+        claude 
+        --dangerously-skip-permissions 
+        {{.PWD}}

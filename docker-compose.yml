@@ -9,7 +9,11 @@ services:
       - ./web:/web
       - /web/node_modules/
     ports:
-      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:${WEB_PORT:-8080}:8080"
+    environment:
+      VUE_APP_TRAINER_HTTP_PORT: ${TRAINER_HTTP_PORT:-3000}
+      VUE_APP_TRAININGS_HTTP_PORT: ${TRAININGS_HTTP_PORT:-3001}
+      VUE_APP_USERS_HTTP_PORT: ${USERS_HTTP_PORT:-3002}
 
   trainer-http:
     build:
@@ -21,13 +25,14 @@ services:
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
     working_dir: /internal
     ports:
-      - "127.0.0.1:3000:$PORT"
+      - "127.0.0.1:${TRAINER_HTTP_PORT:-3000}:$PORT"
     env_file:
       - .env
     environment:
       SERVICE: trainer
       SERVER_TO_RUN: http
       GOCACHE: /go-cache
+      CORS_ALLOWED_ORIGINS: http://localhost:${WEB_PORT:-8080}
     depends_on:
       - firestore
 
@@ -41,7 +46,7 @@ services:
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
     working_dir: /internal
     ports:
-      - "127.0.0.1:3010:$PORT"
+      - "127.0.0.1:${TRAINER_GRPC_PORT:-3010}:$PORT"
     env_file:
       - .env
     environment:
@@ -61,12 +66,13 @@ services:
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
     working_dir: /internal
     ports:
-      - "127.0.0.1:3001:$PORT"
+      - "127.0.0.1:${TRAININGS_HTTP_PORT:-3001}:$PORT"
     env_file:
       - .env
     environment:
       SERVICE: trainings
       GOCACHE: /go-cache
+      CORS_ALLOWED_ORIGINS: http://localhost:${WEB_PORT:-8080}
     depends_on:
       - firestore
 
@@ -80,11 +86,12 @@ services:
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
     working_dir: /internal
     ports:
-      - "127.0.0.1:3002:$PORT"
+      - "127.0.0.1:${USERS_HTTP_PORT:-3002}:$PORT"
     environment:
       SERVICE: users
       SERVER_TO_RUN: http
       GOCACHE: /go-cache
+      CORS_ALLOWED_ORIGINS: http://localhost:${WEB_PORT:-8080}
     env_file:
       - .env
     depends_on:
@@ -100,7 +107,7 @@ services:
 #      - ./service-account-file.json:$SERVICE_ACCOUNT_FILE
     working_dir: /internal
     ports:
-      - "127.0.0.1:3020:$PORT"
+      - "127.0.0.1:${USERS_GRPC_PORT:-3020}:$PORT"
     environment:
       SERVICE: users
       SERVER_TO_RUN: grpc
@@ -116,8 +123,8 @@ services:
     env_file:
       - .env
     ports:
-      - "127.0.0.1:8787:8787"
-      - "127.0.0.1:4000:4000"
+      - "127.0.0.1:${FIRESTORE_PORT:-8787}:8787"
+      - "127.0.0.1:${FIRESTORE_UI_PORT:-4000}:4000"
     restart: unless-stopped
 
   firestore-component-tests:
@@ -126,7 +133,7 @@ services:
     env_file:
       - .env
     ports:
-      - "127.0.0.1:8788:8787"
+      - "127.0.0.1:${FIRESTORE_COMPONENT_PORT:-8788}:8787"
     restart: unless-stopped
 
   mysql:
@@ -136,5 +143,5 @@ services:
     volumes:
       - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     ports:
-      - "127.0.0.1:3306:3306"
+      - "127.0.0.1:${MYSQL_PORT:-3306}:3306"
     restart: unless-stopped

@@ -48,8 +48,12 @@ The example application is available at [https://threedotslabs-wildworkouts.web.
 
 ### Running locally
 
+Use `task up` (and `task down`) instead of raw `docker compose up` — it assigns each git worktree
+its own port range so multiple worktrees can run side by side (see `tools/worktree-env.sh`).
+Other compose commands (`logs`, `ps`, `exec`) work as usual.
+
 ```go
-> docker-compose up
+> task up
 
 # ...
 
