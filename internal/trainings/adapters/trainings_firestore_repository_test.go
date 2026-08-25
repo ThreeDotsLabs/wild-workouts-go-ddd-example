@@ -18,8 +18,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// todo - make tests parallel after fix of emulator: https://github.com/firebase/firebase-tools/issues/2452
-
 const testUserName = "User"
 
 func TestTrainingsFirestoreRepository_AddTraining(t *testing.T) {
@@ -161,13 +159,10 @@ func TestTrainingsFirestoreRepository_AllTrainings(t *testing.T) {
 	t.Parallel()
 	repo := newFirebaseRepository(t)
 
-	// AllTrainings returns all documents, because of that we need to do exception and do DB cleanup
-	// In general, I recommend to do it before test. In that way you are sure that cleanup is done.
-	// Thanks to that tests are more stable.
-	// More about why it is important you can find in https://threedots.tech/post/database-integration-testing/
-	err := repo.RemoveAllTrainings(context.Background())
-	require.NoError(t, err)
-
+	// AllTrainings returns all documents, so we filter the results by the UUIDs added in this test
+	// instead of cleaning up the database. Removing all documents here would break other tests
+	// running in parallel that use the same collection.
+	// More about database integration testing in https://threedots.tech/post/database-integration-testing/
 	ctx := context.Background()
 
 	exampleTraining := newExampleTraining(t)
@@ -183,7 +178,7 @@ func TestTrainingsFirestoreRepository_AllTrainings(t *testing.T) {
 	}
 
 	for _, tr := range trainingsToAdd {
-		err = repo.AddTraining(ctx, tr)
+		err := repo.AddTraining(ctx, tr)
 		require.NoError(t, err)
 	}
 
